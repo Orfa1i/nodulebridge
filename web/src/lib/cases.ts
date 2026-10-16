@@ -11,6 +11,12 @@ export function caseIdFromParam(param: string | null | undefined): string {
   return letter.startsWith("case-") ? letter : `case-${letter}`;
 }
 
+/** Absolute URL of the index of prepared cases (series UIDs and CT hashes). */
+export function caseIndexUrl(): string {
+  const path = `${BASE}/index.json`;
+  return typeof window !== "undefined" ? new URL(path, window.location.origin).href : path;
+}
+
 export function caseFileUrl(caseId: string, file: string): string {
   const path = `${BASE}/${caseId}/${file}`;
   // The NIfTI loader calls new URL(url) without a base, so it needs an absolute URL.
