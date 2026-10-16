@@ -4,9 +4,10 @@ Everything here is deterministic. No language model is called; the wording comes
 (shared/content/passport.json and the explain service). The booking request states what the guideline suggests and asks
 the doctor to decide. It never says the patient has cancer and never asks for a specific test.
 
-Codes: only `text` (and display) is used. SNOMED CT and LOINC codes are NOT added because they were not verified in the
-official browsers.
-TODO-VERIFY: add SNOMED CT / LOINC codes for "pulmonary nodule", "CT of chest" and the report type after checking them.
+Codes: `code.text` always carries the human wording. Standard codes come only from shared/content/fhir-codes.json, where
+each one records how it was checked. Those four were looked up in public references; the official SNOMED International
+browser and loinc.org blocked automated lookups, so official_browser_checked is still false (TODO-VERIFY). Anything with
+no looked-up code (the nodule size, side, lobe, attenuation) stays text only. A code is never guessed.
 """
 
 from __future__ import annotations
@@ -30,6 +31,7 @@ from app.config import ROOT
 from app.services.explain import ContentError, banned_hits
 
 CONTENT_FILE = ROOT / "shared" / "content" / "passport.json"
+CODES_FILE = ROOT / "shared" / "content" / "fhir-codes.json"
 LOCALES = ("en", "ar")
 DEFAULT_TZ = "Asia/Riyadh"
 MAX_IMAGE_BYTES = 3_000_000
@@ -152,6 +154,19 @@ def booking_request(p: PassportPayload, locale: str, strings: dict[str, dict[str
 # ---------- FHIR ----------
 
 
+@lru_cache(maxsize=1)
+def load_codes() -> dict[str, dict[str, Any]]:
+    return json.loads(CODES_FILE.read_text(encoding="utf-8"))["codes"]
+
+
+def coding(key: str, with_display: bool = True) -> dict[str, str]:
+    c = load_codes()[key]
+    out = {"system": c["system"], "code": c["code"]}
+    if with_display:
+        out["display"] = c["display"]
+    return out
+
+
 def _uid_value(uid: str) -> str:
     return f"urn:oid:{uid}"
 
@@ -197,8 +212,7 @@ def fhir_bundle(p: PassportPayload) -> dict[str, Any]:
             "series": [
                 {
                     "uid": p.series_instance_uid,
-                    # TODO-VERIFY: replace the display-only modality with the DICOM DCM code after checking it in the official browser
-                    "modality": {"display": "CT"},
+                    "modality": coding("ct_modality", with_display=False),  # system and code as in the HL7 example
                     "description": "Chest CT series",
                 }
             ],
@@ -219,7 +233,7 @@ def fhir_bundle(p: PassportPayload) -> dict[str, Any]:
     observation: dict[str, Any] = {
         "resourceType": "Observation",
         "status": "final",
-        "code": {"text": "Pulmonary nodule described in a chest CT report"},
+        "code": {"coding": [coding("nodule_finding")], "text": "Pulmonary nodule described in a chest CT report"},
         "subject": patient_ref,
         "valueString": quote,
     }
@@ -232,7 +246,7 @@ def fhir_bundle(p: PassportPayload) -> dict[str, Any]:
         {
             "resourceType": "DiagnosticReport",
             "status": "final",
-            "code": {"text": "Chest CT report"},
+            "code": {"coding": [coding("report_type")], "text": "Chest CT report"},
             "subject": patient_ref,
             "conclusion": quote,
             "result": [ref("obs")],
@@ -252,7 +266,7 @@ def fhir_bundle(p: PassportPayload) -> dict[str, Any]:
                 # a guideline suggestion, not an order: intent "proposal", status "draft". The doctor decides.
                 "status": "draft",
                 "intent": "proposal",
-                "code": {"text": "Follow-up chest CT (guideline suggestion, to be decided by the doctor)"},
+                "code": {"coding": [coding("follow_up_ct")], "text": "Follow-up chest CT (guideline suggestion, to be decided by the doctor)"},
                 "subject": patient_ref,
                 "occurrencePeriod": {"start": window[0], "end": window[1]},
                 "reasonReference": [ref("obs")],

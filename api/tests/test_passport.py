@@ -142,9 +142,44 @@ def test_fhir_patient_is_an_example_without_identifiers_and_report_is_carried():
     assert study["series"][0]["uid"] == SERIES
 
 
-def test_fhir_uses_text_only_codes_until_codes_are_verified():
-    raw = json.dumps(bundle_of(make_payload()))
-    assert "snomed" not in raw.lower() and "loinc" not in raw.lower()
+def test_fhir_standard_codes_come_from_the_verified_file_and_nothing_else_is_coded():
+    bundle = bundle_of(make_payload())
+    (report,) = by_type(bundle, "DiagnosticReport")
+    (obs,) = by_type(bundle, "Observation")
+    (sr,) = by_type(bundle, "ServiceRequest")
+    (study,) = by_type(bundle, "ImagingStudy")
+    assert report["code"]["coding"] == [{"system": "http://loinc.org", "code": "18748-4", "display": "Diagnostic imaging study"}]
+    assert obs["code"]["coding"] == [{"system": "http://snomed.info/sct", "code": "786838002", "display": "Nodule of lung"}]
+    assert sr["code"]["coding"] == [{"system": "http://snomed.info/sct", "code": "169069000", "display": "CT of chest"}]
+    assert study["series"][0]["modality"] == {"system": "http://dicom.nema.org/resources/ontology/DCM", "code": "CT"}
+    for resource in (report, obs, sr):
+        assert resource["code"]["text"]  # the human wording stays
+    for component in obs["component"]:
+        assert "coding" not in component["code"]  # size, side, lobe, type: no verified code, so text only
+
+
+def test_every_code_in_the_file_says_how_it_was_checked_and_the_bundle_holds_no_other_code():
+    import json as _json
+
+    codes = _json.loads((ROOT / "shared" / "content" / "fhir-codes.json").read_text(encoding="utf-8"))["codes"]
+    assert set(codes) == {"report_type", "nodule_finding", "follow_up_ct", "ct_modality"}
+    for key, c in codes.items():
+        assert c["checked_via"] and c["checked_on"] and c["code"] and c["system"] and "official_browser_checked" in c, key
+    allowed = {(c["system"], c["code"]) for c in codes.values()} | {("http://unitsofmeasure.org", "mm")}
+    found = set()
+
+    def walk(node):
+        if isinstance(node, dict):
+            if "system" in node and "code" in node and node["system"].startswith("http"):
+                found.add((node["system"], node["code"]))
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(bundle_of(make_payload()))
+    assert found == allowed
 
 
 def test_fhir_has_no_service_request_when_the_guideline_names_no_date():
