@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodulebridge.asklevia/schemas/nodule-finding.schema.json",
+  "title": "NoduleFinding",
+  "description": "Placeholder. TODO: fill in Phase 6.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": true
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodulebridge.asklevia/schemas/case-manifest.schema.json",
+  "title": "CaseManifest",
+  "description": "Placeholder. TODO: fill in Phase 2.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": true
+}

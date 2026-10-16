@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodulebridge.asklevia/schemas/extraction-result.schema.json",
+  "title": "ExtractionResult",
+  "description": "Placeholder. TODO: fill in Phase 4.",
+  "type": "object",
+  "properties": {},
+  "additionalProperties": true
+}
