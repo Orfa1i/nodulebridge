@@ -427,3 +427,7 @@ The FHIR bundle now carries four standard codes from `shared/content/fhir-codes.
 
 Official HL7 FHIR validator (`validator_cli.jar`, FHIR R4 4.0.1, run locally with `-tx n/a`, so nothing was sent anywhere): the FHIR bundles of Cases A, B and C each give **0 errors**, 11 warnings, 2 notes. The warnings are best-practice items (no narrative on each resource, no performer and no effective date on the Observation) and checks that need a terminology server (the `mm` unit, the report language, the DICOM modality value set). The codes themselves were therefore not checked against a terminology server. The custom tag code system `urn:nodulebridge:tag` is reported as unknown (information only).
 `docs/build/clinician-review-sheet.md` lists every draft string used by Cases A to C (4 templates, 20 terms, 1 guideline sentence, 2 PDQ excerpts, 15 passport strings) in English and Arabic with tick boxes. Regenerate with `uv run --project api python -m api.scripts.review_sheet`.
+
+## FHIR codes confirmed (2026-10-17)
+
+The project owner confirmed LOINC 18748-4, SNOMED CT 786838002, SNOMED CT 169069000 and DICOM DCM CT in the official browsers and asked for `official_browser_checked` to be set to true; it is, for all four, with `official_browser_checked_by` recording that the confirmation came from the owner and not from the assistant. The code TODO-VERIFY is closed. The codes were still not checked against a terminology server by the validator run.

@@ -1,5 +1,5 @@
 {
-  "_note": "Standard codes used in the FHIR summary. Only codes that were looked up are here; anything else stays text-only (for example the nodule size, which has no verified LOINC code yet). Every entry says where it was checked. official_browser_checked is false until someone confirms it in the SNOMED International browser or on loinc.org (both blocked automated lookups on 2026-10-17). Display strings are the preferred terms found there; code.text stays the human wording.",
+  "_note": "Standard codes used in the FHIR summary. Only codes that were looked up are here; anything else stays text-only (for example the nodule size, which has no verified LOINC code yet). Every entry says where it was checked. official_browser_checked is true once a person has confirmed the code in the SNOMED International browser or on loinc.org (both blocked automated lookups on 2026-10-17, so the assistant could not). Display strings are the preferred terms found there; code.text stays the human wording.",
   "codes": {
     "report_type": {
       "system": "http://loinc.org",
@@ -7,8 +7,12 @@
       "display": "Diagnostic imaging study",
       "used_in": "DiagnosticReport.code",
       "checked_on": "2026-10-17",
-      "checked_via": ["findacode.com LOINC entry (status active, class DOC.MISC)", "HL7 Taiwan NHI imaging DiagnosticReport example using it as DiagnosticReport.code"],
-      "official_browser_checked": false
+      "checked_via": [
+        "findacode.com LOINC entry (status active, class DOC.MISC)",
+        "HL7 Taiwan NHI imaging DiagnosticReport example using it as DiagnosticReport.code"
+      ],
+      "official_browser_checked": true,
+      "official_browser_checked_by": "the project owner, as stated in chat on 2026-10-17 (the assistant did not see the official browsers)"
     },
     "nodule_finding": {
       "system": "http://snomed.info/sct",
@@ -16,8 +20,11 @@
       "display": "Nodule of lung",
       "used_in": "Observation.code",
       "checked_on": "2026-10-17",
-      "checked_via": ["art-decor.org SNOMED browser (fully specified name 'Nodule of lung (finding)', morphology nodule 27925004, site lung structure 39607008)"],
-      "official_browser_checked": false
+      "checked_via": [
+        "art-decor.org SNOMED browser (fully specified name 'Nodule of lung (finding)', morphology nodule 27925004, site lung structure 39607008)"
+      ],
+      "official_browser_checked": true,
+      "official_browser_checked_by": "the project owner, as stated in chat on 2026-10-17 (the assistant did not see the official browsers)"
     },
     "follow_up_ct": {
       "system": "http://snomed.info/sct",
@@ -25,8 +32,12 @@
       "display": "CT of chest",
       "used_in": "ServiceRequest.code",
       "checked_on": "2026-10-17",
-      "checked_via": ["art-decor.org SNOMED browser (procedure, 'Computed tomography of chest')", "findacode.com SNOMED entry (active, method computed tomography imaging 312251004)"],
-      "official_browser_checked": false
+      "checked_via": [
+        "art-decor.org SNOMED browser (procedure, 'Computed tomography of chest')",
+        "findacode.com SNOMED entry (active, method computed tomography imaging 312251004)"
+      ],
+      "official_browser_checked": true,
+      "official_browser_checked_by": "the project owner, as stated in chat on 2026-10-17 (the assistant did not see the official browsers)"
     },
     "ct_modality": {
       "system": "http://dicom.nema.org/resources/ontology/DCM",
@@ -34,9 +45,12 @@
       "display": "Computed Tomography",
       "used_in": "ImagingStudy.series.modality",
       "checked_on": "2026-10-17",
-      "checked_via": ["HL7 FHIR R4B ImagingStudy example (system and code; the example carries no display)"],
-      "official_browser_checked": false,
-      "display_note": "The display text is the DICOM name of the modality and was not in the HL7 example; confirm it in DICOM PS3.16 CID 29."
+      "checked_via": [
+        "HL7 FHIR R4B ImagingStudy example (system and code; the example carries no display)"
+      ],
+      "official_browser_checked": true,
+      "display_note": "The display text is the DICOM name of the modality and was not in the HL7 example; confirm it in DICOM PS3.16 CID 29.",
+      "official_browser_checked_by": "the project owner, as stated in chat on 2026-10-17 (the assistant did not see the official browsers)"
     }
   }
 }
