@@ -37,7 +37,7 @@ Video and live demo links are above (to be added). `docs/build/video-plan.md` ha
 - Regex report redaction is incomplete; pixel-level patient data in images is not handled (such scans are refused).
 - The Arabic text is a machine draft until a bilingual clinician reviews it: `pnpm check-content` fails until then. Arabic reviewed by: TODO (name). The Arabic voice clips need a listening check by a native speaker.
 - The guideline table has not yet been ticked off by the team clinician.
-- FHIR and calendar files were validated by library and parser only, not yet in the HL7/HAPI validator or a calendar app. The FHIR file carries four standard codes (LOINC 18748-4; SNOMED CT 786838002 and 169069000; DICOM DCM CT) that were checked in public references, not yet in the official SNOMED or LOINC browsers; nothing else is coded.
+- The FHIR files for Cases A to C pass the official HL7 validator with 0 errors (run offline, terminology checks off); the calendar file was parsed by a library only, not yet opened in a calendar app. The FHIR file carries four standard codes (LOINC 18748-4; SNOMED CT 786838002 and 169069000; DICOM DCM CT) that were checked in public references, not yet in the official SNOMED or LOINC browsers; nothing else is coded.
 - Free-tier model and speech limits apply.
 
 ## Data and credits
