@@ -10,7 +10,8 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.services.extract_service import ExtractService
-from app.services.extractor import AnthropicExtractor, ExtractionFailed, ExtractionUnavailable
+from app.services.extractor import ExtractionFailed, ExtractionUnavailable
+from app.services.providers import make_extractor
 from app.services.report_text import ReportReadError, read_pdf, read_text
 
 router = APIRouter()
@@ -20,7 +21,7 @@ READ_ERROR = "The report could not be read. Paste the text instead."
 @lru_cache
 def get_service() -> ExtractService:
     settings = get_settings()
-    return ExtractService(settings, lambda: AnthropicExtractor(settings))
+    return ExtractService(settings, lambda: make_extractor(settings))
 
 
 def _error(status: int, code: str, message: str, detail: str | None = None) -> JSONResponse:

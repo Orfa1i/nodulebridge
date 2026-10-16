@@ -10,6 +10,7 @@ from app.config import Settings
 
 from .cache import ExtractCache, cache_key
 from .extractor import PROMPT_VERSION, Extractor
+from .providers import model_id
 from .report_text import ReportText
 from .verify_extraction import verify
 
@@ -24,8 +25,7 @@ class ExtractService:
     def run(self, report: ReportText, intake_ms: float, started: float | None = None) -> dict:
         t0 = started if started is not None else time.monotonic()
         deadline = t0 + self.settings.extract_timeout_s
-        model_id = self.settings.anthropic_model or "unset"
-        key = cache_key(report.normalised, PROMPT_VERSION, model_id)
+        key = cache_key(report.normalised, PROMPT_VERSION, model_id(self.settings))
 
         llm_ms = 0.0
         entry = self.cache.get(key)

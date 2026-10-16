@@ -22,7 +22,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.config import ROOT, Settings, get_settings
 from app.services.extract_service import ExtractService
-from app.services.extractor import AnthropicExtractor, ExtractionFailed, ExtractionUnavailable
+from app.services.extractor import ExtractionFailed, ExtractionUnavailable
+from app.services.providers import make_extractor, model_id
 from app.services.report_text import read_pdf, read_text
 
 from .scoring import FIELDS, mentions_follow_up, merge, pct, score_case, signature
@@ -99,14 +100,14 @@ def main() -> int:
     if args.fresh:
         shutil.rmtree(EVAL_DATA / "cache", ignore_errors=True)
     try:
-        extractor = AnthropicExtractor(settings)
+        extractor = make_extractor(settings)
     except ExtractionUnavailable as exc:
         print(f"CANNOT RUN: {exc}\nSet it in .env (see .env.example) and run again.")
         return 2
     service = ExtractService(settings, lambda: extractor)
 
     cases = load_cases()
-    print(f"{len(cases)} cases · model {settings.anthropic_model} · running with {args.workers} workers\n")
+    print(f"{len(cases)} cases · model {model_id(settings)} · running with {args.workers} workers\n")
     outputs: dict[str, dict] = {}
     errors: dict[str, str] = {}
 
