@@ -3,10 +3,138 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from enum import Enum
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class CountContext(Enum):
+    single = 'single'
+    multiple = 'multiple'
+    unclear = 'unclear'
+
+
+class SizeBasis(Enum):
+    stated_single = 'stated_single'
+    two_axes = 'two_axes'
+    unspecified = 'unspecified'
+
+
+class Attenuation(Enum):
+    solid = 'solid'
+    part_solid = 'part_solid'
+    ground_glass = 'ground_glass'
+    calcified = 'calcified'
+    unknown = 'unknown'
+
+
+class Side(Enum):
+    right = 'right'
+    left = 'left'
+    NoneType_None = None
+
+
+class Lobe(Enum):
+    upper = 'upper'
+    middle = 'middle'
+    lower = 'lower'
+    lingula = 'lingula'
+    NoneType_None = None
+
+
+class MorphologyEnum(Enum):
+    spiculated = 'spiculated'
+    smooth = 'smooth'
+    lobulated = 'lobulated'
+    irregular = 'irregular'
+
+
+class BenignFeature(Enum):
+    benign_calcification = 'benign_calcification'
+    fat = 'fat'
+    perifissural = 'perifissural'
+
+
+class Assertion(Enum):
+    present = 'present'
+    negated = 'negated'
+    hedged = 'hedged'
+
+
+class EvidenceItem(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    sentence_id: str = Field(..., description='Id of the sentence, for example s014.')
+    quote: str = Field(
+        ...,
+        description='A verbatim excerpt of that sentence that supports the finding.',
+    )
+
+
+class Confidence(Enum):
+    checked = 'checked'
+    needs_review = 'needs_review'
 
 
 class NoduleFinding(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='forbid',
     )
+    id: str = Field(..., description='Short id you assign: n1, n2, ...')
+    count_context: CountContext = Field(
+        ...,
+        description="Does the report describe one nodule or several in the lungs? 'unclear' when it does not say.",
+    )
+    size_text: str | None = Field(
+        ...,
+        description="The size exactly as written, for example '9 x 7 mm'. null when no size is stated.",
+    )
+    dimensions_mm: list[float] = Field(
+        ...,
+        description='Numbers stated for this nodule, in millimetres (convert cm to mm), in the order written. [] when no size is stated. Never estimate.',
+    )
+    size_basis: SizeBasis = Field(
+        ...,
+        description='stated_single: one dimension. two_axes: two or more dimensions. unspecified: no size.',
+    )
+    attenuation: Attenuation = Field(
+        ..., description="As stated. 'unknown' when the report does not say."
+    )
+    solid_component_mm: float | None = Field(
+        ...,
+        description='Size of the solid component of a part-solid nodule when stated, else null.',
+    )
+    side: Side = Field(..., description='Side as written, else null.')
+    lobe: Lobe = Field(
+        ...,
+        description="Lobe as written, else null. A phrase like 'mid-lung zone' is not a lobe: use null.",
+    )
+    morphology: list[MorphologyEnum] = Field(
+        ..., description='Only features the report states.'
+    )
+    benign_features: list[BenignFeature] = Field(
+        ..., description='Only features the report states.'
+    )
+    stability_text: str | None = Field(
+        ...,
+        description="Verbatim stability statement, for example 'stable since 2023', else null.",
+    )
+    assertion: Assertion = Field(
+        ...,
+        description="present: the report states the nodule is there. negated: the report says there is none ('No pulmonary nodules'). hedged: uncertain wording ('possible', 'cannot exclude', 'versus vessel').",
+    )
+    evidence: list[EvidenceItem] = Field(
+        ..., description='At least one item. Quote copied character for character.'
+    )
+    mean_diameter_mm: float | None = Field(
+        None,
+        description='Computed: mean of two axes rounded to the nearest mm, or the single stated size.',
+    )
+    size_note: str | None = None
+    confidence: Confidence | None = Field(
+        None,
+        description='Computed by regex cross-check against the evidence sentence. Never self-rated by the model.',
+    )
+    confidence_reasons: list[str] | None = None
+    issues: list[str] | None = None

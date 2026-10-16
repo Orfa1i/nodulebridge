@@ -2,8 +2,75 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nodulebridge.asklevia/schemas/extraction-result.schema.json",
   "title": "ExtractionResult",
-  "description": "Placeholder. TODO: fill in Phase 4.",
+  "description": "Facts extracted from one radiology report. Only what the text states: nothing is guessed. Nodule fields marked readOnly are computed by code after extraction.",
   "type": "object",
-  "properties": {},
-  "additionalProperties": true
+  "properties": {
+    "study": {
+      "type": "object",
+      "properties": {
+        "exam_type": { "type": ["string", "null"], "description": "For example 'CT chest', as written." },
+        "indication_text": { "type": ["string", "null"], "description": "The reason for the exam, verbatim." },
+        "is_screening_exam": { "type": ["boolean", "null"], "description": "true only when the report says it is a lung cancer screening exam; false when it names another indication; null when unclear." },
+        "study_date": { "type": ["string", "null"], "description": "Only if stated, as written." }
+      },
+      "required": ["exam_type", "indication_text", "is_screening_exam", "study_date"],
+      "additionalProperties": false
+    },
+    "patient_context": {
+      "type": "object",
+      "description": "Each item is null unless the report states it. Never infer age, cancer history, immune status or smoking history.",
+      "properties": {
+        "age_years": {
+          "type": "object",
+          "properties": {
+            "value": { "type": ["integer", "null"] },
+            "evidence_sentence_ids": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["value", "evidence_sentence_ids"],
+          "additionalProperties": false
+        },
+        "known_cancer": {
+          "type": "object",
+          "properties": {
+            "value": { "type": ["boolean", "null"], "description": "true when a cancer history is stated, false when 'no known cancer' is stated, else null." },
+            "evidence_sentence_ids": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["value", "evidence_sentence_ids"],
+          "additionalProperties": false
+        },
+        "immunocompromised": {
+          "type": "object",
+          "properties": {
+            "value": { "type": ["boolean", "null"], "description": "true when stated, false when 'not immunocompromised' is stated, else null." },
+            "evidence_sentence_ids": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["value", "evidence_sentence_ids"],
+          "additionalProperties": false
+        },
+        "smoking_history": {
+          "type": "object",
+          "properties": {
+            "value": { "enum": ["never", "former", "current", null] },
+            "evidence_sentence_ids": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["value", "evidence_sentence_ids"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["age_years", "known_cancer", "immunocompromised", "smoking_history"],
+      "additionalProperties": false
+    },
+    "nodules": {
+      "type": "array",
+      "description": "Every lung nodule mention, including negated ('No pulmonary nodules') and hedged ones. Not other findings.",
+      "items": { "$ref": "nodule-finding.schema.json" }
+    },
+    "other_findings": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Short labels only for notable findings that are not lung nodules, for example 'healing rib fracture'. No sizes, no advice."
+    }
+  },
+  "required": ["study", "patient_context", "nodules", "other_findings"],
+  "additionalProperties": false
 }

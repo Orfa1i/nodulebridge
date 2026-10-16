@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://nodulebridge.asklevia/schemas/extract-response.schema.json",
+  "title": "ExtractResponse",
+  "description": "Response of POST /extract.",
+  "type": "object",
+  "properties": {
+    "sentences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "pattern": "^s[0-9]{3,}$" },
+          "text": { "type": "string" },
+          "start": { "type": "integer", "minimum": 0, "description": "Offset in the normalised text." },
+          "end": { "type": "integer", "minimum": 0 },
+          "source_start": { "type": "integer", "minimum": 0, "description": "Offset of the same sentence in the original extracted text." },
+          "source_end": { "type": "integer", "minimum": 0 },
+          "line": { "type": "integer", "minimum": 1, "description": "1-based line number in the original text." },
+          "page": { "type": ["integer", "null"], "description": "1-based PDF page, null for pasted text." }
+        },
+        "required": ["id", "text", "start", "end", "source_start", "source_end", "line", "page"],
+        "additionalProperties": false
+      }
+    },
+    "result": { "$ref": "extraction-result.schema.json" },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "issues": { "type": "array", "items": { "type": "string" } },
+        "quotes_checked": { "type": "integer" },
+        "quotes_dropped": { "type": "integer" },
+        "nodules_removed": { "type": "integer" }
+      },
+      "required": ["issues", "quotes_checked", "quotes_dropped", "nodules_removed"],
+      "additionalProperties": false
+    },
+    "timings": {
+      "type": "object",
+      "properties": {
+        "intake_ms": { "type": "number" },
+        "llm_ms": { "type": "number" },
+        "verify_ms": { "type": "number" },
+        "total_ms": { "type": "number" }
+      },
+      "required": ["intake_ms", "llm_ms", "verify_ms", "total_ms"],
+      "additionalProperties": false
+    },
+    "prompt_version": { "type": "string" },
+    "model": { "type": "string" },
+    "cached": { "type": "boolean" }
+  },
+  "required": ["sentences", "result", "verification", "timings", "prompt_version", "model", "cached"],
+  "additionalProperties": false
+}

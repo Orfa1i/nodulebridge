@@ -2,8 +2,88 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nodulebridge.asklevia/schemas/nodule-finding.schema.json",
   "title": "NoduleFinding",
-  "description": "Placeholder. TODO: fill in Phase 6.",
+  "description": "One nodule mention extracted from a radiology report. Fields marked readOnly are computed by deterministic code after extraction; the model never fills them and they are stripped from the tool schema sent to the model. Every field is a statement from the report, never an inference.",
   "type": "object",
-  "properties": {},
-  "additionalProperties": true
+  "properties": {
+    "id": { "type": "string", "description": "Short id you assign: n1, n2, ..." },
+    "count_context": {
+      "enum": ["single", "multiple", "unclear"],
+      "description": "Does the report describe one nodule or several in the lungs? 'unclear' when it does not say."
+    },
+    "size_text": { "type": ["string", "null"], "description": "The size exactly as written, for example '9 x 7 mm'. null when no size is stated." },
+    "dimensions_mm": {
+      "type": "array",
+      "items": { "type": "number" },
+      "description": "Numbers stated for this nodule, in millimetres (convert cm to mm), in the order written. [] when no size is stated. Never estimate."
+    },
+    "size_basis": {
+      "enum": ["stated_single", "two_axes", "unspecified"],
+      "description": "stated_single: one dimension. two_axes: two or more dimensions. unspecified: no size."
+    },
+    "attenuation": {
+      "enum": ["solid", "part_solid", "ground_glass", "calcified", "unknown"],
+      "description": "As stated. 'unknown' when the report does not say."
+    },
+    "solid_component_mm": { "type": ["number", "null"], "description": "Size of the solid component of a part-solid nodule when stated, else null." },
+    "side": { "enum": ["right", "left", null], "description": "Side as written, else null." },
+    "lobe": { "enum": ["upper", "middle", "lower", "lingula", null], "description": "Lobe as written, else null. A phrase like 'mid-lung zone' is not a lobe: use null." },
+    "morphology": {
+      "type": "array",
+      "items": { "enum": ["spiculated", "smooth", "lobulated", "irregular"] },
+      "description": "Only features the report states."
+    },
+    "benign_features": {
+      "type": "array",
+      "items": { "enum": ["benign_calcification", "fat", "perifissural"] },
+      "description": "Only features the report states."
+    },
+    "stability_text": { "type": ["string", "null"], "description": "Verbatim stability statement, for example 'stable since 2023', else null." },
+    "assertion": {
+      "enum": ["present", "negated", "hedged"],
+      "description": "present: the report states the nodule is there. negated: the report says there is none ('No pulmonary nodules'). hedged: uncertain wording ('possible', 'cannot exclude', 'versus vessel')."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sentence_id": { "type": "string", "description": "Id of the sentence, for example s014." },
+          "quote": { "type": "string", "description": "A verbatim excerpt of that sentence that supports the finding." }
+        },
+        "required": ["sentence_id", "quote"],
+        "additionalProperties": false
+      },
+      "description": "At least one item. Quote copied character for character."
+    },
+    "mean_diameter_mm": {
+      "type": ["number", "null"],
+      "readOnly": true,
+      "description": "Computed: mean of two axes rounded to the nearest mm, or the single stated size."
+    },
+    "size_note": { "type": ["string", "null"], "readOnly": true },
+    "confidence": {
+      "enum": ["checked", "needs_review"],
+      "readOnly": true,
+      "description": "Computed by regex cross-check against the evidence sentence. Never self-rated by the model."
+    },
+    "confidence_reasons": { "type": "array", "items": { "type": "string" }, "readOnly": true },
+    "issues": { "type": "array", "items": { "type": "string" }, "readOnly": true }
+  },
+  "required": [
+    "id",
+    "count_context",
+    "size_text",
+    "dimensions_mm",
+    "size_basis",
+    "attenuation",
+    "solid_component_mm",
+    "side",
+    "lobe",
+    "morphology",
+    "benign_features",
+    "stability_text",
+    "assertion",
+    "evidence"
+  ],
+  "additionalProperties": false
 }
