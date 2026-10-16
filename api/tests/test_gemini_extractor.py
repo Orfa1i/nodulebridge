@@ -46,7 +46,7 @@ def ok(payload=None, finish="STOP", thought=None):
     parts = [{"text": json.dumps(payload or result())}]
     if thought:
         parts.insert(0, {"text": thought, "thought": True})
-    return httpx.Response(200, json={"candidates": [{"content": {"parts": parts}, "finishReason": finish}], "modelVersion": "gemini-2.5-flash", "responseId": "r1", "usageMetadata": {"totalTokenCount": 10}})
+    return httpx.Response(200, json={"candidates": [{"content": {"parts": parts}, "finishReason": finish}], "modelVersion": "gemini-3.5-flash-lite", "responseId": "r1", "usageMetadata": {"totalTokenCount": 10}})
 
 
 def extractor(tmp_path, handler, **kw):
@@ -72,8 +72,8 @@ def test_success_and_request_shape(tmp_path):
 
     out = run(extractor(tmp_path, handler))
     assert out.result["nodules"][0]["dimensions_mm"] == [9]
-    assert out.model == "gemini:gemini-2.5-flash" and out.request_id == "r1" and out.usage == {"totalTokenCount": 10}
-    assert seen["url"].endswith("/models/gemini-2.5-flash:generateContent") and KEY not in seen["url"]
+    assert out.model == "gemini:gemini-3.5-flash-lite" and out.request_id == "r1" and out.usage == {"totalTokenCount": 10}
+    assert seen["url"].endswith("/models/gemini-3.5-flash-lite:generateContent") and KEY not in seen["url"]
     assert seen["headers"]["x-goog-api-key"] == KEY
     body = seen["body"]
     assert KEY not in json.dumps(body)
@@ -203,7 +203,7 @@ def test_through_the_service_with_cache_and_verification(tmp_path):
     first = service.run(REPORT, 1.0)
     second = service.run(REPORT, 1.0)
     assert first["cached"] is False and second["cached"] is True and len(calls) == 1
-    assert first["model"] == "gemini:gemini-2.5-flash"
+    assert first["model"] == "gemini:gemini-3.5-flash-lite"
     assert first["result"]["nodules"][0]["confidence"] == "checked"
     # a quote the model got wrong is caught by the same verification used for every provider
     bad = ok(result(quote="a 9 mm solid nodule is seen in the right upper lobx"))
@@ -230,7 +230,7 @@ def test_provider_resolution():
 
 
 def test_model_id_is_provider_qualified():
-    assert model_id(settings(google_api_key="g")) == "gemini:gemini-2.5-flash"
+    assert model_id(settings(google_api_key="g")) == "gemini:gemini-3.5-flash-lite"
     assert model_id(settings(google_api_key="g", gemini_model="gemini-3.8-flash")) == "gemini:gemini-3.8-flash"
     assert model_id(settings(anthropic_api_key="a", anthropic_model="claude-sonnet-5-5")) == "anthropic:claude-sonnet-5-5"
     assert model_id(settings(anthropic_model="m")) == "m" and model_id(settings()) == "unset"

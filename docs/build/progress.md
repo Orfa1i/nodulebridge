@@ -137,9 +137,9 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 - Phase 4 reads `report.md` / `report.pdf`; they are copied by the same script to `web/public/cases/<id>/`.
 - Phase 6 links report sentences to the viewer through `useViewerStore.getState().api.jumpToFinding("n1")` and `onSliceChange`.
 
-## Phase 4 — Report extraction (BUILT, NOT ACCEPTED: needs ANTHROPIC_API_KEY)
+## Phase 4 — Report extraction (done with the Gemini provider; see the live-run addendum at the end of this section)
 
-**Status.** Everything except the live model run is built and tested. No `ANTHROPIC_API_KEY` exists on this machine (not in `.env`, the shell, or the user/machine environment), so the real model has never been called: no eval score, no live extraction, no raw API response to show. Per the AI-integration rules this phase is not done until the steps under "To close the phase" pass.
+**Status (historical; superseded by the addendum below).** Everything except the live model run was built and tested. No `ANTHROPIC_API_KEY` exists on this machine (not in `.env`, the shell, or the user/machine environment), so the real model has never been called: no eval score, no live extraction, no raw API response to show. Per the AI-integration rules this phase is not done until the steps under "To close the phase" pass.
 
 **Built**
 - `api/app/services/report_text.py`: PDF (pdfplumber, page and line kept) or text intake; whitespace normalisation with an offset map back to the source; rule-based sentence splitter (no break on `e.g.`, `Dr.`, decimals, list numbers; wrapped PDF lines are joined, headings stand alone); sentences `{id, text, start, end, source_start, source_end, line, page}`.
@@ -181,6 +181,54 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 - The API listens on :8000 by default; here :8000 is taken by another project, so run `API_PORT=8001 pnpm dev` and set `NEXT_PUBLIC_API_BASE_URL` (the dev script does this; `web/.env.local` also points at :8001).
 - `data/logs`, `data/cache`, `data/eval` hold LLM requests, responses and cached extractions; they are git-ignored. Example reports only, never real patient text.
 
+### Phase 4 addendum — live run with Gemini (this closes the phase)
+
+**Provider change (decided with the user, differs from the master brief).** No Anthropic key was available; the user supplied a Google AI Studio key, stored as `GOOGLE_API_KEY` in the git-ignored `.env`. A second extractor, `api/app/services/gemini_extractor.py`, now sits behind the same prompt, schema, verification, cache, endpoint and eval. `api/app/services/providers.py` picks the provider: Anthropic when `ANTHROPIC_API_KEY` is set, otherwise Gemini; `LLM_PROVIDER=anthropic|gemini` overrides. The Anthropic extractor is unchanged and untested live. Cache keys and the response `model` field are provider-qualified (`gemini:gemini-3.5-flash-lite`).
+- REST `generateContent` over httpx (no SDK), JSON output constrained by `responseJsonSchema`, key sent in the `x-goog-api-key` header and never logged, `temperature: 0`, 3 attempts with 2 s / 4 s backoff inside the 20 s limit, full request and response in `data/logs/llm/`.
+- **Nullable enums:** Gemini drops `null` from a plain enum, which forced the model to pick a value (a negated nodule got a side and lobe, silence about smoking became "never", a mid-lung zone became "middle"). `gemini_schema()` rewrites every enum that contains null as `anyOf [string enum, null]`. This single change took `smoking_history` from 13.6% to 100% and fixed lobe and negation.
+- Default model `gemini-3.5-flash-lite` (version 3.5-flash-lite-07-2026; resolved from the alias `gemini-flash-lite-latest`). Override with `GEMINI_MODEL`.
+
+**What the live eval found (and what fixed it)**
+1. First run, `gemini-2.5-flash`, prompt v1: model invented `smoking_history: "never"` on every report that does not mention smoking; gave a side and lobe to a negated nodule; `is_screening_exam` gold was wrong (a stated indication means "not screening"); my advice detector flagged the report's own word "Follow-up". Run stopped at 12 of 26 cases: the free tier allows 5 requests per minute and 20 per day per model.
+2. Fixes: gold corrected; detector now looks only at model-written labels; prompt `extract_v2` (negated nodule has no location, silence is null) then `extract_v3` ("multiple" only when the report says so, `is_screening_exam` always filled); the nullable-enum schema fix above.
+3. Clinically important: the model returned `count_context: multiple` for single-nodule reports ("No other pulmonary nodule is identified"). That would select a different Fleischner row (`FL17-SM-GT8` instead of `FL17-S1-GT8`). Added a deterministic check in `verify_extraction.py`: "multiple" needs either two or more extracted nodules or a non-negated sentence that states several nodules; otherwise `count_context` becomes `unclear`, the nodule is `needs_review`, and the engine treats it as single with a question for the doctor.
+
+**Final eval (26 cases: 23 synthetic + 3 Phase 2 PDFs), prompt `extract_v3`, all thresholds PASS**
+
+| Field | gemini-3.5-flash-lite | gemini-3.1-flash-lite |
+|---|---|---|
+| nodule presence (present count) | 26/26 | 26/26 |
+| negation recorded | 1/1 | 1/1 |
+| size (dimensions and mean) | 28/28 | 28/28 |
+| attenuation, assertion, solid component, benign, stability | 100% | 100% |
+| side | 28/28 | 28/28 |
+| lobe | 28/28 | 28/28 |
+| count_context | 25/25 | 25/25 |
+| patient: age, cancer, immune, smoking, screening | 26/26 each | 26/26 each |
+| ignored findings (rib fracture, etc.) | 2/2 | 2/2 |
+| injection pair (`16` vs `17`) | identical output | identical output |
+| live latency (calls) | mean 8.0 s, max 14.4 s (26) | mean 11.8 s, max 29.5 s (3, rest cached) |
+
+Thresholds: every negation case correct PASS; injection leaves output unchanged PASS; size >= 95% PASS; side >= 95% PASS; lobe >= 95% PASS; no case errored PASS. The 3.1 table merges two runs: 3 cases hit a transient 503 ("high demand") and were completed from cache.
+
+**Caveats (read before trusting the numbers)**
+- 100% on 26 reports I wrote is a smoke test, not a measure of real-world accuracy. The set is small, synthetic, and was tuned against (prompt v1 to v3) while its gold labels were fixed. It cannot show how the model behaves on messy real reports.
+- Latency is uneven: the same model took 4 s to 25 s. A trivial one-sentence report took 12.5 s once. The 20 s limit can be hit on a bad call; for the demo, warm the cache (done for the three example cases: `data/cache/extract/`, git-ignored) and the UI says "Pre-computed for demo".
+- Free tier limits on this key: `gemini-2.5-flash` is limited to 20 requests per day and 5 per minute (exhausted for about 13 hours at the time of writing); preview models return 503 under load. A billed key or an Anthropic key removes both problems.
+- The Google key was pasted into the chat; rotate it after the hackathon.
+- `claude-sonnet-5-5` path is still unrun live.
+
+**Live acceptance**
+- Minimal call, raw response (excerpt): `POST /extract {"text":"A 9 mm solid nodule is seen in the right upper lobe."}` -> nodule `{dimensions_mm:[9], attenuation:"solid", side:"right", lobe:"upper", assertion:"present", evidence:[{sentence_id:"s001", quote:"9 mm solid nodule is seen in the right upper lobe"}], mean_diameter_mm:9.0, confidence:"checked"}`, `model: "gemini:gemini-3.5-flash-lite"`, `prompt_version: "extract_v3"`, `llm_ms: 12516`, `cached: false`.
+- `web/tests/e2e/live-extract.spec.ts` (run with `NB_API_HAS_KEY=1`): for cases A, B, C the findings card shows exactly the manifest's size, attenuation and location (`9 mm · solid · right upper lobe`, `7 mm · solid · right lung`, `16 mm · ground-glass · right lung`), the evidence sentence is highlighted, the guideline rule is `FL17-S1-GT8`, `FL17-S1-6TO8`, `FL17-GGN1-GE6`, and a second run of case A is served from the cache and says so. 4/4 pass.
+- The injected-instruction report produces the same nodule output as its clean twin (eval pair `16-injection` / `17-injection-clean`).
+- A quote altered by one character in a mocked response is caught and dropped (unit tests; the endpoint test and the Gemini service test).
+- Full run: lint clean; api 206, pipeline 38, web 23, Playwright 32 pass (1 skipped by design).
+
+**Commands**
+- `uv run --project api python -m api.eval.run --fresh --workers 3 --rpm 12` (add `--rpm 5` on a 5-per-minute tier). `GEMINI_MODEL=... ` overrides the model for one run.
+- `NB_API_HAS_KEY=1 pnpm --dir web e2e` runs everything including the live specs.
+
 ## Phase 5 — The Fleischner 2017 rule engine (done; clinician check of the table still open)
 
 **Built**
@@ -217,9 +265,9 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 
 **Open items**
 - Clinician ticks every box in `docs/build/fleischner-checklist.md` against Table 1 of the paper (not done; not the build agent's job).
-- Phase 4 live model run and eval (see the Phase 4 section). Phase 5 does not depend on it, but the card only shows real values once a real extraction exists.
+- Phase 4 live run is done (see the Phase 4 addendum).
 - `TODO-VERIFY`: solid-component note wording; DOI.
-- A Google AI Studio key was given and stored as `GOOGLE_API_KEY` in the git-ignored `.env`. Nothing uses it: the extractor calls the Anthropic API. Using Gemini instead needs a decision (see Phase 4 section).
+- The Google key in `.env` is now used by the Gemini extractor (Phase 4 addendum).
 
 **Next phase must know**
 - Phase 6/7 read `FollowupRecommendation` from `POST /recommend`: `headline`, `why`, `options[].actions[]` (with dates), `applies`, `questions_for_doctor`, `notes`, `citation`. Phase 7 explains it in Arabic and English and must not add intervals of its own.

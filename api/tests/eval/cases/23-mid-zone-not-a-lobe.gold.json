@@ -22,6 +22,6 @@
     "known_cancer": null,
     "immunocompromised": null,
     "smoking_history": null,
-    "is_screening_exam": null
+    "is_screening_exam": false
   }
 }

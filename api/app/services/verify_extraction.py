@@ -93,6 +93,19 @@ def _mean_diameter(dimensions: list[float]) -> tuple[float | None, str | None, s
     return float(round_half_up(sum(two) / 2)), None, "two_axes"
 
 
+PLURAL_NODULES = re.compile(
+    r"\b(?:two|three|four|five|six|several|multiple|numerous|innumerable|bilateral)\b[^.]{0,40}\bnodules\b"
+    r"|\bnodules\b|\b(?:additional|another|second)\s+(?:[\w-]+\s+){0,2}nodule\b",
+    re.IGNORECASE,
+)
+NEGATION = re.compile(r"\b(?:no|not|without|negative for|free of)\b", re.IGNORECASE)
+
+
+def text_states_multiple(sentences: list[Sentence]) -> bool:
+    """True when some non-negated sentence says there is more than one nodule ("two nodules", "another nodule")."""
+    return any(PLURAL_NODULES.search(s.text) and not NEGATION.search(s.text) for s in sentences)
+
+
 def verify(result: dict, sentences: list[Sentence]) -> tuple[dict, Verification]:
     """Return (verified copy of result, verification summary). The input is not modified."""
     out = copy.deepcopy(result)
@@ -182,6 +195,17 @@ def verify(result: dict, sentences: list[Sentence]) -> tuple[dict, Verification]
         nodule["confidence"] = "needs_review" if (reasons or nodule_issues) else "checked"
         kept.append(nodule)
 
+    # "multiple" changes which guideline row applies, so the model's claim needs support in the text:
+    # either several nodules were extracted, or a sentence states there are several.
+    counted = [n for n in kept if n["assertion"] in {"present", "hedged"}]
+    if len(counted) < 2 and not text_states_multiple(sentences):
+        for n in counted:
+            if n.get("count_context") == "multiple":
+                n["count_context"] = "unclear"
+                n["issues"] = sorted({*n["issues"], "count_context_unsupported"})
+                n["confidence_reasons"] = [*n["confidence_reasons"], "count_multiple_not_stated_in_text"]
+                n["confidence"] = "needs_review"
+                ver.issues.append(f"count_context_unsupported: {n['id']}")
     out["nodules"] = kept
     if len({n["id"] for n in kept}) != len(kept):
         ver.issues.append("duplicate_nodule_ids")

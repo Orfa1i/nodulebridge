@@ -61,11 +61,9 @@ def signature(result: dict) -> list:
 
 def mentions_follow_up(result: dict) -> bool:
     """The model must never output advice. Looks at every free-text field."""
+    # Only labels the model wrote can contain advice. Indication, size and stability text are verbatim
+    # report text (an indication like "Follow-up of fall" legitimately contains the word).
     texts: list[str] = list(result.get("other_findings", []))
-    st = result["study"]
-    texts += [t for t in (st.get("exam_type"), st.get("indication_text")) if t]
-    for n in result["nodules"]:
-        texts += [t for t in (n.get("size_text"), n.get("stability_text")) if t]
     return any(w in t.lower() for t in texts for w in FOLLOW_UP_WORDS)
 
 

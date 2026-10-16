@@ -486,7 +486,7 @@
     "verify_ms": 0.0,
     "total_ms": 0.0
   },
-  "prompt_version": "extract_v1",
+  "prompt_version": "extract_v3",
   "model": "mock-model (UI fixture)",
   "cached": false
 }

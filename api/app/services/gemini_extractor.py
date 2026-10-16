@@ -36,10 +36,31 @@ log = logging.getLogger("nodulebridge.gemini")
 
 ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 ATTEMPTS = 3
+BACKOFF_S = 2.0  # 503 "high demand" spikes last seconds: wait 2 s, then 4 s
 MAX_OUTPUT_TOKENS = 8000
 RETRYABLE = {429, 500, 502, 503, 504}
 TOOL_SENTENCE = f"Call the tool `{TOOL_NAME}` exactly once with the result. Do not answer in prose."
 JSON_SENTENCE = "Return exactly one JSON object that matches the response schema. Do not answer in prose."
+
+
+def gemini_schema(schema: Any) -> Any:
+    """Express every `enum` that contains null as anyOf [string enum, null].
+
+    Gemini's constrained decoding drops null from a plain enum, which forces the model to pick one of
+    the listed values (a negated nodule then gets a side and lobe, silence about smoking becomes
+    "never"). anyOf with an explicit null branch keeps "not stated" available.
+    """
+    if isinstance(schema, dict):
+        if isinstance(schema.get("enum"), list) and None in schema["enum"]:
+            members = [e for e in schema["enum"] if e is not None]
+            out = {"anyOf": [{"type": "string", "enum": members}, {"type": "null"}]}
+            if "description" in schema:
+                out["description"] = schema["description"]
+            return out
+        return {k: gemini_schema(v) for k, v in schema.items()}
+    if isinstance(schema, list):
+        return [gemini_schema(v) for v in schema]
+    return schema
 
 
 def gemini_system_prompt() -> str:
@@ -76,7 +97,7 @@ class GeminiExtractor:
         self._model_name = settings.gemini_model
         self._key = settings.google_api_key
         self._client = httpx.Client(transport=transport)
-        self.schema = tool_input_schema()
+        self.schema = gemini_schema(tool_input_schema())
         self._validator = Draft202012Validator(self.schema)
         self._system = gemini_system_prompt()
 
@@ -121,7 +142,7 @@ class GeminiExtractor:
                 last_error = "The Google API did not answer in time." if isinstance(exc, httpx.TimeoutException) else "Could not reach the Google API (network error)."
                 record["error"] = last_error
                 _log_exchange(self.settings, record)
-                time.sleep(min(0.5 * 2 ** (attempt - 1), max(deadline - time.monotonic() - 1.0, 0)))
+                time.sleep(min(BACKOFF_S * 2 ** (attempt - 1), max(deadline - time.monotonic() - 1.0, 0)))
                 continue
 
             try:
@@ -136,7 +157,7 @@ class GeminiExtractor:
                 message = (data.get("error") or {}).get("message") or resp.text[:300]
                 last_error = _plain_error(resp.status_code, message)
                 if resp.status_code in RETRYABLE:
-                    time.sleep(min(0.5 * 2 ** (attempt - 1), max(deadline - time.monotonic() - 1.0, 0)))
+                    time.sleep(min(BACKOFF_S * 2 ** (attempt - 1), max(deadline - time.monotonic() - 1.0, 0)))
                     continue
                 raise ExtractionFailed("The report could not be read.", last_error)
 

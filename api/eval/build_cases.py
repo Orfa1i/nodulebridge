@@ -29,7 +29,7 @@ def N(assertion="present", dims=(), att="unknown", side=None, lobe=None, count=N
     }  # fmt: skip
 
 
-def P(age=None, cancer=None, immuno=None, smoke=None, screening=None):
+def P(age=None, cancer=None, immuno=None, smoke=None, screening=False):  # every report states an indication; only case 14 is screening
     return {"age_years": age, "known_cancer": cancer, "immunocompromised": immuno,
             "smoking_history": smoke, "is_screening_exam": screening}  # fmt: skip
 

@@ -496,9 +496,9 @@
     "intake_ms": 1.0,
     "llm_ms": 0.0,
     "verify_ms": 0.0,
-    "total_ms": 16.0
+    "total_ms": 0.0
   },
-  "prompt_version": "extract_v1",
+  "prompt_version": "extract_v3",
   "model": "mock-model (UI fixture)",
   "cached": false
 }

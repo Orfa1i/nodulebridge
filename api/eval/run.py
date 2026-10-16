@@ -14,6 +14,7 @@ import argparse
 import json
 import shutil
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -21,8 +22,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.config import ROOT, Settings, get_settings
+from app.services.cache import cache_key
 from app.services.extract_service import ExtractService
-from app.services.extractor import ExtractionFailed, ExtractionUnavailable
+from app.services.extractor import PROMPT_VERSION, ExtractionFailed, ExtractionUnavailable
 from app.services.providers import make_extractor, model_id
 from app.services.report_text import read_pdf, read_text
 
@@ -72,6 +74,22 @@ def phase2_cases() -> list[dict]:
     return cases
 
 
+def describe(result: dict) -> str:
+    nodules = "; ".join(
+        f"{n['assertion']} {n['dimensions_mm']} {n['attenuation']} {n['side']}/{n['lobe']} {n['count_context']}" for n in result["nodules"]
+    )
+    pc = result["patient_context"]
+    patient = {k: pc[k]["value"] for k in pc} | {"screening": result["study"]["is_screening_exam"]}
+    return f"{nodules or 'no nodules'} | {patient}"
+
+
+def describe_gold(case: dict) -> str:
+    nodules = "; ".join(
+        f"{n['assertion']} {n['dimensions_mm']} {n['attenuation']} {n['side']}/{n['lobe']} {n['count_context']}" for n in case["nodules"]
+    )
+    return f"{nodules} | {case['patient']}"
+
+
 def load_cases() -> list[dict]:
     cases = []
     for gold_path in sorted(CASES_DIR.glob("*.gold.json")):
@@ -93,6 +111,7 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--fresh", action="store_true", help="clear the eval cache and call the model again")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--rpm", type=float, default=0, help="max live model calls per minute (free tiers allow as few as 5); 0 = no limit")
     args = ap.parse_args()
 
     base = get_settings()
@@ -111,8 +130,26 @@ def main() -> int:
     outputs: dict[str, dict] = {}
     errors: dict[str, str] = {}
 
+    gate = threading.Lock()
+    state = {"next": 0.0}
+    key_model = model_id(settings)
+
+    def pace(case) -> None:
+        """Wait so live calls stay under --rpm. Cache hits never wait."""
+        if not args.rpm:
+            return
+        report = read_pdf(case["pdf"].read_bytes()) if "pdf" in case else read_text(case["text"])
+        if service.cache.get(cache_key(report.normalised, PROMPT_VERSION, key_model)) is not None:
+            return
+        with gate:
+            wait = state["next"] - time.monotonic()
+            state["next"] = max(state["next"], time.monotonic()) + 60.0 / args.rpm
+        if wait > 0:
+            time.sleep(wait)
+
     def work(case):
         try:
+            pace(case)
             return case["id"], run_case(service, case), None
         except (ExtractionFailed, ExtractionUnavailable) as exc:
             return case["id"], None, f"{exc} {getattr(exc, 'detail', '') or ''}".strip()
@@ -139,7 +176,11 @@ def main() -> int:
         merge(totals, part)
         wrong = [f for f, (c, n) in part.items() if c < n]
         if wrong:
-            failures.append(f"{case['id']}: wrong {', '.join(wrong)}")
+            failures.append(
+                f"{case['id']}: wrong {', '.join(wrong)}\n"
+                f"        got:  {describe(out['result'])}\n"
+                f"        gold: {describe_gold(case)}"
+            )
         if "negation" in case["tags"] and part["present_count"][0] != part["present_count"][1]:
             negation_ok = False
         if mentions_follow_up(out["result"]):

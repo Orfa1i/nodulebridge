@@ -1,5 +1,7 @@
 import copy
 
+import pytest
+
 from app.services.report_text import read_text
 from app.services.verify_extraction import SIZE_NOTE_SINGLE, regex_sizes_mm, verify
 
@@ -145,3 +147,52 @@ def test_regex_sizes():
     assert regex_sizes_mm("a 9 x 7 mm nodule and a 4 mm nodule") == [[9.0, 7.0], [4.0]]
     assert regex_sizes_mm("1.2 × 0.8 cm") == [[12.0, 8.0]]
     assert regex_sizes_mm("no size here") == []
+
+
+# ----- "multiple" needs support in the text (it changes the guideline row) -----
+
+
+def multi_run(text, *nodules):
+    report = read_text(text)
+    return verify({"nodules": list(nodules)}, report.sentences)
+
+
+def one(count="multiple", sid="s001", quote="A 9 mm solid nodule"):
+    return nodule(count_context=count, dimensions_mm=[9], side=None, lobe=None, evidence=[{"sentence_id": sid, "quote": quote}])
+
+
+def test_unsupported_multiple_is_downgraded_to_unclear_and_flagged():
+    text = "A 9 mm solid nodule is seen in the lung.\nNo other pulmonary nodule is identified."
+    result, ver = multi_run(text, one())
+    n = result["nodules"][0]
+    assert n["count_context"] == "unclear" and n["confidence"] == "needs_review"
+    assert "count_context_unsupported" in n["issues"] and "count_multiple_not_stated_in_text" in n["confidence_reasons"]
+    assert any(i.startswith("count_context_unsupported") for i in ver.issues)
+
+
+@pytest.mark.parametrize(
+    "extra",
+    ["Two pulmonary nodules are seen.", "There are multiple nodules.", "Another nodule is seen in the left lung.", "An additional small nodule is present."],
+)
+def test_multiple_stays_when_the_text_says_so(extra):
+    result, ver = multi_run(f"A 9 mm solid nodule is seen.\n{extra}", one())
+    assert result["nodules"][0]["count_context"] == "multiple" and ver.issues == []
+
+
+def test_multiple_stays_when_several_nodules_were_extracted():
+    second = nodule(id="n2", count_context="multiple", dimensions_mm=[4], side=None, lobe=None, evidence=[{"sentence_id": "s002", "quote": "A 4 mm solid nodule"}])
+    result, _ = multi_run("A 9 mm solid nodule is seen.\nA 4 mm solid nodule is seen.", one(), second)
+    assert [n["count_context"] for n in result["nodules"]] == ["multiple", "multiple"]
+
+
+def test_negated_plural_does_not_count_as_support():
+    text = "A 9 mm solid nodule is seen.\nThere are no other nodules."
+    result, _ = multi_run(text, one())
+    assert result["nodules"][0]["count_context"] == "unclear"
+
+
+def test_single_and_unclear_are_untouched():
+    text = "A 9 mm solid nodule is seen."
+    for count in ("single", "unclear"):
+        result, ver = multi_run(text, one(count))
+        assert result["nodules"][0]["count_context"] == count and ver.issues == []
