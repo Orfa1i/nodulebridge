@@ -21,3 +21,4 @@ next-env.d.ts
 web/AGENTS.md
 !/data/cases/*/report.md
 !/data/cases/*/report.pdf
+web/public/cases/

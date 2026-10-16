@@ -8,7 +8,8 @@
     "lint": "pnpm --dir web lint && uv run --project api ruff check api && uv run --project pipeline ruff check pipeline",
     "schemas": "node scripts/gen-schemas.mjs",
     "build:cases": "uv run --project pipeline python -m pipeline.build_all",
-    "fetch:cases": "uv run --project pipeline python -m pipeline.fetch_series"
+    "fetch:cases": "uv run --project pipeline python -m pipeline.fetch_series",
+    "sync:cases": "node scripts/sync-cases.mjs"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0"
