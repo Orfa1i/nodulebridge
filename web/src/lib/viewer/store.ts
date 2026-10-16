@@ -25,6 +25,8 @@ interface ViewerState {
   sliceCount: number;
   window: { width: number; level: number };
   sliceCheck: SliceCheck | null;
+  /** First and last slice (0-based) on which the outline exists; null until the mask is loaded. */
+  maskRange: [number, number] | null;
   api: ViewerApi | null;
 }
 
@@ -38,6 +40,7 @@ const initial: ViewerState = {
   sliceCount: 0,
   window: { width: 0, level: 0 },
   sliceCheck: null,
+  maskRange: null,
   api: null,
 };
 
