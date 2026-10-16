@@ -33,3 +33,16 @@
 .nb-ignored { font: 400 14px/20px var(--font-sans); color: var(--text-secondary); }
 .nb-ignored summary { cursor: pointer; padding: var(--space-1) 0; }
 .nb-ignored ul { margin: var(--space-2) 0 0; padding-inline-start: var(--space-6); }
+
+/* Guideline next step */
+.nb-nextstep { display: flex; flex-direction: column; gap: var(--space-4); }
+.nb-nextstep__options { display: flex; flex-direction: column; gap: var(--space-4); }
+.nb-nextstep__option { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); }
+.nb-nextstep__label { margin: 0; font: 600 13px/18px var(--font-sans); color: var(--text-secondary); }
+.nb-nextstep__headline { margin: 0; font: 500 24px/30px var(--font-display); letter-spacing: -0.01em; color: var(--text-primary); }
+.nb-nextstep__window { margin: 0; font: 400 14px/20px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.nb-nextstep__later, .nb-nextstep__questions, .nb-nextstep__notes { margin: 0; padding-inline-start: var(--space-6); display: flex; flex-direction: column; gap: var(--space-1); font: 400 14px/20px var(--font-sans); color: var(--text-secondary); }
+.nb-nextstep__later { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 13px; }
+.nb-nextstep__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.nb-nextstep__why p { margin: 0; font: 400 15px/22px var(--font-sans); color: var(--text-primary); }
+.nb-nextstep__sub { margin: 0 0 var(--space-2); font: 600 14px/20px var(--font-sans); color: var(--text-primary); }
