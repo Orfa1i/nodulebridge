@@ -1,0 +1,14 @@
+{
+  "name": "nodulebridge",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "concurrently -n web,api -c auto \"pnpm --dir web dev\" \"uv run --project api uvicorn app.main:app --reload --port 8000 --app-dir api\"",
+    "test": "pnpm --dir web test && uv run --project api pytest api/tests",
+    "lint": "pnpm --dir web lint && uv run --project api ruff check api",
+    "schemas": "node scripts/gen-schemas.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6"
+  }
+}

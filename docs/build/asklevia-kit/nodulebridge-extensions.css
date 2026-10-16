@@ -1,0 +1,85 @@
+/* =====================================================================
+   NoduleBridge — product extensions to the Asklevia system
+   Load AFTER tokens.css and bundle.css.
+   Everything here is a gap the core system does not cover yet.
+   Each one is marked PROPOSED: raise it with the Asklevia system owner
+   before reusing it in another product.
+   ===================================================================== */
+
+/* PROPOSED 1 — Arabic script.
+   Funnel Display, Host Grotesk and Geist Mono have no Arabic glyphs.
+   IBM Plex Sans Arabic (Google Fonts, OFL) is added as the Arabic face.
+   Load it in the root layout with next/font/google, then these stacks apply. */
+:root {
+  --font-arabic: "IBM Plex Sans Arabic", "Host Grotesk", system-ui, Arial, sans-serif;
+}
+[lang="ar"] {
+  font-family: var(--font-arabic);
+  line-height: 1.7; /* Arabic needs more leading than Latin at the same size */
+}
+[lang="ar"] :where(h1, h2, h3, h4) {
+  font-family: var(--font-arabic);
+  font-weight: 600;
+  letter-spacing: 0; /* never track Arabic */
+}
+
+/* PROPOSED 2 — Viewer surface.
+   The CT viewport is the one dark surface in a light-only system: medical
+   images are read on near-black. It always sits inside a White card. */
+:root {
+  --viewer-bg: var(--neutral-900);
+  --viewer-text: #E3E6EE;          /* neutral-100: 14.9:1 on neutral-900 */
+  --viewer-text-muted: #A3A9BD;    /* neutral-300: 7.9:1 on neutral-900 */
+}
+.nb-viewport {
+  background: var(--viewer-bg);
+  color: var(--viewer-text);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+.nb-viewport__hud {
+  position: absolute;
+  inset-inline-start: var(--space-3);
+  top: var(--space-3);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--viewer-text-muted);
+}
+
+/* PROPOSED 3 — Finding overlay.
+   The nodule mask needs a colour that reads on a CT image. warning-600 is
+   too dark on near-black, and the spectrum is reserved for "AI is working".
+   Amber 400 is used ONLY inside the viewport, always with a text label. */
+:root {
+  --overlay-finding: #F2B84B;            /* 10.4:1 on neutral-900 */
+  --overlay-finding-fill-opacity: 0.35;
+  --overlay-reference: #8F95EE;          /* indigo-300: radiologist reference contour, 6.8:1 on neutral-900 */
+}
+
+/* PROPOSED 4 — Report sentence highlight, linked to the finding. */
+.nb-evidence {
+  background: var(--warning-50);
+  box-shadow: inset 0 -2px 0 var(--warning-600);
+  border-radius: var(--radius-xs);
+  padding: 0 2px;
+}
+.nb-evidence.is-active {
+  outline: 2px solid var(--warning-600);
+  outline-offset: 1px;
+}
+
+/* PROPOSED 5 — The persistent safety banner. Built from ak-alert--info,
+   pinned under the App bar on every screen. */
+.nb-safety-banner {
+  position: sticky;
+  top: 64px;
+  z-index: calc(var(--z-sticky) - 1);
+  border-radius: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-evidence.is-active { transition: none; }
+}

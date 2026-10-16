@@ -1,0 +1,19 @@
+node_modules/
+.next/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.env
+.env.local
+playwright-report/
+test-results/
+*.tsbuildinfo
+# prepared demo data: ignore everything except small case JSON
+/data/**
+!/data/
+!/data/cases/
+!/data/cases/*/
+!/data/cases/*/*.json
+!/data/cases/.gitkeep
