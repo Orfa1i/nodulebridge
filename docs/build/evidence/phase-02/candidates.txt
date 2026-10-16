@@ -1,0 +1,46 @@
+Case A: 28 candidates (showing top 12)
+patient          thick raters med_tex tex_rng diam_mm     z_mm
+LIDC-IDRI-0227    2.50      4     5.0       0    9.00   -170.8
+LIDC-IDRI-0093    2.50      4     5.0       0    9.02   -206.0
+LIDC-IDRI-0369    1.25      4     5.0       0    8.92    -34.2
+LIDC-IDRI-0177    2.50      4     5.0       0    9.10   -106.6
+LIDC-IDRI-0845    0.75      4     5.0       0    9.16   -204.1
+LIDC-IDRI-0445    1.00      3     5.0       0    9.18    -89.7
+LIDC-IDRI-0658    1.25      4     5.0       0    9.19    -10.8
+LIDC-IDRI-0113    2.50      3     5.0       0    9.20   -272.8
+LIDC-IDRI-0210    2.50      4     5.0       0    8.75    -77.2
+LIDC-IDRI-0283    2.50      4     5.0       0    8.61    -71.7
+LIDC-IDRI-0700    1.25      3     5.0       0    8.60    -68.4
+LIDC-IDRI-0021    2.50      4     5.0       0    9.59    -58.6
+Case B: 56 candidates (showing top 12)
+patient          thick raters med_tex tex_rng diam_mm     z_mm
+LIDC-IDRI-0633    1.25      4     5.0       0    6.97   -240.9
+LIDC-IDRI-0263    2.50      4     5.0       0    6.95   -138.5
+LIDC-IDRI-0672    1.25      4     5.0       0    6.95   -171.0
+LIDC-IDRI-0200    2.50      3     5.0       0    7.05   -166.7
+LIDC-IDRI-0399    1.25      3     5.0       0    6.88   -155.8
+LIDC-IDRI-0631    0.75      3     5.0       0    7.17   -324.2
+LIDC-IDRI-0004    1.25      4     5.0       0    6.82   -230.3
+LIDC-IDRI-0308    1.25      4     5.0       0    6.80   -173.3
+LIDC-IDRI-0020    1.25      4     5.0       0    7.21    -40.9
+LIDC-IDRI-0222    2.50      4     5.0       0    7.25   -138.2
+LIDC-IDRI-0343    2.50      4     5.0       0    7.35    -95.7
+LIDC-IDRI-0372    1.25      4     5.0       0    7.36   -239.4
+Case C: 16 candidates (showing top 12)
+patient          thick raters med_tex tex_rng diam_mm     z_mm
+LIDC-IDRI-0497    1.25      4     1.0       0   18.39   -120.1
+LIDC-IDRI-0269    1.25      3     2.0       1    6.74    -99.0
+LIDC-IDRI-0557    0.75      3     2.0       1   10.69   1131.2
+LIDC-IDRI-0131    1.25      3     1.0       1   14.17   -105.5
+LIDC-IDRI-0464    1.25      4     1.5       1   22.79    -57.9
+LIDC-IDRI-0539    1.25      3     1.0       2    9.67   -170.5
+LIDC-IDRI-0634    2.00      3     2.0       2   12.77   -220.4
+LIDC-IDRI-0304    2.00      3     2.0       2   17.15   -118.1
+LIDC-IDRI-0681    1.25      4     1.0       2   21.82   -138.9
+LIDC-IDRI-0498    1.25      3     1.0       3    8.62   -100.8
+LIDC-IDRI-0779    2.00      3     1.0       3    6.16   -134.7
+LIDC-IDRI-0385    1.25      4     2.0       3   10.90    -34.8
+Chosen (first ranked, distinct patients):
+  A: LIDC-IDRI-0227 diam~9.0 mm tex=5.0 raters=4 series=1.3.6.1.4.1.14519.5.2.1.6279.6001.518487185634324801733841260431
+  B: LIDC-IDRI-0633 diam~6.97 mm tex=5.0 raters=4 series=1.3.6.1.4.1.14519.5.2.1.6279.6001.281489753704424911132261151767
+  C: LIDC-IDRI-0497 diam~18.39 mm tex=1.0 raters=4 series=1.3.6.1.4.1.14519.5.2.1.6279.6001.265780642925621389994857727416

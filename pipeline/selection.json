@@ -1,0 +1,44 @@
+{
+  "A": {
+    "case": "A",
+    "patient_id": "LIDC-IDRI-0227",
+    "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.518487185634324801733841260431",
+    "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.194041219679835518833081477370",
+    "slice_thickness": 2.5,
+    "raters": 4,
+    "median_texture": 5.0,
+    "texture_range": 0,
+    "mean_diameter_mm": 9.0,
+    "mean_contour_z_mm": -170.8,
+    "target_gap": 0.0,
+    "note": ""
+  },
+  "B": {
+    "case": "B",
+    "patient_id": "LIDC-IDRI-0633",
+    "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.281489753704424911132261151767",
+    "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.157442654089163434314265938550",
+    "slice_thickness": 1.25,
+    "raters": 4,
+    "median_texture": 5.0,
+    "texture_range": 0,
+    "mean_diameter_mm": 6.97,
+    "mean_contour_z_mm": -240.9,
+    "target_gap": 0.03,
+    "note": ""
+  },
+  "C": {
+    "case": "C",
+    "patient_id": "LIDC-IDRI-0497",
+    "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.265780642925621389994857727416",
+    "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.306209107793490820623279780488",
+    "slice_thickness": 1.25,
+    "raters": 4,
+    "median_texture": 1.0,
+    "texture_range": 0,
+    "mean_diameter_mm": 18.39,
+    "mean_contour_z_mm": -120.1,
+    "target_gap": 10.39,
+    "note": ""
+  }
+}
