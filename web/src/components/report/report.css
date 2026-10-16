@@ -80,3 +80,4 @@
 .nb-voice__bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
 .nb-voice__time { font: 400 13px/18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-secondary); }
 .nb-voice__transcript { display: flex; flex-direction: column; gap: var(--space-1); }
+.nb-redaction__preview { margin: 0; max-height: 240px; overflow: auto; padding: var(--space-3) var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-subtle); font: 400 13px/20px var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--text-primary); }

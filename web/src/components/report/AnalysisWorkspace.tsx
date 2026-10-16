@@ -14,6 +14,7 @@ import { FindingsCard, type FindingsState } from "./FindingsCard";
 import { NextStepCard, type NextStepState } from "./NextStepCard";
 import { PatientSummaryCard } from "./PatientSummaryCard";
 import { PrivacyNotice } from "./PrivacyNotice";
+import { RedactionReview } from "./RedactionReview";
 import { ReportCard } from "./ReportCard";
 import { UploadZone } from "./UploadZone";
 import "./report.css";
@@ -79,6 +80,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   const explanation = useAnalysisStore((s) => s.explanation);
   const explanationError = useAnalysisStore((s) => s.explanationError);
   const privacy = useAnalysisStore((s) => s.privacy);
+  const redaction = useAnalysisStore((s) => s.redaction);
   const explainStage = useAnalysisStore((s) => s.stages.explain.status);
   const error = useAnalysisStore((s) => s.error);
   const readingSeconds = useAnalysisStore((s) => s.readingSeconds);
@@ -187,6 +189,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
       </div>
 
       {privacy ? <PrivacyNotice summary={privacy} /> : null}
+      {redaction ? <RedactionReview redaction={redaction} /> : null}
       {phase !== "idle" ? <AnalysisStepper /> : null}
 
       {unmatched ? (

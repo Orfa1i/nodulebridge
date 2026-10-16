@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Confirmations, Recommendation } from "@/lib/recommend";
 import type { DeidentifySummary } from "@/features/privacy/deidentify";
+import type { RedactionState } from "@/features/privacy/redaction";
 import type { Explanation, Locale } from "@/lib/explain";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 import type { MatchResult } from "./matchFinding";
@@ -62,6 +63,8 @@ export interface AnalysisState {
   explanationError: string | null;
   /** What the browser-side de-identification removed from an uploaded scan (tag names only, never values). */
   privacy: DeidentifySummary | null;
+  /** What the pattern check removed from an uploaded report before the model read it. */
+  redaction: RedactionState | null;
   error: { message: string; detail: string | null } | null;
   readingSeconds: number;
   timings: Timings;
@@ -99,6 +102,7 @@ export const initialAnalysis = (): AnalysisState => ({
   explanation: null,
   explanationError: null,
   privacy: null,
+  redaction: null,
   error: null,
   readingSeconds: 0,
   timings: emptyTimings(),

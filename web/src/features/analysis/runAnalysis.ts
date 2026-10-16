@@ -6,6 +6,7 @@ import { useViewerStore } from "@/lib/viewer/store";
 import { prefersReducedMotion } from "@/lib/viewer/css";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 import { deidentify, type UploadFiles } from "@/features/privacy/deidentify";
+import { decideRedaction, fetchRedaction, waitForRedactionDecision } from "@/features/privacy/redaction";
 import { identifyScan, loadCaseIndex, type ScanIdentity } from "./identifyScan";
 import { matchFinding, pickDrivingNodule, type MatchResult } from "./matchFinding";
 import { patchStage, resetAnalysis, STAGES, useAnalysisStore, type Timings } from "./store";
@@ -92,6 +93,7 @@ export async function rerunRecommendation(confirmations: Confirmations): Promise
 export async function runAnalysis(input: AnalysisInput): Promise<void> {
   lastInput = input;
   controller?.abort();
+  decideRedaction(false); // a new run cancels a review that was still waiting
   controller = new AbortController();
   const signal = controller.signal;
   const id = ++runId;
@@ -130,9 +132,24 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
       } else {
         set({ caseId: null, scan: { kind: "unmatched", label: null, via: identity.format, reason: identity.reason } });
       }
-      const isPdf = files.report.type === "application/pdf" || /\.pdf$/i.test(files.report.name);
-      reportInput = isPdf ? { file: files.report } : { text: await files.report.text() };
       mark("scanIdentified");
+      // the report text is checked for identifying patterns BEFORE the model reads it; the person sees what was removed
+      const redaction = await fetchRedaction(files.report, signal);
+      if (redaction.total > 0) {
+        set({ redaction: { ...redaction, status: "waiting" } });
+        const confirmed = await waitForRedactionDecision();
+        if (!alive()) return;
+        if (!confirmed) {
+          resetAnalysis();
+          return;
+        }
+        set({ redaction: { ...redaction, status: "confirmed" } });
+        reportInput = { text: redaction.text };
+      } else {
+        set({ redaction: { ...redaction, status: "none" } });
+        const isPdf = files.report.type === "application/pdf" || /\.pdf$/i.test(files.report.name);
+        reportInput = isPdf ? { file: files.report } : { text: await files.report.text() };
+      }
     }
     if (!alive()) return;
 
