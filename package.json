@@ -5,14 +5,15 @@
   "scripts": {
     "dev": "node scripts/dev.mjs",
     "test": "pnpm --dir web test && uv run --project api pytest api/tests && uv run --project pipeline pytest pipeline",
-    "lint": "pnpm --dir web lint && uv run --project api ruff check api && uv run --project pipeline ruff check pipeline",
+    "lint": "pnpm --dir web lint && uv run --project api ruff check api && uv run --project pipeline ruff check pipeline && node scripts/check-copy.mjs",
     "schemas": "node scripts/gen-schemas.mjs",
     "build:cases": "uv run --project pipeline python -m pipeline.build_all",
     "fetch:cases": "uv run --project pipeline python -m pipeline.fetch_series",
     "sync:cases": "node scripts/sync-cases.mjs",
     "check-content": "uv run --project api python -m api.scripts.check_content",
     "voices": "uv run --project api python -m api.scripts.make_voices",
-    "draft-arabic": "uv run --project api python -m api.scripts.draft_arabic"
+    "draft-arabic": "uv run --project api python -m api.scripts.draft_arabic",
+    "check-copy": "node scripts/check-copy.mjs"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0"

@@ -257,9 +257,6 @@ def test_pdf_has_the_rule_id_arabic_text_and_the_safety_statement(tmp_path):
     assert len(re.findall(r"[؀-ۿﭐ-﷿ﹰ-﻿]", text)) > 100  # Arabic is present (shaped forms count)
     assert "Decision and adherence support only" in text  # the footer statement
     assert "Page 1" in text
-    evidence = Path(__file__).resolve().parents[2] / "docs" / "build" / "evidence" / "phase-08"
-    evidence.mkdir(parents=True, exist_ok=True)
-    (evidence / "case-a-passport.pdf").write_bytes(r.content)
 
 
 def test_pdf_failure_is_a_plain_error_and_not_a_crash(monkeypatch):

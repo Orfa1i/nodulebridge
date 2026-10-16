@@ -35,7 +35,7 @@ test("case A: the drawer lists the data, extraction, guideline, explanation, tim
   const quotes = page.getByTestId("v-quotes").locator("li");
   await expect(quotes).toHaveCount(1);
   await expect(quotes.first()).toContainText("a 9 mm solid nodule is seen in the right upper lobe");
-  await expect(page.getByTestId("v-quote-found")).toHaveText("✓ Found in report");
+  await expect(page.getByTestId("v-quote-found")).toHaveText("Found in report");
   await drawer.getByText("Raw JSON from the extraction").click();
   const raw = JSON.parse(await page.getByTestId("v-raw").innerText());
   expect(raw.nodules[0].mean_diameter_mm).toBe(fixture.result.nodules[0].mean_diameter_mm);
