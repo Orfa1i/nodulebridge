@@ -1,0 +1,10 @@
+{
+  "rules": {
+    "color-no-hex": true
+  },
+  "ignoreFiles": [
+    "src/styles/tokens.css",
+    "src/styles/bundle.css",
+    "src/styles/nodulebridge-extensions.css"
+  ]
+}

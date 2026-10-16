@@ -17,3 +17,4 @@ test-results/
 !/data/cases/*/
 !/data/cases/*/*.json
 !/data/cases/.gitkeep
+next-env.d.ts
