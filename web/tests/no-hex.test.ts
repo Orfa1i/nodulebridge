@@ -13,8 +13,8 @@ function walk(dir: string): string[] {
   });
 }
 
-describe("no hard-coded hex colours in .tsx", () => {
-  const files = walk(root).filter((f) => f.endsWith(".tsx"));
+describe("no hard-coded hex colours in .ts and .tsx", () => {
+  const files = walk(root).filter((f) => /\.tsx?$/.test(f) && !f.includes("generated"));
   it("finds tsx files", () => expect(files.length).toBeGreaterThan(0));
   for (const file of files) {
     it(file.slice(root.length + 1), () => {

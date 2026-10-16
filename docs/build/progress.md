@@ -91,3 +91,48 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 - Phase 3 loads `ct.nii.gz` and `mask.nii.gz` from `DATA_BASE_URL`; both are git-ignored and must be served from `data/cases/<id>/`.
 - Fleischner engine inputs per case are in the manifest: `fleischner_size_mm`, `attenuation`, `scenario.age_years`; risk is unknown by design.
 - The report PDF text is plain: the extraction step reads `report.md` and the PDF.
+
+## Phase 3 — The CT viewer (done)
+
+**Built**
+- `web/src/components/viewer/CaseViewer.tsx` (Cornerstone3D, one axial ORTHOGRAPHIC volume viewport), `ViewerCard.tsx` (ak-card wrapper), `viewer.css`.
+- `web/src/lib/cases.ts` (manifest and file URLs, world <-> slice-index helpers from the manifest geometry), `lib/viewer/{cornerstone,css,store}.ts`.
+- Route `/dev/viewer?case=A|B|C` (not in the nav). The viewer is not on `/` yet: Phase 6 wires it into the case workspace.
+- `pnpm sync:cases` copies `data/cases/*/{manifest.json, ct.nii.gz, mask.nii.gz, report.md, report.pdf}` into `web/public/cases/` (git-ignored; Windows symlinks need admin). `NEXT_PUBLIC_DATA_BASE_URL` overrides the base for production (added to `.env.example`).
+- Playwright `web/tests/e2e/viewer.spec.ts` (6 tests). Full e2e: 14/14 on `next dev`; the 6 viewer tests also pass on the production build.
+
+**Versions (pinned)**: @cornerstonejs/core, tools, nifti-volume-loader 5.12.1; zustand 5.0.15. (Cornerstone 5.x differs from older docs: the NIfTI loader is image-id based, see below.)
+
+**What had to be configured**
+- Viewer is client-only: `dynamic(() => import("./CaseViewer"), { ssr: false })` in `ViewerCard`. No worker or WASM config was needed: the NIfTI path uses no image codecs. `next.config.ts` is unchanged.
+- NIfTI in v5: `imageLoader.registerImageLoader("nifti", cornerstoneNiftiImageLoader)`, then `createNiftiImageIdsAndCacheMetadata({ url })` -> `volumeLoader.createAndCacheVolume("cornerstoneStreamingImageVolume:<url>", { imageIds })` -> `volume.load()`. URLs must be ABSOLUTE (the loader calls `new URL(url)`): `caseFileUrl()` prefixes `window.location.origin`.
+- Mask: loaded through the same loader (so voxel layout equals the CT), copied with `voxelManager.getCompleteScalarDataArray()` into a derived labelmap (`createAndCacheDerivedLabelmapVolume`) via `setCompleteScalarDataArray`. `getScalarData()` throws for stack-backed volumes in v5.
+- Segmentation: `segmentation.addSegmentations` + `addSegmentationRepresentations` with a 2-entry colour LUT; style via `segmentation.segmentationStyle.setStyle` (fillAlpha, outlineWidth 2). Colour read from `--overlay-finding` at runtime (`lib/viewer/css.ts`); no hex anywhere in viewer code (the hex test now scans `.ts` and `.tsx`).
+- **Production build must use webpack**: `next build` with Turbopack stalled for 17+ minutes (low CPU) once Cornerstone was imported. `web/package.json` `build` is now `next build --webpack` (30 s, prints a harmless "Circular dependency between chunks with runtime" warning). `next dev` still uses Turbopack and works. Revisit when a newer Next fixes it.
+
+**Design decisions**
+- Slice number in the HUD and API is derived from the camera focal point projected on the manifest's own slice axis, not from Cornerstone's internal index. So the display always follows the manifest convention (0-based index, shown as index + 1) and cannot silently flip.
+- Slice-order check (step 6): the max-area slice of the loaded mask is converted to world coordinates and projected on the manifest geometry. It must equal `slice_index`; otherwise a dev-only `ak-alert--danger` "Slice order mismatch: manifest X, viewer Y." shows and `console.error` fires. All three cases pass (A 71, B 55, C 115). This also proves Cornerstone's world space equals the manifest's LPS space.
+- HUD: `Slice 72 / 104 · 2.5 mm · W 1500 L -600`. The mm value is the slice spacing from the manifest (case B has 0.625 mm pixels and 2.5 mm slices; C has 1.25 mm). The HUD has a viewer-surface backing so it stays readable over bright bone.
+- Screen readers: a debounced (350 ms) visually-hidden `aria-live="polite"` mirror says "Slice 72 of 104", instead of live-announcing every slice during a scroll.
+- Keyboard: ArrowUp = next slice (towards the head, index + 1), ArrowDown = previous. Wheel scroll, left-drag window/level, right-drag zoom, middle-drag pan.
+- `jumpToFinding("n1")`: moves the camera to the nodule's slice, centres on the centroid and zooms to 2x over 320 ms (ease-out), then pulses the fill opacity 0.35 -> 0.6 -> 0.35 over 600 ms. Both are skipped under `prefers-reduced-motion`. The test asserts centring within 3 px, zoom ratio 2.0 and the pulse peak.
+- API for Phase 6 (`useViewerStore.getState().api`, set when ready): `jumpToFinding(noduleId)`, `onSliceChange(cb) -> unsubscribe`. In `/dev/viewer` it is also on `window.__nbViewer` with a `debugState()` helper (debug flag only).
+- Loading: indigo `ak-progress` (not spectrum) with "Loading CT" and a percentage, shown only after 400 ms.
+- Finding label: "Finding 1 · {fleischner_size_mm} mm", pinned from world to canvas, visible only on slices where the mask exists.
+- No MedSAM mask exists (skipped in Phase 2), so there is no second segmentation or legend.
+
+**Acceptance results**
+- All three cases load. Time to ready, headless Chromium with software WebGL on this machine (localhost): A 2.6 s, B 2.5-3.1 s, C 3.1 s. Second load of case A: 1.7-1.8 s (limit 4 s). On a laptop with a real GPU this should be faster; not measured.
+- `jumpToFinding` lands on the manifest slice for A, B, C with the nodule centred (screenshots checked).
+- HUD follows scroll (keyboard test: +5 slices, -1), W/L presets change the HUD, announcements fire.
+- Outline colour from CSS variables; hex grep over viewer code is empty.
+- Playwright: open `/dev/viewer?case=A`, call `jumpToFinding`, HUD shows `Slice 72 / 104` (index 71 + 1).
+- `pnpm lint` and `pnpm test` pass (web 17, api 3, pipeline 38).
+
+**Open TODO-VERIFY**: unchanged from Phase 2 (lobe estimates, TCIA citation text, team names, Arabic banner).
+
+**Next phase must know**
+- Case files must be synced with `pnpm sync:cases` before the viewer works locally (and after any `pnpm build:cases`).
+- Phase 4 reads `report.md` / `report.pdf`; they are copied by the same script to `web/public/cases/<id>/`.
+- Phase 6 links report sentences to the viewer through `useViewerStore.getState().api.jumpToFinding("n1")` and `onSliceChange`.
