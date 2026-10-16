@@ -6,7 +6,8 @@ the doctor to decide. It never says the patient has cancer and never asks for a 
 
 Codes: `code.text` always carries the human wording. Standard codes come only from shared/content/fhir-codes.json, where
 each one records how it was checked. Those four were looked up in public references; the official SNOMED International
-browser and loinc.org blocked automated lookups, so official_browser_checked is still false (TODO-VERIFY). Anything with
+browser and loinc.org blocked automated lookups; the project owner confirmed all four there on 2026-10-17
+(official_browser_checked is true, with who confirmed it). Anything with
 no looked-up code (the nodule size, side, lobe, attenuation) stays text only. A code is never guessed.
 """
 
