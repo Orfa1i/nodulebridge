@@ -148,7 +148,10 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
       : phase === "running"
         ? { status: "reading", elapsedSeconds: readingSeconds }
         : { status: "idle" };
-  const next: NextStepState = recommendation
+  const unverified = !!extraction && extraction.result.nodules.length === 0 && extraction.verification.nodules_removed > 0;
+  const next: NextStepState = unverified
+    ? { status: "blocked", message: "A finding the model reported could not be checked against the report, so it was not used. Ask your doctor to read the report." }
+    : recommendation
     ? { status: "done", rec: recommendation }
     : recommendationError
       ? { status: "error", message: recommendationError }

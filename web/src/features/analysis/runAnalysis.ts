@@ -177,6 +177,15 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     });
     set({ drivingNoduleId: driving?.id ?? null });
 
+    // the model reported a finding but none of its evidence could be checked against the report text: use nothing
+    if (listed === 0 && extraction.verification.nodules_removed > 0) {
+      patchStage("find", { status: "done", ms: Math.round(now() - tFind), meta: "Finding could not be checked" });
+      for (const key of ["match", "guideline", "explain"] as const) patchStage(key, { status: "skipped", ms: 0, meta: "No checked finding" });
+      set({ match: null, phase: "done", nextRevealed: true });
+      mark("total");
+      return;
+    }
+
     // 4. match it to the outline of the prepared scan
     const tMatch = now();
     let match: MatchResult | null = null;

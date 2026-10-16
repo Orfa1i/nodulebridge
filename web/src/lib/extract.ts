@@ -31,7 +31,7 @@ export async function extractReport(
     res = await fetch(`${API_BASE}/extract`, init);
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") throw err;
-    throw new ExtractError("The report could not be read. Paste the text instead.", `The analysis service did not answer at ${API_BASE}.`);
+    throw new ExtractError("The analysis service is not responding. Try again in a minute.", `No answer from ${API_BASE}.`);
   }
   const body = await res.json().catch(() => null);
   if (!res.ok) {

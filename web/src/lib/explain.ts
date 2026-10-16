@@ -61,7 +61,7 @@ export async function fetchExplanation(
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") throw err;
-    throw new ExplainError(`The explanation service did not answer at ${API_BASE}.`);
+    throw new ExplainError("The analysis service is not responding. Try again in a minute.", `No answer from ${API_BASE}.`);
   }
   if (!res.ok) throw await failure(res, `The explanation service returned an error (HTTP ${res.status}).`);
   return (await res.json()) as Explanation;

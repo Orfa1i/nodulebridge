@@ -136,7 +136,17 @@ export function FindingsCard({ state, onStart, drivingId = null, match = null, i
               Same report, model and prompt as an earlier run.
             </p>
           ) : null}
-          {state.data.result.nodules.length === 0 ? (
+          {state.data.result.nodules.length === 0 && state.data.verification.nodules_removed > 0 ? (
+            <div className="ak-alert ak-alert--warning" role="status" data-testid="unverified-finding">
+              <TriangleAlert size={20} strokeWidth={2} aria-hidden="true" />
+              <div className="ak-alert__body">
+                <p className="ak-alert__title">
+                  <span className="ak-badge ak-badge--warning">Needs review</span> A finding could not be checked against the report.
+                </p>
+                <p>The model named a finding, but its quote was not found in the report text, so the finding was dropped. Please read the report yourself or ask your doctor.</p>
+              </div>
+            </div>
+          ) : state.data.result.nodules.length === 0 ? (
             <p className="nb-finding__values">No nodules found in the report.</p>
           ) : (
             <ul className="nb-findings" aria-label="Nodules found in the report">

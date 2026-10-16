@@ -12,6 +12,7 @@ import {
 export type NextStepState =
   | { status: "idle" }
   | { status: "loading" }
+  | { status: "blocked"; message: string }
   | { status: "error"; message: string }
   | { status: "done"; rec: Recommendation };
 
@@ -77,6 +78,14 @@ export function NextStepCard({ state, confirmations, onConfirm, revealed = true 
         </div>
       ) : null}
       {state.status === "loading" ? <p className="nb-finding__note">Applying the guideline.</p> : null}
+      {state.status === "blocked" ? (
+        <div className="ak-alert ak-alert--warning" role="status" data-testid="nextstep-blocked">
+          <div className="ak-alert__body">
+            <p className="ak-alert__title">No next step is shown.</p>
+            <p>{state.message}</p>
+          </div>
+        </div>
+      ) : null}
       {state.status === "error" ? (
         <div className="ak-alert ak-alert--danger" role="alert">
           <div className="ak-alert__body">

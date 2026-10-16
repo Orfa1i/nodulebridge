@@ -40,7 +40,7 @@ export async function fetchRecommendation(
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") throw err;
-    throw new Error(`The guideline service did not answer at ${API_BASE}.`);
+    throw new Error("The analysis service is not responding. Try again in a minute.");
   }
   const body = await res.json().catch(() => null);
   if (!res.ok) throw new Error(body?.error?.message ?? `The guideline service returned an error (HTTP ${res.status}).`);

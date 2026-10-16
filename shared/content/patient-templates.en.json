@@ -220,6 +220,20 @@
         "reviewer": null,
         "date": null
       }
+    },
+    "NO_FINDING": {
+      "found": "The report does not describe a nodule in the lungs.",
+      "reassure": "",
+      "why": "The guideline we use is about nodules found by chance on a CT scan, so there is nothing for it to apply to here.",
+      "todo": "We cannot suggest a next step from this report. If you have symptoms or questions about your scan, please ask your doctor.",
+      "when": "Your doctor can tell you if and when a scan is needed.",
+      "who": "Show this page to your doctor if you have questions about your scan.",
+      "voice": "Your report does not describe a nodule in the lungs. We cannot suggest a next step from it. Please ask your doctor if you have questions about your scan.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
     }
   }
 }

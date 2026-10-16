@@ -211,13 +211,15 @@ def first_window(options: list[dict[str, Any]]) -> dict[str, Any] | None:
 
 
 def template_ids(rec: dict[str, Any], matched: bool | None) -> list[str]:
-    if rec["applies"] is False:
+    if rec["applies"] is False and rec.get("driving_nodule_id") is None:
+        ids = ["NO_FINDING"]  # the report names no nodule at all: say that, do not quote anything about abnormal results
+    elif rec["applies"] is False:
         ids = ["NOT_APPLICABLE"]
     elif rec["rule_id"] is None:
         ids = ["CONDITIONAL"]
     else:
         ids = [rec["rule_id"]] + (["CONDITIONAL"] if rec["applies"] == "conditional" else [])
-    if matched is False:
+    if matched is False and ids != ["NO_FINDING"]:  # with no finding there is nothing to match to the scan
         ids.append("NO_MATCH")
     return ids
 
