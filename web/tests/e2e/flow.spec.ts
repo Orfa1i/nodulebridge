@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
+import { syntheticDicom } from "../helpers/syntheticDicom";
 
 /**
  * The drop-in flow (Phase 6). /extract is the mocked-model fixture (real PDF intake and verification, mocked model;
@@ -204,7 +205,7 @@ test("a NIfTI scan and the report chosen together are recognised by the file has
 test("an unknown scan: the report is still read, with a clear note and no outline", async ({ page }) => {
   await mockExtract(page, "A");
   await page.goto("/");
-  await page.getByTestId("files-input").setInputFiles([join(FIXTURES, "unknown-series.dcm"), pdf("A")]);
+  await page.getByTestId("files-input").setInputFiles([{ name: "unknown.dcm", mimeType: "application/dicom", buffer: Buffer.from(syntheticDicom({ burned: "NO" })) }, { name: "report.pdf", mimeType: "application/pdf", buffer: readFileSync(pdf("A")) }]);
   await expect(stepper(page)).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
   const alert = page.getByTestId("unmatched-alert");
   await expect(alert).toContainText("No prepared outline for this scan. The report finding is shown without an outline.");
@@ -216,19 +217,25 @@ test("an unknown scan: the report is still read, with a clear note and no outlin
   await expect(page.getByTestId("nextstep")).toHaveAttribute("data-rule", "FL17-S1-GT8");
 });
 
-test("the privacy hook runs before anything is sent, and warns that it is a stub", async ({ page }) => {
+test("the privacy step runs before the report is sent, and nothing warns about a stub any more", async ({ page }) => {
   const warnings: string[] = [];
   page.on("console", (m) => m.type() === "warning" && warnings.push(m.text()));
-  let sentBeforeHook = false;
+  let noticeBeforeExtract = false;
   await page.route("**/extract", async (route) => {
-    sentBeforeHook = warnings.some((w) => w.includes("[deidentify]")) === false;
-    await route.fulfill({ status: 200, contentType: "application/json", body: fixture("C") });
+    for (let i = 0; i < 20 && !noticeBeforeExtract; i++) {
+      noticeBeforeExtract = await page.evaluate(() => document.querySelector('[data-testid="privacy-notice"]') !== null);
+      if (!noticeBeforeExtract) await new Promise((r) => setTimeout(r, 50));
+    }
+    await route.fulfill({ status: 200, contentType: "application/json", body: fixture("A") });
   });
   await page.goto("/");
-  await page.getByTestId("files-input").setInputFiles([nifti("C"), pdf("C")]);
+  await page.getByTestId("files-input").setInputFiles([
+    { name: "unknown.dcm", mimeType: "application/dicom", buffer: Buffer.from(syntheticDicom({ burned: "NO" })) },
+    { name: "report.pdf", mimeType: "application/pdf", buffer: readFileSync(pdf("A")) },
+  ]);
   await waitDone(page);
-  expect(warnings.some((w) => w.includes("[deidentify] stub"))).toBe(true);
-  expect(sentBeforeHook).toBe(false);
+  expect(noticeBeforeExtract).toBe(true);
+  expect(warnings.some((w) => w.includes("[deidentify]"))).toBe(false);
 });
 
 test("a refresh keeps the finished analysis (sessionStorage) and does not call the model again", async ({ page }) => {

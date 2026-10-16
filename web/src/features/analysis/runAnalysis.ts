@@ -5,7 +5,7 @@ import { fetchRecommendation, type Confirmations, type Recommendation } from "@/
 import { useViewerStore } from "@/lib/viewer/store";
 import { prefersReducedMotion } from "@/lib/viewer/css";
 import type { ExtractResponse } from "@/types/generated/extract-response";
-import { deidentify, type UploadFiles } from "./deidentify";
+import { deidentify, type UploadFiles } from "@/features/privacy/deidentify";
 import { identifyScan, loadCaseIndex, type ScanIdentity } from "./identifyScan";
 import { matchFinding, pickDrivingNodule, type MatchResult } from "./matchFinding";
 import { patchStage, resetAnalysis, STAGES, useAnalysisStore, type Timings } from "./store";
@@ -118,9 +118,12 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
       reportInput = { file: await pdf.blob() };
       mark("scanIdentified");
     } else {
-      const files = await deidentify(input.files);
+      // privacy first: patient details are removed on this device before anything else reads the scan
+      const index = await loadCaseIndex();
+      const { files, summary } = await deidentify(input.files, { knownSeriesUids: new Set(index.map((c) => c.series_instance_uid)) });
+      set({ privacy: summary });
       if (!files.report) throw new ExtractError("No report was provided.", "Add the report as a PDF or a text file.");
-      const identity: ScanIdentity = await identifyScan(files.ct, await loadCaseIndex());
+      const identity: ScanIdentity = await identifyScan(files.ct, index);
       if (identity.kind === "prepared") {
         caseId = identity.caseId;
         set({ caseId, scan: { kind: "prepared", label: identity.label, via: identity.via, reason: null } });

@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Confirmations, Recommendation } from "@/lib/recommend";
+import type { DeidentifySummary } from "@/features/privacy/deidentify";
 import type { Explanation, Locale } from "@/lib/explain";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 import type { MatchResult } from "./matchFinding";
@@ -59,6 +60,8 @@ export interface AnalysisState {
   /** Patient explanation per language, from POST /explain (reviewed templates, no model). */
   explanation: Record<Locale, Explanation> | null;
   explanationError: string | null;
+  /** What the browser-side de-identification removed from an uploaded scan (tag names only, never values). */
+  privacy: DeidentifySummary | null;
   error: { message: string; detail: string | null } | null;
   readingSeconds: number;
   timings: Timings;
@@ -95,6 +98,7 @@ export const initialAnalysis = (): AnalysisState => ({
   confirmations: {},
   explanation: null,
   explanationError: null,
+  privacy: null,
   error: null,
   readingSeconds: 0,
   timings: emptyTimings(),

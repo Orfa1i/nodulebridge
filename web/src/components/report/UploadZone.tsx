@@ -2,7 +2,7 @@
 
 import { Upload } from "lucide-react";
 import { useRef, useState, type DragEvent } from "react";
-import type { UploadFiles } from "@/features/analysis/deidentify";
+import type { UploadFiles } from "@/features/privacy/uploadFiles";
 
 const EXAMPLES = ["A", "B", "C"] as const;
 const REPORT_EXT = /\.(pdf|txt|md)$/i;

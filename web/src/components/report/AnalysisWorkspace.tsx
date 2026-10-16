@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ViewerCard } from "@/components/viewer/ViewerCard";
-import type { UploadFiles } from "@/features/analysis/deidentify";
+import type { UploadFiles } from "@/features/privacy/uploadFiles";
 import { focusFinding, rerunRecommendation, retryAnalysis, runAnalysis } from "@/features/analysis/runAnalysis";
 import { rehydrateAnalysis, resetAnalysis, STAGES, useAnalysisStore } from "@/features/analysis/store";
 import { createPassport } from "@/features/passport/passportStore";
@@ -13,6 +13,7 @@ import { AnalysisStepper } from "./AnalysisStepper";
 import { FindingsCard, type FindingsState } from "./FindingsCard";
 import { NextStepCard, type NextStepState } from "./NextStepCard";
 import { PatientSummaryCard } from "./PatientSummaryCard";
+import { PrivacyNotice } from "./PrivacyNotice";
 import { ReportCard } from "./ReportCard";
 import { UploadZone } from "./UploadZone";
 import "./report.css";
@@ -77,6 +78,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   const confirmations = useAnalysisStore((s) => s.confirmations);
   const explanation = useAnalysisStore((s) => s.explanation);
   const explanationError = useAnalysisStore((s) => s.explanationError);
+  const privacy = useAnalysisStore((s) => s.privacy);
   const explainStage = useAnalysisStore((s) => s.stages.explain.status);
   const error = useAnalysisStore((s) => s.error);
   const readingSeconds = useAnalysisStore((s) => s.readingSeconds);
@@ -184,6 +186,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
         </button>
       </div>
 
+      {privacy ? <PrivacyNotice summary={privacy} /> : null}
       {phase !== "idle" ? <AnalysisStepper /> : null}
 
       {unmatched ? (
