@@ -53,3 +53,5 @@
 .nb-kit__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }
 .nb-mono { font: 400 14px/20px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); }
 .nb-viewport--sample { height: 120px; }
+
+body { margin: 0; }

@@ -11,7 +11,7 @@ cp .env.example .env
 pnpm install
 pnpm --dir web install
 uv sync --project api
-pnpm dev        # web :3000 + api :8000
+pnpm dev        # web :3000 + api :8000 (set API_PORT to change)
 pnpm test
 pnpm lint
 pnpm schemas    # regenerate TS and Python types from /shared/schemas
