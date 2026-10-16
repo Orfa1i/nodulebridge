@@ -1,0 +1,55 @@
+/* Layout glue for the app shell. Tokens only, no hex values. */
+.nb-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+@media (max-width: 640px) {
+  .nb-page { padding: var(--space-6) var(--space-4); }
+}
+
+.nb-skip {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  top: -64px;
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill);
+  color: var(--text-brand);
+  font: 600 14px/20px var(--font-sans);
+}
+.nb-skip:focus { top: var(--space-2); }
+
+.nb-brand { display: flex; align-items: center; gap: var(--space-4); text-decoration: none; color: var(--text-primary); }
+.nb-brand__divider { width: 1px; height: 24px; background: var(--border-default); }
+.nb-brand__name { font: 500 20px/28px var(--font-display); letter-spacing: -0.005em; }
+.nb-appbar { gap: var(--space-6); }
+@media (max-width: 768px) {
+  .nb-brand__name { display: none; }
+  .nb-brand__divider { display: none; }
+  .nb-appbar { gap: var(--space-3); padding: 0 var(--space-4); }
+}
+
+.nb-workspace { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--space-6); align-items: start; }
+.nb-workspace__viewer { grid-column: span 7; }
+.nb-workspace__side { grid-column: span 5; display: flex; flex-direction: column; gap: var(--space-6); }
+@media (max-width: 1024px) {
+  .nb-workspace__viewer, .nb-workspace__side { grid-column: 1 / -1; }
+}
+
+.nb-page__title { font: 500 28px/34px var(--font-display); letter-spacing: -0.01em; }
+.nb-prose { display: flex; flex-direction: column; gap: var(--space-3); max-width: 70ch; font: 400 16px/24px var(--font-sans); color: var(--text-secondary); }
+.nb-prose h2 { font: 500 20px/28px var(--font-display); color: var(--text-primary); }
+.nb-prose ul { margin: 0; padding-inline-start: var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); }
+
+.nb-kit { display: flex; flex-direction: column; gap: var(--space-8); }
+.nb-kit__row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
+.nb-kit__stack { display: flex; flex-direction: column; gap: var(--space-3); }
+.nb-kit__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }
+.nb-mono { font: 400 14px/20px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.nb-viewport--sample { height: 120px; }
