@@ -12,6 +12,7 @@ from app.config import get_settings
 from app.services.extract_service import ExtractService
 from app.services.extractor import ExtractionFailed, ExtractionUnavailable
 from app.services.providers import make_extractor
+from app.services.ratelimit import too_many
 from app.services.report_text import ReportReadError, read_pdf, read_text
 
 router = APIRouter()
@@ -62,6 +63,10 @@ async def extract(request: Request):
     except ReportReadError as exc:
         return _error(422, "report_unreadable", READ_ERROR, str(exc))
     service = get_service()
+    if not service.is_cached(report):  # only a call that reaches the model costs anything
+        limited = too_many(request, "extract", settings.rate_limit_extract_per_hour, settings.trust_proxy)
+        if limited is not None:
+            return limited
     try:
         payload = await asyncio.wait_for(
             anyio.to_thread.run_sync(lambda: service.run(report, intake_ms, started)),

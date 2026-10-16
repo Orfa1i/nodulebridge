@@ -1,16 +1,25 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
 from app.config import get_settings
 from app.routers import explain, extract, health, passport, recommend, redact
+from app.services.seed import seed_extract_cache
 
 settings = get_settings()
 
-app = FastAPI(title="NoduleBridge API", version=__version__)
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    seed_extract_cache(settings)  # the example reports are served pre-computed, so the first click is warm
+    yield
+
+
+app = FastAPI(title="NoduleBridge API", version=__version__, lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.web_origin],
+    allow_origins=[o.strip() for o in settings.web_origin.split(",") if o.strip()],  # comma separated for several web origins
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T11:08:11.237614+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Persistent cough.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 63,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      },
+      "immunocompromised": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "smoking_history": {
+        "value": null,
+        "evidence_sentence_ids": []
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "16 mm",
+        "dimensions_mm": [
+          16.0
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "ground_glass",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s036",
+            "quote": "16 mm ground-glass nodule is seen in the right mid-lung zone"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "lQXSatH2EJrNvdIPn8aouAQ",
+  "usage": {
+    "promptTokenCount": 1830,
+    "candidatesTokenCount": 417,
+    "totalTokenCount": 2247,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1830
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

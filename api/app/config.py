@@ -28,6 +28,12 @@ class Settings(BaseSettings):
     data_base_url: str | None = None
     data_dir: Path = ROOT / "data"
     extract_timeout_s: float = 20.0
+    # Public-link protection: requests per hour per IP address for the calls that cost money or CPU. 0 turns a limit off.
+    # Localhost is never limited. Behind a proxy set TRUST_PROXY=true so the real caller (X-Forwarded-For) is counted.
+    rate_limit_extract_per_hour: int = 20
+    rate_limit_tts_per_hour: int = 60
+    rate_limit_pdf_per_hour: int = 30
+    trust_proxy: bool = False
 
 
 @lru_cache

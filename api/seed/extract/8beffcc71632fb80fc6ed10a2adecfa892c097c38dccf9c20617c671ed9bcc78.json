@@ -1,0 +1,78 @@
+{
+  "created": "2026-10-16T11:07:41.001990+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Right rib pain after a fall.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 58,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "former",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "9 mm",
+        "dimensions_mm": [
+          9
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "upper",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s036",
+            "quote": "9 mm solid nodule is seen in the right upper lobe"
+          }
+        ]
+      }
+    ],
+    "other_findings": [
+      "healing fracture of the right seventh rib"
+    ]
+  },
+  "request_id": "dwXSauT6BuyHxN8Pn6_QsAg",
+  "usage": {
+    "promptTokenCount": 1858,
+    "candidatesTokenCount": 427,
+    "totalTokenCount": 2285,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1858
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

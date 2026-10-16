@@ -1,0 +1,83 @@
+{
+  "created": "2026-10-16T11:12:36.347913+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT pulmonary angiogram",
+      "indication_text": "Chest pain.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 46,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "never",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "7 mm",
+        "dimensions_mm": [
+          7
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s036",
+            "quote": "7 mm solid nodule is seen in the right mid-lung zone"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "ngbSarreHrfPvdIP-7vg4Ag",
+  "usage": {
+    "promptTokenCount": 1826,
+    "candidatesTokenCount": 411,
+    "totalTokenCount": 2237,
+    "cachedContentTokenCount": 899,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1826
+      }
+    ],
+    "cacheTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 899
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

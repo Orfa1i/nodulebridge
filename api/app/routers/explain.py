@@ -6,12 +6,13 @@ from functools import lru_cache
 from typing import Any, Literal
 
 import anyio
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.services.explain import ContentError, explain
+from app.services.ratelimit import too_many
 from app.services.tts import TtsFailed, TtsProvider, TtsUnavailable, make_tts
 
 router = APIRouter()
@@ -51,7 +52,11 @@ def get_tts() -> TtsProvider:
 
 
 @router.post("/tts")
-async def post_tts(body: TtsRequest):
+async def post_tts(body: TtsRequest, request: Request):
+    settings = get_settings()
+    limited = too_many(request, "tts", settings.rate_limit_tts_per_hour, settings.trust_proxy)
+    if limited is not None:
+        return limited
     try:
         tts = get_tts()
         audio = await anyio.to_thread.run_sync(tts.synthesize, body.text, body.locale)

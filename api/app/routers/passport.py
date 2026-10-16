@@ -6,13 +6,14 @@ import json
 from typing import Literal
 
 import anyio
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
 from app.services import passport as svc
 from app.services.explain import ContentError
+from app.services.ratelimit import too_many
 
 router = APIRouter()
 Locale = Literal["en", "ar"]
@@ -77,8 +78,11 @@ def post_ics(body: IcsBody):
 
 
 @router.post("/passport/pdf")
-async def post_pdf(body: PdfBody):
+async def post_pdf(body: PdfBody, request: Request):
     settings = get_settings()
+    limited = too_many(request, "pdf", settings.rate_limit_pdf_per_hour, settings.trust_proxy)
+    if limited is not None:
+        return limited
     try:
         pdf = await anyio.to_thread.run_sync(svc.render_pdf, settings.web_base_url, body.passport, settings.chromium_path)
     except Exception as exc:  # noqa: BLE001 - Chromium missing, web app down, timeout: report plainly; the UI offers browser print

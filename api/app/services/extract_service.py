@@ -22,6 +22,10 @@ class ExtractService:
         self._extractor: Extractor | None = None
         self.cache = ExtractCache(settings.data_dir / "cache" / "extract")
 
+    def is_cached(self, report: ReportText) -> bool:
+        """True when this report was already read with the current model and prompt (no model call, so no cost)."""
+        return self.cache.get(cache_key(report.normalised, PROMPT_VERSION, model_id(self.settings))) is not None
+
     def run(self, report: ReportText, intake_ms: float, started: float | None = None) -> dict:
         t0 = started if started is not None else time.monotonic()
         deadline = t0 + self.settings.extract_timeout_s
