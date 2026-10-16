@@ -1,0 +1,53 @@
+/* Viewer layout. Tokens only; the dark surface is .nb-viewport from nodulebridge-extensions.css. */
+.nb-viewer { display: flex; flex-direction: column; gap: var(--space-3); }
+.nb-viewer__toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); flex-wrap: wrap; }
+.nb-viewer__viewport { height: min(560px, 70vh); min-height: 320px; outline-offset: 2px; }
+.nb-viewer__canvas { position: absolute; inset: 0; }
+.nb-viewer__label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  pointer-events: none;
+  padding: 2px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--viewer-bg);
+  color: var(--viewer-text);
+  font: 400 13px/20px var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.nb-viewport__hud { z-index: 2; pointer-events: none; }
+.nb-viewer__loading {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  background: var(--viewer-bg);
+}
+.nb-viewer__loading > * { width: min(360px, 100%); }
+.nb-viewer__loading-label { color: var(--viewer-text); }
+
+.nb-viewer-card__head { align-items: center; }
+.nb-tip { position: relative; display: inline-flex; }
+.nb-tip__bubble {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + var(--space-2));
+  width: 240px;
+  z-index: var(--z-tooltip);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-standard);
+}
+.nb-tip:hover .nb-tip__bubble, .nb-tip:focus-within .nb-tip__bubble { visibility: visible; opacity: 1; }
+
+/* HUD sits over bright lung and bone: give it the viewer surface as a backing. */
+.nb-viewer .nb-viewport__hud {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-xs);
+  background: var(--viewer-bg);
+}
