@@ -1,0 +1,8 @@
+Example report written for evaluation. Not a real patient.
+Indication: Rib pain after a fall.
+Technique: Axial CT of the chest.
+Findings:
+The heart is normal in size.
+No pleural effusion.
+However, a 9 mm solid nodule is seen in the right upper lobe.
+The visualised upper abdomen is unremarkable.

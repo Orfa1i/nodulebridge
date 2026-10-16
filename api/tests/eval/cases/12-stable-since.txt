@@ -1,0 +1,6 @@
+Example report written for evaluation. Not a real patient.
+Indication: Follow-up.
+Technique: Axial CT of the chest.
+Findings:
+A 7 mm solid nodule in the right lower lobe is stable since 2023.
+The heart is normal in size.

@@ -1,0 +1,6 @@
+Example report written for evaluation. Not a real patient.
+Indication: Low-dose CT for lung cancer screening.
+Technique: Axial CT of the chest.
+Findings:
+A 6 mm solid nodule is seen in the right middle lobe.
+The heart is normal in size.

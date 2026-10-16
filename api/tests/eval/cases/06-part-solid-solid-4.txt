@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+A 14 mm part-solid nodule is seen in the left upper lobe.
+The solid component measures 4 mm.
+The heart is normal in size.

@@ -1,0 +1,9 @@
+Example report written for evaluation. Not a real patient.
+Indication: Fall.
+Technique: Axial CT of the chest.
+Findings:
+There is a healing fracture of the right sixth rib.
+A 3 cm simple cyst is seen in the liver.
+A 12 mm right paratracheal lymph node is noted.
+A 6 mm solid nodule is seen in the left lower lobe.
+The heart is normal in size.

@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+A 16 x 12 mm part-solid nodule is seen in the right lower lobe.
+The solid component measures 7 mm.
+There is no mediastinal lymphadenopathy.

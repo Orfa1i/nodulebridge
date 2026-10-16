@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+The heart is normal in size.
+A 1.2 cm solid nodule is seen in the right lower lobe.
+The visualised upper abdomen is unremarkable.

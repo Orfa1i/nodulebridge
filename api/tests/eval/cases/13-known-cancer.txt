@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Staging CT. History of colon cancer.
+Technique: Axial CT of the chest.
+Findings:
+There is no mediastinal lymphadenopathy.
+An 8 mm solid nodule is seen in the left upper lobe.
+The heart is normal in size.

@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+The heart is normal in size.
+A densely calcified granuloma measuring 5 mm is seen in the left lower lobe.
+The visualised upper abdomen is unremarkable.

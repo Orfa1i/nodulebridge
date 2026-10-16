@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Chest pain.
+Technique: Axial CT of the chest.
+Findings:
+There is no mediastinal lymphadenopathy.
+Possible 4 mm nodule versus vessel in the right lower lobe.
+The heart is normal in size.

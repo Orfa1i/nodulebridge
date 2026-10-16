@@ -1,0 +1,8 @@
+Example report written for evaluation. Not a real patient.
+Indication: Follow-up of fall.
+Technique: Axial CT of the chest.
+Findings:
+Two pulmonary nodules are seen.
+The larger is a 12 mm solid nodule in the right middle lobe.
+The smaller is a 3 mm solid nodule in the left upper lobe.
+The heart is normal in size.

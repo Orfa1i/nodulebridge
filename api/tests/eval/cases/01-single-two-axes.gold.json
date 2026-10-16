@@ -1,0 +1,28 @@
+{
+  "tags": [
+    "size"
+  ],
+  "nodules": [
+    {
+      "assertion": "present",
+      "dimensions_mm": [
+        9,
+        7
+      ],
+      "attenuation": "solid",
+      "side": "right",
+      "lobe": "upper",
+      "count_context": "single",
+      "solid_component_mm": null,
+      "benign_features": [],
+      "has_stability_text": false
+    }
+  ],
+  "patient": {
+    "age_years": null,
+    "known_cancer": null,
+    "immunocompromised": null,
+    "smoking_history": null,
+    "is_screening_exam": null
+  }
+}

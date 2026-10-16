@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Chest pain.
+Technique: Axial CT of the chest.
+Findings:
+No pulmonary nodules.
+The lungs are clear.
+The heart is normal in size.

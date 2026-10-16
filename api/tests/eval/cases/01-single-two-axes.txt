@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Chest pain.
+Technique: Axial CT of the chest.
+Findings:
+The heart is normal in size.
+A 9 x 7 mm solid nodule is seen in the right upper lobe.
+The visualised upper abdomen is unremarkable.

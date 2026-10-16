@@ -1,0 +1,6 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+Subcentimetre opacity in the left upper lobe; a 5 mm nodule cannot be excluded.
+The heart is normal in size.

@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Cough.
+Technique: Axial CT of the chest.
+Findings:
+There is no mediastinal lymphadenopathy.
+A 6 mm solid nodule is present in the left lower lobe.
+The heart is normal in size.

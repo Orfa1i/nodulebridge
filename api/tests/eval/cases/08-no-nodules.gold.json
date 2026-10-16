@@ -1,0 +1,25 @@
+{
+  "tags": [
+    "negation"
+  ],
+  "nodules": [
+    {
+      "assertion": "negated",
+      "dimensions_mm": [],
+      "attenuation": "unknown",
+      "side": null,
+      "lobe": null,
+      "count_context": null,
+      "solid_component_mm": null,
+      "benign_features": [],
+      "has_stability_text": false
+    }
+  ],
+  "patient": {
+    "age_years": null,
+    "known_cancer": null,
+    "immunocompromised": null,
+    "smoking_history": null,
+    "is_screening_exam": null
+  }
+}

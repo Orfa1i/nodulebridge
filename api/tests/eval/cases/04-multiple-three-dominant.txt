@@ -1,0 +1,9 @@
+Example report written for evaluation. Not a real patient.
+Indication: Shortness of breath.
+Technique: Axial CT of the chest.
+Findings:
+There are three pulmonary nodules.
+The dominant nodule measures 14 x 11 mm and is solid, in the left upper lobe.
+A 4 mm solid nodule is seen in the right lower lobe.
+A 3 mm solid nodule is seen in the right upper lobe.
+There is no mediastinal lymphadenopathy.

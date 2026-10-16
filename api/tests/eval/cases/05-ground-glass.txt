@@ -1,0 +1,7 @@
+Example report written for evaluation. Not a real patient.
+Indication: Persistent cough.
+Technique: Axial CT of the chest.
+Findings:
+The heart is normal in size.
+A 10 mm ground-glass nodule is seen in the right upper lobe.
+The visualised upper abdomen is unremarkable.
