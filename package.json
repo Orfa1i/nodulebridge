@@ -4,9 +4,11 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "test": "pnpm --dir web test && uv run --project api pytest api/tests",
-    "lint": "pnpm --dir web lint && uv run --project api ruff check api",
-    "schemas": "node scripts/gen-schemas.mjs"
+    "test": "pnpm --dir web test && uv run --project api pytest api/tests && uv run --project pipeline pytest pipeline",
+    "lint": "pnpm --dir web lint && uv run --project api ruff check api && uv run --project pipeline ruff check pipeline",
+    "schemas": "node scripts/gen-schemas.mjs",
+    "build:cases": "uv run --project pipeline python -m pipeline.build_all",
+    "fetch:cases": "uv run --project pipeline python -m pipeline.fetch_series"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0"

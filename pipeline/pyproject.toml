@@ -20,7 +20,10 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest"]
+dev = [
+    "pytest",
+    "ruff>=0.17.1",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

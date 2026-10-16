@@ -19,3 +19,5 @@ test-results/
 !/data/cases/.gitkeep
 next-env.d.ts
 web/AGENTS.md
+!/data/cases/*/report.md
+!/data/cases/*/report.pdf
