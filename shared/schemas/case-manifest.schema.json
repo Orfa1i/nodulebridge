@@ -2,8 +2,118 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nodulebridge.asklevia/schemas/case-manifest.schema.json",
   "title": "CaseManifest",
-  "description": "Placeholder. TODO: fill in Phase 2.",
+  "description": "One prepared demo case: files, geometry and measured nodule facts. Every number shown in the UI comes from here. Indices are 0-based. Slices are ordered by ImagePositionPatient z ascending, which is the order stored in ct.nii.gz (third array axis) and the order the viewer uses. Patient coordinates are DICOM LPS in millimetres.",
   "type": "object",
-  "properties": {},
-  "additionalProperties": true
+  "required": [
+    "case_id",
+    "lidc_patient_id",
+    "series_instance_uid",
+    "files",
+    "geometry",
+    "nodules",
+    "label",
+    "attribution"
+  ],
+  "properties": {
+    "case_id": { "type": "string", "pattern": "^case-[a-z0-9-]+$" },
+    "lidc_patient_id": { "type": "string", "pattern": "^LIDC-IDRI-[0-9]{4}$" },
+    "study_instance_uid": { "type": "string" },
+    "series_instance_uid": { "type": "string" },
+    "label": { "type": "string", "description": "Always an example label, for example 'Example patient A'." },
+    "attribution": { "type": "string" },
+    "files": {
+      "type": "object",
+      "required": ["ct", "mask", "report_pdf", "report_md"],
+      "properties": {
+        "ct": { "type": "string" },
+        "mask": { "type": "string" },
+        "report_pdf": { "type": "string" },
+        "report_md": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "geometry": {
+      "type": "object",
+      "required": ["spacing", "origin", "direction", "dims", "coordinate_system"],
+      "properties": {
+        "spacing": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "Voxel size in mm for array axes (row, column, slice)." },
+        "origin": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3, "description": "LPS position in mm of voxel (0,0,0) after cropping." },
+        "direction": { "type": "array", "items": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 }, "minItems": 3, "maxItems": 3, "description": "3x3 matrix, columns are the LPS unit vectors of the (row, column, slice) axes." },
+        "dims": { "type": "array", "items": { "type": "integer", "minimum": 1 }, "minItems": 3, "maxItems": 3 },
+        "coordinate_system": { "const": "LPS" },
+        "slice_count": { "type": "integer", "minimum": 1 },
+        "crop": { "type": "object", "description": "Box cut from the original series, same for CT and mask." },
+        "hu_range": { "type": "array", "items": { "type": "integer" }, "minItems": 2, "maxItems": 2 }
+      },
+      "additionalProperties": true
+    },
+    "nodules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "slice_index",
+          "slice_sop_uid",
+          "centroid_voxel",
+          "centroid_mm",
+          "long_axis_mm",
+          "short_axis_mm",
+          "mean_diameter_mm",
+          "fleischner_size_mm",
+          "volume_mm3",
+          "attenuation",
+          "lobe_estimate",
+          "radiologist_count"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "slice_index": { "type": "integer", "minimum": 0, "description": "0-based index of the axial slice with the largest mask area, in the cropped volume." },
+          "slice_sop_uid": { "type": "string" },
+          "centroid_voxel": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+          "centroid_mm": { "type": "array", "items": { "type": "number" }, "minItems": 3, "maxItems": 3 },
+          "long_axis_mm": { "type": "number", "exclusiveMinimum": 0 },
+          "short_axis_mm": { "type": "number", "exclusiveMinimum": 0 },
+          "mean_diameter_mm": { "type": "number", "exclusiveMinimum": 0, "description": "Mean of long and short axis, 0.1 mm." },
+          "fleischner_size_mm": { "type": "integer", "minimum": 1, "description": "mean_diameter_mm rounded to the nearest whole mm. The size used for the guideline." },
+          "volume_mm3": { "type": "number", "exclusiveMinimum": 0 },
+          "attenuation": { "enum": ["solid", "part-solid", "ground-glass"] },
+          "attenuation_method": { "type": "string" },
+          "attenuation_uncertain": { "type": "boolean" },
+          "texture_ratings": { "type": "array", "items": { "type": "integer", "minimum": 1, "maximum": 5 }, "description": "Research annotations from the LIDC radiologists. Not a diagnosis." },
+          "lobe_estimate": {
+            "type": "object",
+            "required": ["label", "method"],
+            "properties": {
+              "side": { "enum": ["left", "right"] },
+              "region": { "enum": ["upper", "mid", "lower"] },
+              "label": { "type": "string" },
+              "height_fraction": { "type": "number" },
+              "lobe_certain": { "type": "boolean" },
+              "method": { "const": "geometric estimate" },
+              "todo_verify": { "type": "string" }
+            }
+          },
+          "radiologist_count": { "type": "integer", "minimum": 1 }
+        },
+        "additionalProperties": false
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "description": "Fictional age and history written for this demo. No risk level is stated.",
+      "properties": {
+        "label": { "type": "string" },
+        "age_years": { "type": "integer", "minimum": 0 },
+        "sex": { "enum": ["female", "male"] },
+        "indication": { "type": "string" },
+        "history": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "export": { "type": "object" },
+    "selection": { "type": "object" },
+    "todo_verify": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
 }

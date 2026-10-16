@@ -3,10 +3,161 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from enum import Enum
+from typing import Any, Literal
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    PositiveFloat,
+    RootModel,
+    conint,
+    constr,
+)
+
+
+class Files(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    ct: str
+    mask: str
+    report_pdf: str
+    report_md: str
+
+
+class DirectionItem(RootModel[list[float]]):
+    root: list[float]
+
+
+class Dim(RootModel[conint(ge=1)]):
+    root: conint(ge=1)
+
+
+class Geometry(BaseModel):
+    model_config = ConfigDict(
+        extra='allow',
+    )
+    spacing: list[float] = Field(
+        ...,
+        description='Voxel size in mm for array axes (row, column, slice).',
+        max_length=3,
+        min_length=3,
+    )
+    origin: list[float] = Field(
+        ...,
+        description='LPS position in mm of voxel (0,0,0) after cropping.',
+        max_length=3,
+        min_length=3,
+    )
+    direction: list[DirectionItem] = Field(
+        ...,
+        description='3x3 matrix, columns are the LPS unit vectors of the (row, column, slice) axes.',
+        max_length=3,
+        min_length=3,
+    )
+    dims: list[Dim] = Field(..., max_length=3, min_length=3)
+    coordinate_system: Literal['LPS']
+    slice_count: conint(ge=1) | None = None
+    crop: dict[str, Any] | None = Field(
+        None, description='Box cut from the original series, same for CT and mask.'
+    )
+    hu_range: list[int] | None = Field(None, max_length=2, min_length=2)
+
+
+class Attenuation(Enum):
+    solid = 'solid'
+    part_solid = 'part-solid'
+    ground_glass = 'ground-glass'
+
+
+class Side(Enum):
+    left = 'left'
+    right = 'right'
+
+
+class Region(Enum):
+    upper = 'upper'
+    mid = 'mid'
+    lower = 'lower'
+
+
+class LobeEstimate(BaseModel):
+    side: Side | None = None
+    region: Region | None = None
+    label: str
+    height_fraction: float | None = None
+    lobe_certain: bool | None = None
+    method: Literal['geometric estimate']
+    todo_verify: str | None = None
+
+
+class Nodule(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    id: str
+    slice_index: conint(ge=0) = Field(
+        ...,
+        description='0-based index of the axial slice with the largest mask area, in the cropped volume.',
+    )
+    slice_sop_uid: str
+    centroid_voxel: list[float] = Field(..., max_length=3, min_length=3)
+    centroid_mm: list[float] = Field(..., max_length=3, min_length=3)
+    long_axis_mm: PositiveFloat
+    short_axis_mm: PositiveFloat
+    mean_diameter_mm: PositiveFloat = Field(
+        ..., description='Mean of long and short axis, 0.1 mm.'
+    )
+    fleischner_size_mm: conint(ge=1) = Field(
+        ...,
+        description='mean_diameter_mm rounded to the nearest whole mm. The size used for the guideline.',
+    )
+    volume_mm3: PositiveFloat
+    attenuation: Attenuation
+    attenuation_method: str | None = None
+    attenuation_uncertain: bool | None = None
+    texture_ratings: list[conint(ge=1, le=5)] | None = Field(
+        None,
+        description='Research annotations from the LIDC radiologists. Not a diagnosis.',
+    )
+    lobe_estimate: LobeEstimate
+    radiologist_count: conint(ge=1)
+
+
+class Sex(Enum):
+    female = 'female'
+    male = 'male'
+
+
+class Scenario(BaseModel):
+    label: str | None = None
+    age_years: conint(ge=0) | None = None
+    sex: Sex | None = None
+    indication: str | None = None
+    history: list[str] | None = None
 
 
 class CaseManifest(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='forbid',
     )
+    case_id: constr(pattern=r'^case-[a-z0-9-]+$')
+    lidc_patient_id: constr(pattern=r'^LIDC-IDRI-[0-9]{4}$')
+    study_instance_uid: str | None = None
+    series_instance_uid: str
+    label: str = Field(
+        ..., description="Always an example label, for example 'Example patient A'."
+    )
+    attribution: str
+    files: Files
+    geometry: Geometry
+    nodules: list[Nodule] = Field(..., min_length=1)
+    scenario: Scenario | None = Field(
+        None,
+        description='Fictional age and history written for this demo. No risk level is stated.',
+    )
+    export: dict[str, Any] | None = None
+    selection: dict[str, Any] | None = None
+    todo_verify: list[str] | None = None
