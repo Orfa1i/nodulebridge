@@ -1,0 +1,11 @@
+{
+  "locale": "ar",
+  "text": "يظهر في تقريرك عقيدة صلبة بحجم 7 مليمترات في الرئة اليمنى. تقترح الإرشادات إعادة الأشعة المقطعية. يرجى مراجعة طبيبك. لا تزال هناك إجابات مطلوبة.",
+  "text_sha256": "3723fa9170905e8654a7357284f0b935f110ccf2a96f07eca48e8ac1f2fe26ca",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "duration_s": 13.28,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}

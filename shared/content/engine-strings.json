@@ -1,0 +1,85 @@
+{
+  "_note": "Every reason, question and note the Fleischner engine can return, with its Arabic translation (drafted offline by api/scripts/draft_arabic.py, then reviewed by a person). A test fails if the engine can return a string that is not listed here, so no untranslated sentence can reach the Arabic panel.",
+  "strings": {
+    "The report does not describe a pulmonary nodule.": {
+      "ar": "لا يصف التقرير عقيدة رئوية.",
+      "status": "draft"
+    },
+    "The report is not certain that this is a nodule (a possible nodule).": {
+      "ar": "التقرير غير متأكد ما إذا كانت هذه عقيدة (عقيدة محتملة).",
+      "status": "draft"
+    },
+    "The report describes features usually seen in benign nodules. Confirm with your doctor whether follow-up is needed.": {
+      "ar": "يصف التقرير سمات توجد عادة في العقيدات الحميدة. تأكد مع طبيبك مما إذا كانت المتابعة مطلوبة.",
+      "status": "draft"
+    },
+    "The guideline is for adults aged 35 or older.": {
+      "ar": "المنهج التوجيهي مخصص للبالغين الذين تبلغ أعمارهم 35 عاما أو أكثر.",
+      "status": "draft"
+    },
+    "The guideline does not cover people with a known cancer.": {
+      "ar": "لا يغطي المنهج التوجيهي الأشخاص المصابين بسرطان معروف.",
+      "status": "draft"
+    },
+    "The guideline does not cover people whose immune system is weakened.": {
+      "ar": "لا يغطي المنهج التوجيهي الأشخاص الذين يعانون من ضعف الجهاز المناعي.",
+      "status": "draft"
+    },
+    "The guideline does not cover lung cancer screening scans. A different guideline applies.": {
+      "ar": "لا يغطي المنهج التوجيهي فحوصات الكشف المبكر عن سرطان الرئة. ينطبق منهج توجيهي مختلف.",
+      "status": "draft"
+    },
+    "The report compares with an earlier scan. Ask your doctor whether more scans are needed.": {
+      "ar": "يقارن التقرير الفحص بفحص سابق. اسأل طبيبك عما إذا كانت هناك حاجة لمزيد من الفحوصات.",
+      "status": "draft"
+    },
+    "The report does not give a size for the nodule.": {
+      "ar": "التقرير لا يذكر حجم العقيدة.",
+      "status": "draft"
+    },
+    "Are you 35 years or older?": {
+      "ar": "هل عمرك 35 عاما أو أكثر؟",
+      "status": "draft"
+    },
+    "Do you have a known cancer?": {
+      "ar": "هل لديك سرطان معروف؟",
+      "status": "draft"
+    },
+    "Is your immune system weakened?": {
+      "ar": "هل جهازك المناعي ضعيف؟",
+      "status": "draft"
+    },
+    "Was this scan done for lung cancer screening?": {
+      "ar": "هل تم إجراء هذا الفحص للكشف المبكر عن سرطان الرئة؟",
+      "status": "draft"
+    },
+    "Ask your doctor whether this finding needs follow-up.": {
+      "ar": "اسأل طبيبك عما إذا كانت هذه النتيجة تتطلب متابعة.",
+      "status": "draft"
+    },
+    "Ask your doctor for the size of the nodule.": {
+      "ar": "اسأل طبيبك عن حجم العقيدة.",
+      "status": "draft"
+    },
+    "Ask your doctor whether the scan shows other nodules.": {
+      "ar": "اسأل طبيبك عما إذا كانت الأشعة تظهر عقيدات أخرى.",
+      "status": "draft"
+    },
+    "The report does not say whether the nodule is solid.": {
+      "ar": "لا يوضح التقرير ما إذا كانت العقيدة صلبة.",
+      "status": "draft"
+    },
+    "The report does not say whether there are other nodules.": {
+      "ar": "لا يوضح التقرير ما إذا كانت هناك عقيدات أخرى.",
+      "status": "draft"
+    },
+    "The report describes more than one nodule. The guideline row was chosen by the largest one.": {
+      "ar": "يصف التقرير أكثر من عقيدة. تم اختيار صف الإرشادات بناء على العقيدة الأكبر.",
+      "status": "draft"
+    },
+    "Solid component of 6 mm or more is a concerning feature; discuss promptly with your doctor.": {
+      "ar": "الجزء الصلب البالغ 6 مم أو أكثر يُعد ميزة مقلقة؛ ناقش ذلك فوراً مع طبيبك.",
+      "status": "draft"
+    }
+  }
+}

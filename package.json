@@ -9,7 +9,10 @@
     "schemas": "node scripts/gen-schemas.mjs",
     "build:cases": "uv run --project pipeline python -m pipeline.build_all",
     "fetch:cases": "uv run --project pipeline python -m pipeline.fetch_series",
-    "sync:cases": "node scripts/sync-cases.mjs"
+    "sync:cases": "node scripts/sync-cases.mjs",
+    "check-content": "uv run --project api python -m api.scripts.check_content",
+    "voices": "uv run --project api python -m api.scripts.make_voices",
+    "draft-arabic": "uv run --project api python -m api.scripts.draft_arabic"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0"

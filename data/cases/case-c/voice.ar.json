@@ -1,0 +1,11 @@
+{
+  "locale": "ar",
+  "text": "يظهر في تقريرك عقيدة ضبابية بحجم 16 مليمترات في الرئة اليمنى. تقترح الإرشادات إعادة الأشعة المقطعية، لمعرفة ما إذا كانت لا تزال موجودة. يرجى مراجعة طبيبك.",
+  "text_sha256": "2eaacfd0cd50de8a01baee65ee201954bb8d0d0a7dc8519e615d554583a43439",
+  "provider": "gemini",
+  "model": "gemini-3.1-flash-tts-preview",
+  "voice": "Kore",
+  "duration_s": 16.0,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}

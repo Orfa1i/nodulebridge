@@ -1,0 +1,225 @@
+{
+  "locale": "en",
+  "_note": "Draft English patient wording. Placeholders: {size_mm} {location} {type} {type_short} {side} {lobe} {window_start} {window_end} {action_list} {questions} {reasons} and {pdq:ID} (a verbatim NCI PDQ excerpt from pdq-snippets.json). Short sentences, finding first, next step second. No health claim is written here: claims come only from PDQ excerpts. status stays draft until a person on the team reviews it. voice_append is the short form spoken after a rule's voice when the answer is conditional.",
+  "headings": {
+    "found": "What the scan showed",
+    "reassure": "What this usually means",
+    "why": "Why follow-up matters",
+    "todo": "What to do next",
+    "when": "By when",
+    "who": "Who to contact"
+  },
+  "templates": {
+    "FL17-S1-LT6": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "No routine scan date is needed. An optional CT, if your doctor advises it, would be around {window_start}.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows a small {type_short} nodule, {size_mm} millimetres, in the {location}. For a nodule this small, the guideline does not suggest routine follow-up scans. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-S1-6TO8": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}. A second CT may follow later.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows a {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in six to twelve months. Please show this page to your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-S1-GT8": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "A repeat CT, if chosen, is due around {window_start}. A PET-CT or a biopsy has no fixed date in the guideline.",
+      "who": "Show this page to your doctor soon. Ask which option is right for you.",
+      "voice": "Your report shows a {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT in about three months, a PET-CT, or a biopsy. Please talk to your doctor soon.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-SM-LT6": {
+      "found": "The report describes more than one nodule. The largest is {size_mm} mm, {type}, in the {location}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "No routine scan date is needed. An optional CT, if your doctor advises it, would be around {window_start}.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows more than one small nodule. The largest is {size_mm} millimetres, in the {location}. The guideline does not suggest routine follow-up scans. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-SM-6TO8": {
+      "found": "The report describes more than one nodule. The largest is {size_mm} mm, {type}, in the {location}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows more than one nodule. The largest is {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in three to six months. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-SM-GT8": {
+      "found": "The report describes more than one nodule. The largest is {size_mm} mm, {type}, in the {location}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor soon. Ask which option is right for you.",
+      "voice": "Your report shows more than one nodule. The largest is {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in three to six months. Please talk to your doctor soon.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-GGN1-LT6": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "No scan date is needed under the guideline.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows a small {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline does not suggest routine follow-up scans for a nodule this small. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-GGN1-GE6": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows a {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in six to twelve months, to see if it is still there. Please show this page to your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-PS1-LT6": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "No scan date is needed under the guideline.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows a small {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline does not suggest routine follow-up scans for a nodule this small. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-PS1-GE6": {
+      "found": "The report describes a nodule, a small spot, in the {location}. It measures {size_mm} mm and is {type}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor soon. Ask which option is right for you.",
+      "voice": "Your report shows a {type_short} nodule, {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in three to six months. Please talk to your doctor soon.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-SSM-LT6": {
+      "found": "The report describes more than one hazy or part-solid nodule. The largest is {size_mm} mm, in the {location}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor. Ask which option is right for you.",
+      "voice": "Your report shows more than one small nodule. The largest is {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in three to six months. Please ask your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "FL17-SSM-GE6": {
+      "found": "The report describes more than one hazy or part-solid nodule. The largest is {size_mm} mm, in the {location}.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "This follows the Fleischner Society 2017 guideline for nodules found by chance on a CT scan. NCI says: {pdq:more_tests}",
+      "todo": "Here is what the guideline suggests. {action_list} Your doctor will decide what is right for you.",
+      "when": "The first CT is due between {window_start} and {window_end}.",
+      "who": "Show this page to your doctor soon. Ask which option is right for you.",
+      "voice": "Your report shows more than one nodule. The largest is {size_mm} millimetres, in the {location}. The guideline suggests a repeat CT scan in three to six months. Please talk to your doctor soon.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "NOT_APPLICABLE": {
+      "found": "The guideline we use cannot be applied to this report.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "{reasons}",
+      "todo": "The guideline cannot tell you the next step. Please ask your doctor about follow-up.",
+      "when": "Your doctor can tell you if and when a scan is needed.",
+      "who": "Show this page to your doctor. Ask about follow-up.",
+      "voice": "The guideline we use cannot be applied to this report. We cannot tell you the next step. Please show this page to your doctor and ask about follow-up.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    },
+    "CONDITIONAL": {
+      "found": "The report describes a finding, but the next step depends on answers we do not have.",
+      "reassure": "NCI says: {pdq:abnormal_no_cancer}",
+      "why": "{reasons}",
+      "todo": "Please check these with your doctor: {questions}",
+      "when": "Your doctor can confirm the timing once these are answered.",
+      "who": "Show this page to your doctor. Ask these questions.",
+      "voice": "Some answers are still needed. Please check them with your doctor.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      },
+      "voice_append": "Some answers are still needed."
+    },
+    "NO_MATCH": {
+      "found": "We could not match the report finding to an outlined nodule in the scan.",
+      "reassure": "",
+      "why": "",
+      "todo": "",
+      "when": "",
+      "who": "",
+      "voice": "We could not match the report finding to the scan.",
+      "review": {
+        "status": "draft",
+        "reviewer": null,
+        "date": null
+      }
+    }
+  }
+}

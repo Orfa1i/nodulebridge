@@ -1,0 +1,200 @@
+{
+  "_note": "Controlled translations used by the renderer and as the forced glossary when Arabic drafts are generated. TODO-VERIFY: every Arabic term stays 'draft' until the clinician reviewer signs it off; check-content fails while a term used by Cases A to C is draft. Measurements and dates use Western digits in both languages (decision recorded in explain.py).",
+  "terms": {
+    "location.right.upper": {
+      "en": "right upper lobe",
+      "ar": "الفص العلوي من الرئة اليمنى",
+      "status": "draft"
+    },
+    "location.right.middle": {
+      "en": "right middle lobe",
+      "ar": "الفص الأوسط من الرئة اليمنى",
+      "status": "draft"
+    },
+    "location.right.lower": {
+      "en": "right lower lobe",
+      "ar": "الفص السفلي من الرئة اليمنى",
+      "status": "draft"
+    },
+    "location.left.upper": {
+      "en": "left upper lobe",
+      "ar": "الفص العلوي من الرئة اليسرى",
+      "status": "draft"
+    },
+    "location.left.lower": {
+      "en": "left lower lobe",
+      "ar": "الفص السفلي من الرئة اليسرى",
+      "status": "draft"
+    },
+    "location.left.lingula": {
+      "en": "left lingula",
+      "ar": "الفص اللساني من الرئة اليسرى",
+      "status": "draft"
+    },
+    "location.right.lung": {
+      "en": "right lung",
+      "ar": "الرئة اليمنى",
+      "status": "draft"
+    },
+    "location.left.lung": {
+      "en": "left lung",
+      "ar": "الرئة اليسرى",
+      "status": "draft"
+    },
+    "location.unknown": {
+      "en": "lungs",
+      "ar": "الرئتين",
+      "status": "draft"
+    },
+    "type.solid": {
+      "en": "solid (dense)",
+      "ar": "صلبة (كثيفة)",
+      "status": "draft"
+    },
+    "type.ground_glass": {
+      "en": "ground-glass (hazy)",
+      "ar": "زجاجية (ضبابية)",
+      "status": "draft"
+    },
+    "type.part_solid": {
+      "en": "part-solid (partly hazy, partly dense)",
+      "ar": "جزئية الصلابة (جزء ضبابي وجزء كثيف)",
+      "status": "draft"
+    },
+    "type.calcified": {
+      "en": "calcified",
+      "ar": "متكلسة",
+      "status": "draft"
+    },
+    "type.unknown": {
+      "en": "of a type the report does not state",
+      "ar": "من نوع لم يذكره التقرير",
+      "status": "draft"
+    },
+    "type_short.solid": {
+      "en": "solid",
+      "ar": "صلبة",
+      "status": "draft"
+    },
+    "type_short.ground_glass": {
+      "en": "hazy",
+      "ar": "ضبابية",
+      "status": "draft"
+    },
+    "type_short.part_solid": {
+      "en": "part-solid",
+      "ar": "جزئية الصلابة",
+      "status": "draft"
+    },
+    "type_short.calcified": {
+      "en": "calcified",
+      "ar": "متكلسة",
+      "status": "draft"
+    },
+    "type_short.unknown": {
+      "en": "",
+      "ar": "",
+      "status": "draft"
+    },
+    "action.ct": {
+      "en": "a CT scan",
+      "ar": "الأشعة المقطعية",
+      "status": "draft"
+    },
+    "action.pet_ct": {
+      "en": "a PET-CT",
+      "ar": "التصوير المقطعي بالإصدار البوزيتروني",
+      "status": "draft"
+    },
+    "action.biopsy": {
+      "en": "a biopsy",
+      "ar": "خزعة",
+      "status": "draft"
+    },
+    "action.none": {
+      "en": "No routine follow-up scan.",
+      "ar": "لا حاجة إلى فحص متابعة روتيني.",
+      "status": "draft"
+    },
+    "phrase.between": {
+      "en": "between {start} and {end}",
+      "ar": "بين {start} و{end}",
+      "status": "draft"
+    },
+    "phrase.around": {
+      "en": "around {start}",
+      "ar": "في حدود {start}",
+      "status": "draft"
+    },
+    "phrase.optional": {
+      "en": "optional",
+      "ar": "اختياري",
+      "status": "draft"
+    },
+    "phrase.then": {
+      "en": "Then",
+      "ar": "ثم",
+      "status": "draft"
+    },
+    "phrase.consider_one": {
+      "en": "Consider one of these:",
+      "ar": "يمكن التفكير في أحد هذه الخيارات:",
+      "status": "draft"
+    },
+    "phrase.or": {
+      "en": "or",
+      "ar": "أو",
+      "status": "draft"
+    },
+    "phrase.every_year": {
+      "en": "then every year until {until} years",
+      "ar": "ثم كل سنة حتى مرور {until} سنوات",
+      "status": "draft"
+    },
+    "phrase.every_years": {
+      "en": "then every {every} years until {until} years",
+      "ar": "ثم كل {every} سنوات حتى مرور {until} سنوات",
+      "status": "draft"
+    },
+    "phrase.every_months": {
+      "en": "then every {every} months until {until} months",
+      "ar": "ثم كل {every} أشهر حتى مرور {until} شهرا",
+      "status": "draft"
+    },
+    "phrase.risk_low": {
+      "en": "If your doctor considers your risk low",
+      "ar": "إذا اعتبر طبيبك أن خطرك منخفض",
+      "status": "draft"
+    },
+    "phrase.risk_high": {
+      "en": "If your doctor considers your risk higher",
+      "ar": "إذا اعتبر طبيبك أن خطرك أعلى",
+      "status": "draft"
+    },
+    "cond.if the area is still there": {
+      "en": "if the area is still there",
+      "ar": "إذا بقيت المنطقة موجودة",
+      "status": "draft"
+    },
+    "cond.if unchanged and the solid part stays under 6 mm": {
+      "en": "if unchanged and the solid part stays under 6 mm",
+      "ar": "إذا لم تتغير وبقي الجزء الصلب أقل من 6 mm",
+      "status": "draft"
+    },
+    "cond.if stable": {
+      "en": "if stable",
+      "ar": "إذا بقيت مستقرة",
+      "status": "draft"
+    },
+    "ui.source": {
+      "en": "Source: NCI’s PDQ cancer information summary for patients on lung cancer screening states:",
+      "ar": "المصدر: ملخص معلومات السرطان للمرضى (PDQ) من المعهد الوطني للسرطان حول الفحص المبكر لسرطان الرئة يذكر:",
+      "status": "draft"
+    },
+    "phrase.no_date": {
+      "en": "No scan date is needed under the guideline.",
+      "ar": "لا حاجة إلى تحديد موعد فحص بحسب الإرشادات.",
+      "status": "draft"
+    }
+  }
+}

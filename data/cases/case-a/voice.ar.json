@@ -1,0 +1,11 @@
+{
+  "locale": "ar",
+  "text": "يظهر في تقريرك عقيدة صلبة بحجم 9 مليمترات في الفص العلوي من الرئة اليمنى. تقترح الإرشادات إعادة الأشعة المقطعية أو التصوير المقطعي بالإصدار البوزيتروني أو خزعة. تحدث إلى طبيبك. لا تزال هناك إجابات مطلوبة.",
+  "text_sha256": "af918e3c17f6c1acbaee24e871993dd4414d5cc16c29cd235d6cfd1a04b909fe",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "duration_s": 17.88,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}

@@ -1,0 +1,11 @@
+{
+  "locale": "en",
+  "text": "Your report shows a solid nodule, 9 millimetres, in the right upper lobe. The guideline suggests a repeat CT in about three months, a PET-CT, or a biopsy. Please talk to your doctor soon. Some answers are still needed.",
+  "text_sha256": "e5b08b048392b2aeba9b64d8b7db3c10a12906a4bb701df57c079e50fb0ddf0f",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "duration_s": 16.16,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}

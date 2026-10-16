@@ -1,0 +1,11 @@
+{
+  "locale": "en",
+  "text": "Your report shows a solid nodule, 7 millimetres, in the right lung. The guideline suggests a repeat CT scan in six to twelve months. Please show this page to your doctor. Some answers are still needed.",
+  "text_sha256": "afc1614f189c97f703f3b0815c7084e217e8b67bbbf064113b834a2d03f65188",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "duration_s": 13.0,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}

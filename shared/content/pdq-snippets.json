@@ -1,0 +1,29 @@
+{
+  "_note": "Verbatim excerpts from NCI PDQ patient summaries. NOT written by the build agent: extracted programmatically from the page HTML (paragraph text, whitespace normalised) on the retrieved_on date. TODO-VERIFY: the team confirms each excerpt against the live page and NCI's permission rules (an excerpt may be quoted; it must not be presented as the full PDQ summary). GAP: this summary covers lung cancer SCREENING, not incidental lung nodules. No passage saying that most incidental lung nodules are not cancer was found, so the product makes no such claim. TODO-VERIFY: the team pastes a suitable PDQ passage if one exists.",
+  "snippets": {
+    "abnormal_no_cancer": {
+      "text": "Screening test results may appear to be abnormal even though no cancer is present.",
+      "topic": "lung cancer screening",
+      "url": "https://www.cancer.gov/types/lung/patient/lung-screening-pdq",
+      "retrieved_on": "2026-10-16",
+      "source_paragraph_starts": "Screening test results may appear to be abnormal even though no cancer is present. A false-positive test result",
+      "ar": {
+        "text": "قد تبدو نتائج اختبار الفحص غير طبيعية حتى لو لم يكن هناك سرطان.",
+        "status": "draft"
+      },
+      "status": "draft"
+    },
+    "more_tests": {
+      "text": "If a screening test result is abnormal, you may need to have more tests done to find out if you have cancer.",
+      "topic": "lung cancer screening",
+      "url": "https://www.cancer.gov/types/lung/patient/lung-screening-pdq",
+      "retrieved_on": "2026-10-16",
+      "source_paragraph_starts": "If a screening test result is abnormal, you may need to have more tests done to find out if you have cancer. These are called diagnostic tests.",
+      "ar": {
+        "text": "إذا كانت نتيجة اختبار الفحص غير طبيعية، فقد تحتاج إلى إجراء المزيد من الاختبارات لمعرفة ما إذا كنت مصاباً بالسرطان.",
+        "status": "draft"
+      },
+      "status": "draft"
+    }
+  }
+}

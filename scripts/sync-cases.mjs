@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const src = join(root, "data", "cases");
 const dst = join(root, "web", "public", "cases");
-const files = ["manifest.json", "ct.nii.gz", "mask.nii.gz", "report.md", "report.pdf"];
+const files = ["manifest.json", "ct.nii.gz", "mask.nii.gz", "report.md", "report.pdf", "voice.en.mp3", "voice.en.json", "voice.ar.mp3", "voice.ar.json"];
 
 mkdirSync(dst, { recursive: true });
 const cases = readdirSync(src, { withFileTypes: true }).filter((d) => d.isDirectory() && d.name.startsWith("case-"));

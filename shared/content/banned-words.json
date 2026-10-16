@@ -1,0 +1,6 @@
+{
+  "_note": "Patient-facing text must not contain any of these (case-insensitive substrings), in either language. PDQ excerpts are checked too. TODO-VERIFY: the bilingual clinician extends the Arabic list.",
+  "en": ["diagnos", "cancer-free", "cancer free", "guarantee", "revolutionary", "magic", "life-saving", "miracle", "!"],
+  "ar": ["تشخيص", "تشخّص", "خالٍ من السرطان", "خالي من السرطان", "ضمان", "نضمن", "أضمن", "معجزة", "!", "❗"],
+  "emoji": true
+}

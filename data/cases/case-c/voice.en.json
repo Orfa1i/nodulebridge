@@ -1,0 +1,11 @@
+{
+  "locale": "en",
+  "text": "Your report shows a hazy nodule, 16 millimetres, in the right lung. The guideline suggests a repeat CT scan in six to twelve months, to see if it is still there. Please show this page to your doctor.",
+  "text_sha256": "8d332cebbbba233f867a1892b0973685f179f2566c50f0b274b764144d1e32b6",
+  "provider": "gemini",
+  "model": "gemini-3.8-flash-tts",
+  "voice": "Kore",
+  "duration_s": 14.04,
+  "review_status": "draft",
+  "generated_by": "AI voice (Gemini TTS)"
+}
