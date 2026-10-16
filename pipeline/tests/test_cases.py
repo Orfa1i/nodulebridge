@@ -22,7 +22,9 @@ SCHEMA = json.loads((ROOT / "shared" / "schemas" / "case-manifest.schema.json").
 
 
 def test_cases_are_built():
-    assert len(CASES) == 3, "run python -m pipeline.build_all"
+    selected = json.loads((ROOT / "pipeline" / "selection.json").read_text())
+    assert len(CASES) == len(selected) >= 18, "run python -m pipeline.build_all"
+    assert {p.name for p in CASES} == {f"case-{k.lower()}" for k in selected}
 
 
 def load(case_dir: Path):

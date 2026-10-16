@@ -1,0 +1,472 @@
+{
+  "sentences": [
+    {
+      "id": "s001",
+      "text": "Chest CT report",
+      "start": 0,
+      "end": 15,
+      "source_start": 0,
+      "source_end": 15,
+      "line": 1,
+      "page": 1
+    },
+    {
+      "id": "s002",
+      "text": "Example report written for this demo.",
+      "start": 16,
+      "end": 53,
+      "source_start": 16,
+      "source_end": 53,
+      "line": 2,
+      "page": 1
+    },
+    {
+      "id": "s003",
+      "text": "Not a real patient.",
+      "start": 54,
+      "end": 73,
+      "source_start": 54,
+      "source_end": 73,
+      "line": 2,
+      "page": 1
+    },
+    {
+      "id": "s004",
+      "text": "Fictional age and history written for this demo.",
+      "start": 74,
+      "end": 122,
+      "source_start": 74,
+      "source_end": 122,
+      "line": 3,
+      "page": 1
+    },
+    {
+      "id": "s005",
+      "text": "Example patient E · LIDC-IDRI-0200",
+      "start": 123,
+      "end": 157,
+      "source_start": 123,
+      "source_end": 157,
+      "line": 4,
+      "page": 1
+    },
+    {
+      "id": "s006",
+      "text": "Clinical information",
+      "start": 158,
+      "end": 178,
+      "source_start": 158,
+      "source_end": 178,
+      "line": 5,
+      "page": 1
+    },
+    {
+      "id": "s007",
+      "text": "67-year-old man.",
+      "start": 179,
+      "end": 195,
+      "source_start": 179,
+      "source_end": 195,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s008",
+      "text": "CT chest.",
+      "start": 196,
+      "end": 205,
+      "source_start": 196,
+      "source_end": 205,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s009",
+      "text": "Chest tightness.",
+      "start": 206,
+      "end": 222,
+      "source_start": 206,
+      "source_end": 222,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s010",
+      "text": "Current smoker, 30 pack-years.",
+      "start": 223,
+      "end": 253,
+      "source_start": 223,
+      "source_end": 253,
+      "line": 7,
+      "page": 1
+    },
+    {
+      "id": "s011",
+      "text": "No known cancer.",
+      "start": 254,
+      "end": 270,
+      "source_start": 254,
+      "source_end": 270,
+      "line": 7,
+      "page": 1
+    },
+    {
+      "id": "s012",
+      "text": "Technique",
+      "start": 271,
+      "end": 280,
+      "source_start": 271,
+      "source_end": 280,
+      "line": 8,
+      "page": 1
+    },
+    {
+      "id": "s013",
+      "text": "Axial CT of the chest with intravenous contrast, 2.5 mm slices.",
+      "start": 281,
+      "end": 344,
+      "source_start": 281,
+      "source_end": 344,
+      "line": 9,
+      "page": 1
+    },
+    {
+      "id": "s014",
+      "text": "No prior imaging is available for comparison.",
+      "start": 345,
+      "end": 390,
+      "source_start": 345,
+      "source_end": 390,
+      "line": 10,
+      "page": 1
+    },
+    {
+      "id": "s015",
+      "text": "Findings",
+      "start": 391,
+      "end": 399,
+      "source_start": 391,
+      "source_end": 399,
+      "line": 11,
+      "page": 1
+    },
+    {
+      "id": "s016",
+      "text": "Chest wall and bones",
+      "start": 400,
+      "end": 420,
+      "source_start": 400,
+      "source_end": 420,
+      "line": 12,
+      "page": 1
+    },
+    {
+      "id": "s017",
+      "text": "No acute rib fracture is seen.",
+      "start": 421,
+      "end": 451,
+      "source_start": 421,
+      "source_end": 451,
+      "line": 13,
+      "page": 1
+    },
+    {
+      "id": "s018",
+      "text": "The sternum and the visualised thoracic spine are intact.",
+      "start": 452,
+      "end": 509,
+      "source_start": 452,
+      "source_end": 509,
+      "line": 14,
+      "page": 1
+    },
+    {
+      "id": "s019",
+      "text": "The soft tissues of the chest wall are unremarkable.",
+      "start": 510,
+      "end": 562,
+      "source_start": 510,
+      "source_end": 562,
+      "line": 15,
+      "page": 1
+    },
+    {
+      "id": "s020",
+      "text": "Heart and vessels",
+      "start": 563,
+      "end": 580,
+      "source_start": 563,
+      "source_end": 580,
+      "line": 16,
+      "page": 1
+    },
+    {
+      "id": "s021",
+      "text": "The heart is normal in size.",
+      "start": 581,
+      "end": 609,
+      "source_start": 581,
+      "source_end": 609,
+      "line": 17,
+      "page": 1
+    },
+    {
+      "id": "s022",
+      "text": "There is no pericardial effusion.",
+      "start": 610,
+      "end": 643,
+      "source_start": 610,
+      "source_end": 643,
+      "line": 18,
+      "page": 1
+    },
+    {
+      "id": "s023",
+      "text": "The thoracic aorta is normal in calibre.",
+      "start": 644,
+      "end": 684,
+      "source_start": 644,
+      "source_end": 684,
+      "line": 19,
+      "page": 1
+    },
+    {
+      "id": "s024",
+      "text": "Mediastinum and hila",
+      "start": 685,
+      "end": 705,
+      "source_start": 685,
+      "source_end": 705,
+      "line": 20,
+      "page": 1
+    },
+    {
+      "id": "s025",
+      "text": "There is no mediastinal or hilar lymphadenopathy.",
+      "start": 706,
+      "end": 755,
+      "source_start": 706,
+      "source_end": 755,
+      "line": 21,
+      "page": 1
+    },
+    {
+      "id": "s026",
+      "text": "The oesophagus is unremarkable.",
+      "start": 756,
+      "end": 787,
+      "source_start": 756,
+      "source_end": 787,
+      "line": 22,
+      "page": 1
+    },
+    {
+      "id": "s027",
+      "text": "Airways",
+      "start": 788,
+      "end": 795,
+      "source_start": 788,
+      "source_end": 795,
+      "line": 23,
+      "page": 1
+    },
+    {
+      "id": "s028",
+      "text": "The trachea and main bronchi are patent.",
+      "start": 796,
+      "end": 836,
+      "source_start": 796,
+      "source_end": 836,
+      "line": 24,
+      "page": 1
+    },
+    {
+      "id": "s029",
+      "text": "Lungs and pleura",
+      "start": 837,
+      "end": 853,
+      "source_start": 837,
+      "source_end": 853,
+      "line": 25,
+      "page": 1
+    },
+    {
+      "id": "s030",
+      "text": "The lungs are well expanded.",
+      "start": 854,
+      "end": 882,
+      "source_start": 854,
+      "source_end": 882,
+      "line": 26,
+      "page": 1
+    },
+    {
+      "id": "s031",
+      "text": "There is no consolidation or pulmonary oedema.",
+      "start": 883,
+      "end": 929,
+      "source_start": 883,
+      "source_end": 929,
+      "line": 27,
+      "page": 1
+    },
+    {
+      "id": "s032",
+      "text": "There is no pneumothorax.",
+      "start": 930,
+      "end": 955,
+      "source_start": 930,
+      "source_end": 955,
+      "line": 28,
+      "page": 1
+    },
+    {
+      "id": "s033",
+      "text": "There is no pleural effusion.",
+      "start": 956,
+      "end": 985,
+      "source_start": 956,
+      "source_end": 985,
+      "line": 29,
+      "page": 1
+    },
+    {
+      "id": "s034",
+      "text": "However, a 5 mm solid nodule is seen in the right mid-lung zone.",
+      "start": 986,
+      "end": 1050,
+      "source_start": 986,
+      "source_end": 1050,
+      "line": 30,
+      "page": 1
+    },
+    {
+      "id": "s035",
+      "text": "No other pulmonary nodule is identified.",
+      "start": 1051,
+      "end": 1091,
+      "source_start": 1051,
+      "source_end": 1091,
+      "line": 31,
+      "page": 1
+    },
+    {
+      "id": "s036",
+      "text": "Upper abdomen",
+      "start": 1092,
+      "end": 1105,
+      "source_start": 1092,
+      "source_end": 1105,
+      "line": 32,
+      "page": 1
+    },
+    {
+      "id": "s037",
+      "text": "The visualised upper abdomen is unremarkable.",
+      "start": 1106,
+      "end": 1151,
+      "source_start": 1106,
+      "source_end": 1151,
+      "line": 33,
+      "page": 1
+    },
+    {
+      "id": "s038",
+      "text": "Impression",
+      "start": 1152,
+      "end": 1162,
+      "source_start": 1152,
+      "source_end": 1162,
+      "line": 34,
+      "page": 1
+    },
+    {
+      "id": "s039",
+      "text": "1. Pulmonary nodule, as described above.",
+      "start": 1163,
+      "end": 1203,
+      "source_start": 1163,
+      "source_end": 1203,
+      "line": 35,
+      "page": 2
+    }
+  ],
+  "result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Chest tightness",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 67,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "current",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "5 mm",
+        "dimensions_mm": [
+          5.0
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "5 mm solid nodule is seen in the right mid-lung zone"
+          }
+        ],
+        "mean_diameter_mm": 5.0,
+        "size_note": "Report gives one dimension; Fleischner uses the mean of long and short axis.",
+        "issues": [],
+        "confidence_reasons": [],
+        "confidence": "checked"
+      }
+    ],
+    "other_findings": []
+  },
+  "verification": {
+    "issues": [],
+    "quotes_checked": 1,
+    "quotes_dropped": 0,
+    "nodules_removed": 0
+  },
+  "timings": {
+    "intake_ms": 0,
+    "llm_ms": 0,
+    "verify_ms": 0,
+    "total_ms": 0
+  },
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "cached": true
+}

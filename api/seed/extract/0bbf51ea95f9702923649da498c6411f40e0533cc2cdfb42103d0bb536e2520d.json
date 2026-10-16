@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:37:41.166767+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT pulmonary angiogram",
+      "indication_text": "Sudden shortness of breath.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 44,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "never",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "7 mm",
+        "dimensions_mm": [
+          7
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "left",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s036",
+            "quote": "7 mm solid nodule is seen in the left mid-lung zone"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "NKfSardTvoLszw_c8P6ABQ",
+  "usage": {
+    "promptTokenCount": 1828,
+    "candidatesTokenCount": 414,
+    "totalTokenCount": 2242,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1828
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

@@ -4,7 +4,7 @@ Three pieces: the web app (Vercel), the API (any container host), and the prepar
 
 ## 1. Case files (object storage)
 
-The CT volumes are about 80 MB for Cases A to C and are not in git. Upload `web/public/cases/` (made by `pnpm sync:cases`) to a bucket (Cloudflare R2, S3 or Vercel Blob) so the layout is `<base>/case-a/ct.nii.gz`, `<base>/index.json`, and so on.
+The CT volumes are about 560 MB for the 18 studies (20 to 60 MB each) and are not in git. Upload `web/public/cases/` (made by `pnpm sync:cases`) to a bucket (Cloudflare R2, S3 or Vercel Blob) so the layout is `<base>/case-a/ct.nii.gz`, `<base>/index.json`, and so on.
 
 - CORS: allow `GET` and `HEAD` from the web origin (and your preview origins).
 - Cache: `Cache-Control: public, max-age=31536000, immutable` on `*.nii.gz`, `*.mp3` and `*.pdf`; a short cache on `manifest.json`, `index.json` and the voice `.json` files.

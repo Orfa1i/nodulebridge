@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_seed_files_are_real_extractions_without_patient_data():
     files = sorted(SEED_DIR.glob("*.json"))
-    assert len(files) == 3
+    assert len(files) >= 3  # the three original cases at least; every prepared case once it has been read
     for f in files:
         text = f.read_text(encoding="utf-8")
         assert '"llm_result"' in text and '"nodules"' in text
@@ -21,7 +21,8 @@ def test_seed_files_are_real_extractions_without_patient_data():
 
 def test_seeding_copies_missing_files_once_and_never_overwrites(tmp_path):
     settings = Settings(_env_file=None, data_dir=tmp_path)
-    assert seed_extract_cache(settings) == 3
+    n = len(list(SEED_DIR.glob("*.json")))
+    assert seed_extract_cache(settings) == n
     assert seed_extract_cache(settings) == 0
     target = tmp_path / "cache" / "extract"
     first = min(target.glob("*.json"))

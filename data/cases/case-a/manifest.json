@@ -121,7 +121,9 @@
     "history": [
       "Former smoker, quit 10 years ago.",
       "No known cancer."
-    ]
+    ],
+    "exam": "CT chest, emergency department",
+    "source": "Emergency department"
   },
   "export": {
     "format": "NIfTI-1 gzip (option 1)",

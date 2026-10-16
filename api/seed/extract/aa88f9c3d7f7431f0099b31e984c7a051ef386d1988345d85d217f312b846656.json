@@ -1,0 +1,77 @@
+{
+  "created": "2026-10-16T22:38:21.238813+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Staging of a known colon cancer.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 68,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": true,
+        "evidence_sentence_ids": [
+          "s009",
+          "s010"
+        ]
+      },
+      "immunocompromised": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "smoking_history": {
+        "value": null,
+        "evidence_sentence_ids": []
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "10 mm",
+        "dimensions_mm": [
+          10
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "upper",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "10 mm solid nodule is seen in the right upper lobe"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "XKfSavxwpPOewQ-0m4iIDA",
+  "usage": {
+    "promptTokenCount": 1802,
+    "candidatesTokenCount": 424,
+    "totalTokenCount": 2226,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1802
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

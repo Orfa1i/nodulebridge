@@ -168,6 +168,14 @@ export interface CaseManifest {
     age_years?: number;
     sex?: "female" | "male";
     indication?: string;
+    /**
+     * The examination as the (fictional) referral names it.
+     */
+    exam?: string;
+    /**
+     * The (fictional) service that sent the study, shown in the worklist.
+     */
+    source?: string;
     history?: string[];
     [k: string]: unknown;
   };

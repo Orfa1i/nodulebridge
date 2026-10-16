@@ -132,6 +132,8 @@ def build_case(letter: str, sel: dict, out_root: Path = CASES_DIR) -> dict:
             "sex": sc["sex"],
             "indication": sc["indication"],
             "history": sc["history"],
+            "exam": sc["exam"],
+            "source": sc["source"],
         },
         "export": export,
         "selection": {

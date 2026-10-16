@@ -1,0 +1,504 @@
+{
+  "sentences": [
+    {
+      "id": "s001",
+      "text": "Chest CT report",
+      "start": 0,
+      "end": 15,
+      "source_start": 0,
+      "source_end": 15,
+      "line": 1,
+      "page": 1
+    },
+    {
+      "id": "s002",
+      "text": "Example report written for this demo.",
+      "start": 16,
+      "end": 53,
+      "source_start": 16,
+      "source_end": 53,
+      "line": 2,
+      "page": 1
+    },
+    {
+      "id": "s003",
+      "text": "Not a real patient.",
+      "start": 54,
+      "end": 73,
+      "source_start": 54,
+      "source_end": 73,
+      "line": 2,
+      "page": 1
+    },
+    {
+      "id": "s004",
+      "text": "Fictional age and history written for this demo.",
+      "start": 74,
+      "end": 122,
+      "source_start": 74,
+      "source_end": 122,
+      "line": 3,
+      "page": 1
+    },
+    {
+      "id": "s005",
+      "text": "Example patient A · LIDC-IDRI-0213",
+      "start": 123,
+      "end": 157,
+      "source_start": 123,
+      "source_end": 157,
+      "line": 4,
+      "page": 1
+    },
+    {
+      "id": "s006",
+      "text": "Clinical information",
+      "start": 158,
+      "end": 178,
+      "source_start": 158,
+      "source_end": 178,
+      "line": 5,
+      "page": 1
+    },
+    {
+      "id": "s007",
+      "text": "58-year-old man.",
+      "start": 179,
+      "end": 195,
+      "source_start": 179,
+      "source_end": 195,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s008",
+      "text": "CT chest, emergency department.",
+      "start": 196,
+      "end": 227,
+      "source_start": 196,
+      "source_end": 227,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s009",
+      "text": "Right rib pain after a fall.",
+      "start": 228,
+      "end": 256,
+      "source_start": 228,
+      "source_end": 256,
+      "line": 6,
+      "page": 1
+    },
+    {
+      "id": "s010",
+      "text": "Former smoker, quit 10 years ago.",
+      "start": 257,
+      "end": 290,
+      "source_start": 257,
+      "source_end": 290,
+      "line": 7,
+      "page": 1
+    },
+    {
+      "id": "s011",
+      "text": "No known cancer.",
+      "start": 291,
+      "end": 307,
+      "source_start": 291,
+      "source_end": 307,
+      "line": 7,
+      "page": 1
+    },
+    {
+      "id": "s012",
+      "text": "Technique",
+      "start": 308,
+      "end": 317,
+      "source_start": 308,
+      "source_end": 317,
+      "line": 8,
+      "page": 1
+    },
+    {
+      "id": "s013",
+      "text": "Axial CT of the chest with intravenous contrast, 2.5 mm slices.",
+      "start": 318,
+      "end": 381,
+      "source_start": 318,
+      "source_end": 381,
+      "line": 9,
+      "page": 1
+    },
+    {
+      "id": "s014",
+      "text": "No prior imaging is available for comparison.",
+      "start": 382,
+      "end": 427,
+      "source_start": 382,
+      "source_end": 427,
+      "line": 10,
+      "page": 1
+    },
+    {
+      "id": "s015",
+      "text": "Findings",
+      "start": 428,
+      "end": 436,
+      "source_start": 428,
+      "source_end": 436,
+      "line": 11,
+      "page": 1
+    },
+    {
+      "id": "s016",
+      "text": "Chest wall and bones",
+      "start": 437,
+      "end": 457,
+      "source_start": 437,
+      "source_end": 457,
+      "line": 12,
+      "page": 1
+    },
+    {
+      "id": "s017",
+      "text": "There is a healing fracture of the right seventh rib, with early callus.",
+      "start": 458,
+      "end": 530,
+      "source_start": 458,
+      "source_end": 530,
+      "line": 13,
+      "page": 1
+    },
+    {
+      "id": "s018",
+      "text": "The alignment is anatomical.",
+      "start": 531,
+      "end": 559,
+      "source_start": 531,
+      "source_end": 559,
+      "line": 14,
+      "page": 1
+    },
+    {
+      "id": "s019",
+      "text": "No other acute rib fracture is seen.",
+      "start": 560,
+      "end": 596,
+      "source_start": 560,
+      "source_end": 596,
+      "line": 15,
+      "page": 1
+    },
+    {
+      "id": "s020",
+      "text": "The sternum and the visualised thoracic spine are intact.",
+      "start": 597,
+      "end": 654,
+      "source_start": 597,
+      "source_end": 654,
+      "line": 16,
+      "page": 1
+    },
+    {
+      "id": "s021",
+      "text": "The soft tissues of the chest wall are unremarkable.",
+      "start": 655,
+      "end": 707,
+      "source_start": 655,
+      "source_end": 707,
+      "line": 17,
+      "page": 1
+    },
+    {
+      "id": "s022",
+      "text": "Heart and vessels",
+      "start": 708,
+      "end": 725,
+      "source_start": 708,
+      "source_end": 725,
+      "line": 18,
+      "page": 1
+    },
+    {
+      "id": "s023",
+      "text": "The heart is normal in size.",
+      "start": 726,
+      "end": 754,
+      "source_start": 726,
+      "source_end": 754,
+      "line": 19,
+      "page": 1
+    },
+    {
+      "id": "s024",
+      "text": "There is no pericardial effusion.",
+      "start": 755,
+      "end": 788,
+      "source_start": 755,
+      "source_end": 788,
+      "line": 20,
+      "page": 1
+    },
+    {
+      "id": "s025",
+      "text": "The thoracic aorta is normal in calibre.",
+      "start": 789,
+      "end": 829,
+      "source_start": 789,
+      "source_end": 829,
+      "line": 21,
+      "page": 1
+    },
+    {
+      "id": "s026",
+      "text": "Mediastinum and hila",
+      "start": 830,
+      "end": 850,
+      "source_start": 830,
+      "source_end": 850,
+      "line": 22,
+      "page": 1
+    },
+    {
+      "id": "s027",
+      "text": "There is no mediastinal or hilar lymphadenopathy.",
+      "start": 851,
+      "end": 900,
+      "source_start": 851,
+      "source_end": 900,
+      "line": 23,
+      "page": 1
+    },
+    {
+      "id": "s028",
+      "text": "The oesophagus is unremarkable.",
+      "start": 901,
+      "end": 932,
+      "source_start": 901,
+      "source_end": 932,
+      "line": 24,
+      "page": 1
+    },
+    {
+      "id": "s029",
+      "text": "Airways",
+      "start": 933,
+      "end": 940,
+      "source_start": 933,
+      "source_end": 940,
+      "line": 25,
+      "page": 1
+    },
+    {
+      "id": "s030",
+      "text": "The trachea and main bronchi are patent.",
+      "start": 941,
+      "end": 981,
+      "source_start": 941,
+      "source_end": 981,
+      "line": 26,
+      "page": 1
+    },
+    {
+      "id": "s031",
+      "text": "Lungs and pleura",
+      "start": 982,
+      "end": 998,
+      "source_start": 982,
+      "source_end": 998,
+      "line": 27,
+      "page": 1
+    },
+    {
+      "id": "s032",
+      "text": "The lungs are well expanded.",
+      "start": 999,
+      "end": 1027,
+      "source_start": 999,
+      "source_end": 1027,
+      "line": 28,
+      "page": 1
+    },
+    {
+      "id": "s033",
+      "text": "There is no consolidation or pulmonary oedema.",
+      "start": 1028,
+      "end": 1074,
+      "source_start": 1028,
+      "source_end": 1074,
+      "line": 29,
+      "page": 1
+    },
+    {
+      "id": "s034",
+      "text": "There is no pneumothorax.",
+      "start": 1075,
+      "end": 1100,
+      "source_start": 1075,
+      "source_end": 1100,
+      "line": 30,
+      "page": 1
+    },
+    {
+      "id": "s035",
+      "text": "There is no pleural effusion.",
+      "start": 1101,
+      "end": 1130,
+      "source_start": 1101,
+      "source_end": 1130,
+      "line": 31,
+      "page": 1
+    },
+    {
+      "id": "s036",
+      "text": "However, a 9 mm solid nodule is seen in the right upper lobe.",
+      "start": 1131,
+      "end": 1192,
+      "source_start": 1131,
+      "source_end": 1192,
+      "line": 32,
+      "page": 1
+    },
+    {
+      "id": "s037",
+      "text": "No other pulmonary nodule is identified.",
+      "start": 1193,
+      "end": 1233,
+      "source_start": 1193,
+      "source_end": 1233,
+      "line": 33,
+      "page": 1
+    },
+    {
+      "id": "s038",
+      "text": "Upper abdomen",
+      "start": 1234,
+      "end": 1247,
+      "source_start": 1234,
+      "source_end": 1247,
+      "line": 34,
+      "page": 1
+    },
+    {
+      "id": "s039",
+      "text": "The visualised upper abdomen is unremarkable.",
+      "start": 1248,
+      "end": 1293,
+      "source_start": 1248,
+      "source_end": 1293,
+      "line": 35,
+      "page": 1
+    },
+    {
+      "id": "s040",
+      "text": "Impression",
+      "start": 1294,
+      "end": 1304,
+      "source_start": 1294,
+      "source_end": 1304,
+      "line": 36,
+      "page": 2
+    },
+    {
+      "id": "s041",
+      "text": "1. Healing right seventh rib fracture.",
+      "start": 1305,
+      "end": 1343,
+      "source_start": 1305,
+      "source_end": 1343,
+      "line": 37,
+      "page": 2
+    },
+    {
+      "id": "s042",
+      "text": "2. Pulmonary nodule, as described above.",
+      "start": 1344,
+      "end": 1384,
+      "source_start": 1344,
+      "source_end": 1384,
+      "line": 38,
+      "page": 2
+    }
+  ],
+  "result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Right rib pain after a fall.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 58,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "former",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "9 mm",
+        "dimensions_mm": [
+          9
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "upper",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s036",
+            "quote": "9 mm solid nodule is seen in the right upper lobe"
+          }
+        ],
+        "mean_diameter_mm": 9.0,
+        "size_note": "Report gives one dimension; Fleischner uses the mean of long and short axis.",
+        "issues": [],
+        "confidence_reasons": [],
+        "confidence": "checked"
+      }
+    ],
+    "other_findings": [
+      "healing fracture of the right seventh rib"
+    ]
+  },
+  "verification": {
+    "issues": [],
+    "quotes_checked": 1,
+    "quotes_dropped": 0,
+    "nodules_removed": 0
+  },
+  "timings": {
+    "intake_ms": 0,
+    "llm_ms": 0,
+    "verify_ms": 0,
+    "total_ms": 0
+  },
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "cached": true
+}

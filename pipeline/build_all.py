@@ -7,6 +7,7 @@ pointing at it (~/pylidc.conf on Windows, ~/.pylidcrc elsewhere); the config is 
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
@@ -26,8 +27,14 @@ def ensure_pylidc_config() -> None:
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--only", help="comma separated case letters to build, for example D,E (default: all)")
+    args = ap.parse_args()
     ensure_pylidc_config()
     selection = json.loads((Path(__file__).parent / "selection.json").read_text())
+    if args.only:
+        wanted = {x.strip().upper() for x in args.only.split(",")}
+        selection = {k: v for k, v in selection.items() if k in wanted}
     t0 = time.time()
     for letter, sel in selection.items():
         t = time.time()

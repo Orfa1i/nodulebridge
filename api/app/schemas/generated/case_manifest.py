@@ -136,6 +136,13 @@ class Scenario(BaseModel):
     age_years: conint(ge=0) | None = None
     sex: Sex | None = None
     indication: str | None = None
+    exam: str | None = Field(
+        None, description='The examination as the (fictional) referral names it.'
+    )
+    source: str | None = Field(
+        None,
+        description='The (fictional) service that sent the study, shown in the worklist.',
+    )
     history: list[str] | None = None
 
 

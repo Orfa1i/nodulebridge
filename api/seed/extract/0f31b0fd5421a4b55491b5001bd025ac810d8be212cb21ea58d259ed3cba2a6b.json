@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:36:37.768520+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Chest tightness",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 67,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "current",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "5 mm",
+        "dimensions_mm": [
+          5.0
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "5 mm solid nodule is seen in the right mid-lung zone"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "9KbSapX6Ib2yvdIPmNDUoQU",
+  "usage": {
+    "promptTokenCount": 1802,
+    "candidatesTokenCount": 411,
+    "totalTokenCount": 2213,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1802
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

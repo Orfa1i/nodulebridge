@@ -121,7 +121,9 @@
     "history": [
       "No known cancer.",
       "Not immunocompromised."
-    ]
+    ],
+    "exam": "CT chest",
+    "source": "Primary care"
   },
   "export": {
     "format": "NIfTI-1 gzip (option 1)",

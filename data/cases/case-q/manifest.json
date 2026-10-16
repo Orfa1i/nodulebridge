@@ -1,0 +1,146 @@
+{
+  "case_id": "case-q",
+  "lidc_patient_id": "LIDC-IDRI-0464",
+  "study_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.338681063148697211042842329869",
+  "series_instance_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.558286136379689377915919180358",
+  "label": "Example patient Q",
+  "attribution": "CT images: LIDC-IDRI collection, The Cancer Imaging Archive (TCIA), licence CC BY 3.0, DOI 10.7937/K9/TCIA.2015.LO9QL9SX. TODO-VERIFY: replace with the exact citation text from the TCIA collection page.",
+  "files": {
+    "ct": "ct.nii.gz",
+    "mask": "mask.nii.gz",
+    "report_pdf": "report.pdf",
+    "report_md": "report.md"
+  },
+  "geometry": {
+    "spacing": [
+      0.585938,
+      0.585938,
+      1.25
+    ],
+    "origin": [
+      -158.8984,
+      -104.664,
+      -292.55
+    ],
+    "direction": [
+      [
+        0.0,
+        1.0,
+        0.0
+      ],
+      [
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "dims": [
+      346,
+      493,
+      224
+    ],
+    "slice_count": 224,
+    "coordinate_system": "LPS",
+    "crop": {
+      "rows": [
+        97,
+        443
+      ],
+      "cols": [
+        7,
+        500
+      ],
+      "slices": [
+        17,
+        241
+      ],
+      "original_dims": [
+        512,
+        512,
+        241
+      ],
+      "lung_voxel_coverage": 1.0,
+      "note": "same box for CT and mask; both lungs kept with 10 mm in-plane and 25 mm z margin"
+    },
+    "hu_range": [
+      -1024,
+      3071
+    ]
+  },
+  "nodules": [
+    {
+      "id": "n1",
+      "slice_index": 190,
+      "slice_sop_uid": "1.3.6.1.4.1.14519.5.2.1.6279.6001.245962436545420041424661392441",
+      "centroid_voxel": [
+        159.15,
+        138.35,
+        187.77
+      ],
+      "centroid_mm": [
+        -77.84,
+        -11.41,
+        -57.84
+      ],
+      "long_axis_mm": 22.3,
+      "short_axis_mm": 19.8,
+      "mean_diameter_mm": 21.0,
+      "fleischner_size_mm": 21,
+      "volume_mm3": 2644.0,
+      "attenuation": "ground-glass",
+      "attenuation_method": "median of the LIDC texture ratings from the radiologists: <=2 ground-glass, >=4 solid, otherwise part-solid; uncertain if ratings differ by more than 2 points",
+      "attenuation_uncertain": false,
+      "texture_ratings": [
+        1,
+        2,
+        1,
+        2
+      ],
+      "lobe_estimate": {
+        "side": "right",
+        "region": "upper",
+        "label": "right upper lobe",
+        "height_fraction": 0.887,
+        "lobe_certain": true,
+        "method": "geometric estimate",
+        "todo_verify": "clinician to confirm lobe"
+      },
+      "radiologist_count": 4
+    }
+  ],
+  "scenario": {
+    "label": "Fictional age and history written for this demo",
+    "age_years": 74,
+    "sex": "female",
+    "indication": "Breathlessness.",
+    "history": [
+      "Never smoker.",
+      "No known cancer."
+    ],
+    "exam": "CT chest",
+    "source": "Geriatric clinic"
+  },
+  "export": {
+    "format": "NIfTI-1 gzip (option 1)",
+    "ct_mb": 53.1,
+    "mask_mb": 0.2,
+    "total_mb": 53.3,
+    "target_mb": 60,
+    "ct_dtype": "int16 HU, values below -1024 clipped to -1024 (scanner padding)"
+  },
+  "selection": {
+    "pylidc_series_slice_thickness_mm": 1.25,
+    "contrast_used": false,
+    "consensus": "pylidc consensus clevel=0.5",
+    "mask_source": "radiologists' consensus mask (not an AI segmentation)"
+  },
+  "todo_verify": [
+    "clinician to confirm lobe estimate",
+    "exact TCIA citation text"
+  ]
+}

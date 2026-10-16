@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:36:54.349368+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Hoarseness for six weeks.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 61,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "former",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "10 mm",
+        "dimensions_mm": [
+          10.0
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "left",
+        "lobe": null,
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "10 mm solid nodule is seen in the left mid-lung zone"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "BafSarPeCoCexN8PqtGSsAw",
+  "usage": {
+    "promptTokenCount": 1807,
+    "candidatesTokenCount": 418,
+    "totalTokenCount": 2225,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1807
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

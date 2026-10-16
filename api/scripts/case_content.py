@@ -64,3 +64,8 @@ def case_passport(letter: str, content: Content | None = None) -> dict[str, Any]
         "recommendation": rec,
         "explanation": explanation,
     }
+
+
+def all_case_letters() -> list[str]:
+    """Every prepared case folder in data/cases, as lower-case letters (a, b, c, d, ...)."""
+    return sorted(p.name.removeprefix("case-") for p in (ROOT / "data" / "cases").glob("case-*") if (p / "report.pdf").exists())

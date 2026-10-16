@@ -108,6 +108,8 @@
         "age_years": { "type": "integer", "minimum": 0 },
         "sex": { "enum": ["female", "male"] },
         "indication": { "type": "string" },
+        "exam": { "type": "string", "description": "The examination as the (fictional) referral names it." },
+        "source": { "type": "string", "description": "The (fictional) service that sent the study, shown in the worklist." },
         "history": { "type": "array", "items": { "type": "string" } }
       }
     },

@@ -8,15 +8,24 @@
  *      warms the CDN or object storage and shows the cache and CORS headers the browser will see.
  * It changes nothing on the server except the caches. Exit code 1 if anything fails.
  *
- * Usage: node scripts/warm.mjs [--api URL] [--data URL] [--origin URL] [--cases A,B,C]
+ * Usage: node scripts/warm.mjs [--api URL] [--data URL] [--origin URL] [--cases A,B,C]  (default: every study in index.json)
  * Defaults come from the environment: API_BASE (or NEXT_PUBLIC_API_BASE_URL), NEXT_PUBLIC_DATA_BASE_URL, WEB_ORIGIN.
  */
 const args = Object.fromEntries(process.argv.slice(2).flatMap((a, i, all) => (a.startsWith("--") ? [[a.slice(2), all[i + 1]]] : [])));
 const API = (args.api ?? process.env.API_BASE ?? process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(/\/$/, "");
 const WEB = (args.origin ?? process.env.WEB_ORIGIN ?? "http://localhost:3000").split(",")[0].replace(/\/$/, "");
 const DATA = (args.data ?? process.env.NEXT_PUBLIC_DATA_BASE_URL ?? `${WEB}/cases`).replace(/\/$/, "");
-const CASES = (args.cases ?? "A,B,C").split(",").map((c) => `case-${c.trim().toLowerCase()}`);
-const FILES = ["manifest.json", "report.pdf", "ct.nii.gz", "mask.nii.gz", "voice.en.mp3", "voice.en.json", "voice.ar.mp3", "voice.ar.json"];
+// every study in the data host's index.json, unless --cases names some
+async function allCases() {
+  try {
+    return (await (await fetch(`${DATA}/index.json`)).json()).cases.map((c) => c.case_id);
+  } catch {
+    return ["case-a", "case-b", "case-c"]; // the index could not be read: step 3 reports that
+  }
+}
+const CASES = args.cases ? args.cases.split(",").map((c) => `case-${c.trim().toLowerCase()}`) : await allCases();
+const FILES = ["manifest.json", "report.pdf", "ct.nii.gz", "mask.nii.gz"];
+const VOICE_FILES = ["voice.en.mp3", "voice.en.json", "voice.ar.mp3", "voice.ar.json"]; // only for the studies the index says were voiced
 
 let failures = 0;
 const ok = (msg) => console.log(`  ok    ${msg}`);
@@ -84,8 +93,16 @@ for (const id of CASES) {
 }
 
 console.log("\n3. Case files from the data host");
+let voiced = new Set();
+try {
+  const index = await (await fetch(`${DATA}/index.json`)).json();
+  voiced = new Set(index.cases.filter((c) => c.voice?.en && c.voice?.ar).map((c) => c.case_id));
+  ok(`index.json lists ${index.cases.length} studies, ${voiced.size} with pre-made voice clips (the others are spoken on demand)`);
+} catch (err) {
+  bad(`index.json: ${err.message}`);
+}
 for (const id of CASES) {
-  for (const file of FILES) {
+  for (const file of voiced.has(id) ? [...FILES, ...VOICE_FILES] : FILES) {
     try {
       const [res, ms] = await timed(async () => {
         const r = await fetch(`${DATA}/${id}/${file}`, { headers: { origin: WEB } });

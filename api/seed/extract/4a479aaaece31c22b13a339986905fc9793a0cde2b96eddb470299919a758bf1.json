@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:37:56.832823+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Breathlessness.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 74,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "never",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "21 mm",
+        "dimensions_mm": [
+          21.0
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "ground_glass",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "upper",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "a 21 mm ground-glass nodule is seen in the right upper lobe"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "Q6fSasToHoHMvdIP7eKg4Qc",
+  "usage": {
+    "promptTokenCount": 1797,
+    "candidatesTokenCount": 419,
+    "totalTokenCount": 2216,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1797
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

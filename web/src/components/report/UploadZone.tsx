@@ -4,7 +4,6 @@ import { Upload } from "lucide-react";
 import { useRef, useState, type DragEvent } from "react";
 import type { UploadFiles } from "@/features/privacy/uploadFiles";
 
-const EXAMPLES = ["A", "B", "C"] as const;
 const REPORT_EXT = /\.(pdf|txt|md)$/i;
 
 /** Split a flat file list into the report (PDF or text) and the CT (DICOM files or one NIfTI). */
@@ -44,10 +43,9 @@ export async function filesFromDrop(dt: DataTransfer): Promise<File[]> {
 
 interface Props {
   onFiles: (files: UploadFiles) => void;
-  onExample: (letter: string) => void;
 }
 
-export function UploadZone({ onFiles, onExample }: Props) {
+export function UploadZone({ onFiles }: Props) {
   const [dragging, setDragging] = useState(false);
   const [picked, setPicked] = useState<UploadFiles>({ ct: [], report: null });
   const [message, setMessage] = useState<string | null>(null);
@@ -76,7 +74,7 @@ export function UploadZone({ onFiles, onExample }: Props) {
   return (
     <section className="ak-card" aria-labelledby="upload-title">
       <h2 id="upload-title" className="ak-card__title">
-        Start a case
+        Use your own files
       </h2>
       <div
         className={`ak-dropzone${dragging ? " is-dragover" : ""}`}
@@ -130,17 +128,6 @@ export function UploadZone({ onFiles, onExample }: Props) {
         multiple
         onChange={(e) => accept(Array.from(e.target.files ?? []))}
       />
-
-      <div className="ak-empty nb-examples">
-        <p className="ak-empty__text">Or use an example case built from LIDC-IDRI images.</p>
-        <div className="nb-case-picker">
-          {EXAMPLES.map((letter) => (
-            <button key={letter} type="button" className="ak-btn ak-btn--secondary" onClick={() => onExample(letter)}>
-              Use example patient {letter}
-            </button>
-          ))}
-        </div>
-      </div>
     </section>
   );
 }

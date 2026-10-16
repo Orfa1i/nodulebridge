@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:37:48.977263+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "Coughing up a small amount of blood.",
+      "is_screening_exam": false,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 62,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "former",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "9 mm",
+        "dimensions_mm": [
+          9
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "lower",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "9 mm solid nodule is seen in the right lower lobe"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "O6fSarnbMLOJvdIPiN3T0AE",
+  "usage": {
+    "promptTokenCount": 1803,
+    "candidatesTokenCount": 416,
+    "totalTokenCount": 2219,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1803
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

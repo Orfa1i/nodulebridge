@@ -8,7 +8,7 @@ import type { ExtractResponse } from "@/types/generated/extract-response";
 import { deidentify, type UploadFiles } from "@/features/privacy/deidentify";
 import { decideRedaction, fetchRedaction, waitForRedactionDecision } from "@/features/privacy/redaction";
 import { identifyScan, loadCaseIndex, type ScanIdentity } from "./identifyScan";
-import { matchFinding, pickDrivingNodule, type MatchResult } from "./matchFinding";
+import { matchFinding, pickDrivingNodule, reportStudyRef, type MatchResult } from "./matchFinding";
 import { patchStage, resetAnalysis, STAGES, useAnalysisStore, type Timings } from "./store";
 
 export type AnalysisInput =
@@ -191,7 +191,10 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     let match: MatchResult | null = null;
     if (caseId) {
       const manifest = await fetchManifest(caseId);
-      match = matchFinding(driving, manifest.nodules);
+      match = matchFinding(driving, manifest.nodules, {
+        report: reportStudyRef(extraction.sentences.map((s) => s.text)),
+        scan: manifest.lidc_patient_id,
+      });
       patchStage("match", {
         status: "done",
         ms: Math.round(now() - tMatch),

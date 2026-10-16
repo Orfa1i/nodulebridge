@@ -4,6 +4,10 @@ NoduleBridge, a product by Asklevia, helps close the follow-up gap for incidenta
 
 Live demo: TODO (public URL after deployment, see `docs/deploy.md`). Video: TODO (link after recording, see `docs/build/video-plan.md`). Architecture: `docs/architecture.png`.
 
+## What you see
+
+The home screen is a worklist of 18 chest CT studies, like an inbox a radiologist or referring doctor would open: study, patient (fictional age and sex), exam, indication, referring service, report on file. Opening a study reads its report, shows the nodule in the CT viewer, applies the guideline and builds the bilingual summary and passport. The scans are LIDC-IDRI; the reports and referral details are team-written examples. Three studies (R, S, T) are written so that the guideline does not apply (age 30, a screening scan, a known cancer) to show the guardrails on real scans.
+
 ## Innovation
 
 Most tools in this space classify the image. NoduleBridge closes the follow-up loop instead: it links the nodule in the scan to the sentence in the radiology report that mentions it, applies the Fleischner Society 2017 rules in deterministic code, and gives the patient a bilingual (Arabic and English) passport with the next step, a due window, a message for the doctor, a PDF, a FHIR summary and calendar reminders. The language model only reads the report; every value it returns must quote the report, and a rule engine, not the model, chooses the interval.

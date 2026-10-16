@@ -121,7 +121,9 @@
     "history": [
       "Never smoker.",
       "No known cancer."
-    ]
+    ],
+    "exam": "CT pulmonary angiogram",
+    "source": "Emergency department"
   },
   "export": {
     "format": "NIfTI-1 gzip (option 1)",

@@ -1,0 +1,76 @@
+{
+  "created": "2026-10-16T22:38:13.222754+00:00",
+  "prompt_version": "extract_v4",
+  "model": "gemini:gemini-3.5-flash-lite",
+  "llm_result": {
+    "study": {
+      "exam_type": "CT chest",
+      "indication_text": "lung cancer screening",
+      "is_screening_exam": true,
+      "study_date": null
+    },
+    "patient_context": {
+      "age_years": {
+        "value": 63,
+        "evidence_sentence_ids": [
+          "s007"
+        ]
+      },
+      "known_cancer": {
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
+      },
+      "immunocompromised": {
+        "value": null,
+        "evidence_sentence_ids": []
+      },
+      "smoking_history": {
+        "value": "current",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
+      }
+    },
+    "nodules": [
+      {
+        "id": "n1",
+        "count_context": "single",
+        "size_text": "8 mm",
+        "dimensions_mm": [
+          8
+        ],
+        "size_basis": "stated_single",
+        "attenuation": "solid",
+        "solid_component_mm": null,
+        "side": "right",
+        "lobe": "upper",
+        "morphology": [],
+        "benign_features": [],
+        "stability_text": null,
+        "assertion": "present",
+        "evidence": [
+          {
+            "sentence_id": "s034",
+            "quote": "8 mm solid nodule is seen in the right upper lobe"
+          }
+        ]
+      }
+    ],
+    "other_findings": []
+  },
+  "request_id": "U6fSar-XMIuN28oPoryKqAQ",
+  "usage": {
+    "promptTokenCount": 1806,
+    "candidatesTokenCount": 409,
+    "totalTokenCount": 2215,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 1806
+      }
+    ],
+    "serviceTier": "standard"
+  }
+}

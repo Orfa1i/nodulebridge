@@ -1,4 +1,4 @@
-"""Copy the cached extractions of the example reports (Cases A to C) into api/seed/extract/ so they ship with the API.
+"""Copy the cached extractions of the example reports (every prepared case) into api/seed/extract/ so they ship with the API.
 
 Usage (repo root): uv run --project api python -m api.scripts.export_seed
 
@@ -23,14 +23,14 @@ from app.services.providers import model_id
 from app.services.report_text import read_pdf
 from app.services.seed import SEED_DIR
 
-from .case_content import CASES, case_dir
+from .case_content import all_case_letters, case_dir
 
 
 def main() -> int:
     settings = get_settings()
     SEED_DIR.mkdir(parents=True, exist_ok=True)
     missing = 0
-    for letter in CASES:
+    for letter in all_case_letters():
         report = read_pdf((case_dir(letter) / "report.pdf").read_bytes())
         key = cache_key(report.normalised, PROMPT_VERSION, model_id(settings))
         src = settings.data_dir / "cache" / "extract" / f"{key}.json"

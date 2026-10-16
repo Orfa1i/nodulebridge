@@ -28,6 +28,24 @@ export interface MatchResult {
   reasons: string[];
   /** Why it was not matched, in plain words. */
   summary: string;
+  /** Extra plain-language detail, for example that the report names a different study. */
+  note: string | null;
+}
+
+/** The study reference a report carries in its header (a real report names its patient or accession). */
+export function reportStudyRef(sentenceTexts: string[]): string | null {
+  for (const t of sentenceTexts) {
+    const m = /\bLIDC-IDRI-\d{4}\b/.exec(t);
+    if (m) return m[0];
+  }
+  return null;
+}
+
+export interface StudyRefs {
+  /** The study the report names, if it names one. */
+  report: string | null;
+  /** The study the scan is. */
+  scan: string | null;
 }
 
 const MANIFEST_ATTENUATION: Record<string, ReportNodule["attenuation"]> = {
@@ -72,7 +90,8 @@ function scoreOne(report: ReportNodule, m: ManifestNodule): { score: number; rea
       reasons.push(`size ${fmt(report.mean_diameter_mm)} vs ${fmt(m.mean_diameter_mm)} mm`);
     }
   }
-  if (report.side && report.side === m.lobe_estimate.side) {
+  const sameSide = !!report.side && report.side === m.lobe_estimate.side;
+  if (sameSide) {
     score += 2;
     reasons.push(`${report.side} side`);
   }
@@ -82,26 +101,32 @@ function scoreOne(report: ReportNodule, m: ManifestNodule): { score: number; rea
     score += 1;
     reasons.push(`${report.lobe} lobe (estimate)`);
   }
+  // a lobe the report names that is not the lobe of the outline counts against the match (when the outline's lobe is certain)
+  if (sameSide && report.lobe != null && !lobeMatches && region !== "mid" && m.lobe_estimate.lobe_certain !== false) {
+    score -= 2;
+    reasons.push(`${report.lobe} lobe in the report, ${region} lobe in the scan`);
+  }
   if (report.attenuation !== "unknown" && MANIFEST_ATTENUATION[m.attenuation] === report.attenuation) {
     score += 1;
     reasons.push(report.attenuation.replace("_", "-"));
   }
-  return { score, reasons };
+  return { score: Math.max(score, 0), reasons };
 }
 
 /** Match the report's driving nodule to one outlined nodule of the prepared scan. Pure and deterministic. */
-export function matchFinding(report: ReportNodule | null, manifestNodules: ManifestNodule[]): MatchResult {
-  const base = { threshold: MATCH_THRESHOLD, noduleId: null, bestId: null, score: 0, reasons: [] as string[] };
+export function matchFinding(report: ReportNodule | null, manifestNodules: ManifestNodule[], refs?: StudyRefs): MatchResult {
+  const base = { threshold: MATCH_THRESHOLD, noduleId: null, bestId: null, score: 0, reasons: [] as string[], note: null as string | null };
   if (!report) return { ...base, matched: false, summary: "The report does not describe a nodule to match." };
   if (manifestNodules.length === 0) return { ...base, matched: false, summary: "This scan has no outlined nodule." };
 
+  const conflict = refs?.report && refs.scan && refs.report !== refs.scan ? `The report names ${refs.report}, but this scan is ${refs.scan}.` : null;
   let best: { id: string; score: number; reasons: string[] } | null = null;
   for (const m of manifestNodules) {
     const s = scoreOne(report, m);
     if (!best || s.score > best.score) best = { id: m.id, ...s };
   }
   const result = best as { id: string; score: number; reasons: string[] };
-  if (result.score >= MATCH_THRESHOLD) {
+  if (result.score >= MATCH_THRESHOLD && !conflict) {
     return {
       matched: true,
       noduleId: result.id,
@@ -110,6 +135,7 @@ export function matchFinding(report: ReportNodule | null, manifestNodules: Manif
       threshold: MATCH_THRESHOLD,
       reasons: result.reasons,
       summary: `Matched to outline: ${result.reasons.join(", ")}`,
+      note: null,
     };
   }
   return {
@@ -120,5 +146,6 @@ export function matchFinding(report: ReportNodule | null, manifestNodules: Manif
     threshold: MATCH_THRESHOLD,
     reasons: result.reasons,
     summary: "The report finding could not be matched to an outlined nodule",
+    note: conflict,
   };
 }

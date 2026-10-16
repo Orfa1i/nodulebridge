@@ -9,22 +9,18 @@ import { rehydrateAnalysis, resetAnalysis, STAGES, useAnalysisStore } from "@/fe
 import { createPassport } from "@/features/passport/passportStore";
 import { caseIdFromParam } from "@/lib/cases";
 import { useViewerStore } from "@/lib/viewer/store";
+import { fetchWorklist, letterOf, type WorklistStudy } from "@/lib/worklist";
 import { AnalysisStepper } from "./AnalysisStepper";
 import { FindingsCard, type FindingsState } from "./FindingsCard";
 import { NextStepCard, type NextStepState } from "./NextStepCard";
 import { PatientSummaryCard } from "./PatientSummaryCard";
 import { PrivacyNotice } from "./PrivacyNotice";
 import { RedactionReview } from "./RedactionReview";
+import { Worklist } from "./Worklist";
 import { VerificationDrawer } from "./VerificationDrawer";
 import { ReportCard } from "./ReportCard";
 import { UploadZone } from "./UploadZone";
 import "./report.css";
-
-const EXAMPLES = [
-  { letter: "A", label: "Example patient A" },
-  { letter: "B", label: "Example patient B" },
-  { letter: "C", label: "Example patient C" },
-] as const;
 
 function setUrlCase(caseId: string | null) {
   const url = caseId ? `/?case=${caseId.replace("case-", "").toUpperCase()}` : "/";
@@ -65,6 +61,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   const [hydrated, setHydrated] = useState(false);
   const [showTimings, setShowTimings] = useState(false);
   const [verifyOpen, setVerifyOpen] = useState(false);
+  const [studies, setStudies] = useState<WorklistStudy[]>([]);
   const [passportBusy, setPassportBusy] = useState(false);
   const [passportError, setPassportError] = useState<string | null>(null);
   const router = useRouter();
@@ -134,6 +131,18 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
     if (caseId) void runAnalysis({ kind: "example", caseId, startedByClick: true });
   }, [caseId]);
 
+  // the study bar needs the list of studies (the worklist loads the same file for the home screen)
+  useEffect(() => {
+    let cancelled = false;
+    fetchWorklist().then(
+      (s) => !cancelled && setStudies(s),
+      () => undefined,
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   // an uploaded scan that was recognised moves the URL to its case
   useEffect(() => {
     if (hydrated && caseId) setUrlCase(caseId);
@@ -166,7 +175,8 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
     return (
       <>
         <h1 className="nb-page__title">Case workspace</h1>
-        <UploadZone onFiles={startUpload} onExample={startExample} />
+        <Worklist onOpen={startExample} />
+        <UploadZone onFiles={startUpload} />
       </>
     );
   }
@@ -176,22 +186,31 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   return (
     <>
       <h1 className="nb-page__title">Case workspace</h1>
-      <div className="nb-case-picker" role="navigation" aria-label="Example cases">
-        {EXAMPLES.map((e) => (
-          <button
-            key={e.letter}
-            type="button"
-            className={`ak-chip${e.letter === letter ? " is-selected" : ""}`}
-            aria-pressed={e.letter === letter}
-            onClick={() => startExample(e.letter)}
-          >
-            {e.label}
-          </button>
-        ))}
-        <button type="button" className="ak-chip" onClick={() => { setUrlCase(null); resetAnalysis(); }}>
-          Use my own files
+      <nav className="nb-studybar" aria-label="Studies">
+        <button type="button" className="ak-btn ak-btn--ghost ak-btn--sm" onClick={() => { setUrlCase(null); resetAnalysis(); }} data-testid="all-studies">
+          All studies
         </button>
-      </div>
+        {studies.length > 0 && letter ? (
+          <>
+            <button type="button" className="ak-btn ak-btn--secondary ak-btn--sm" onClick={() => startExample(letterOf(studies[(studies.findIndex((s) => s.case_id === caseId) - 1 + studies.length) % studies.length].case_id))} data-testid="prev-study">
+              Previous study
+            </button>
+            <button type="button" className="ak-btn ak-btn--secondary ak-btn--sm" onClick={() => startExample(letterOf(studies[(studies.findIndex((s) => s.case_id === caseId) + 1) % studies.length].case_id))} data-testid="next-study">
+              Next study
+            </button>
+            <label className="nb-studybar__select">
+              <span className="nb-sr-only">Switch study</span>
+              <select className="ak-select" value={letter} onChange={(e) => startExample(e.target.value)} data-testid="study-select">
+                {studies.map((s) => (
+                  <option key={s.case_id} value={letterOf(s.case_id)}>
+                    {s.label} · {s.scenario.indication ?? s.scenario.exam ?? "Chest CT"}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </>
+        ) : null}
+      </nav>
 
       {privacy ? <PrivacyNotice summary={privacy} /> : null}
       {redaction ? <RedactionReview redaction={redaction} /> : null}
@@ -209,6 +228,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
         <div className="ak-alert ak-alert--info" role="status" data-testid="not-matched-alert">
           <div className="ak-alert__body">
             <p className="ak-alert__title">The report finding could not be matched to an outlined nodule.</p>
+            {match.note ? <p data-testid="match-note">{match.note}</p> : null}
             <p>The scan stays open so you can scroll it yourself.</p>
           </div>
         </div>

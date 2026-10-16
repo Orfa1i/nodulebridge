@@ -123,12 +123,12 @@ test("with no API key the real API says so in plain English (nothing is faked)",
   await expect(page.getByTestId("finding-values")).toHaveCount(0);
 });
 
-test("home without a case offers the upload zone and the three examples", async ({ page }) => {
+test("home without a case offers the worklist and the upload zone", async ({ page }) => {
   await mockExtract(page, "B");
   await page.goto("/");
   await expect(page.getByText("Drop a chest CT folder and its report, or")).toBeVisible();
   await expect(page.getByText("DICOM folder or .nii.gz, plus the report as PDF or text. Example data only.")).toBeVisible();
   await page.getByRole("button", { name: "Use example patient B" }).click();
   await expect(page).toHaveURL(/case=B/);
-  await expect(page.getByRole("button", { name: "Example patient B" })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByTestId("study-select")).toHaveValue("B");
 });
