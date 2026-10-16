@@ -347,14 +347,17 @@ FOOTER = (
 )
 
 
-def render_pdf(web_base_url: str, p: PassportPayload, chromium_path: str | None = None) -> bytes:
+def render_pdf(web_base_url: str, p: PassportPayload, chromium_path: str | None = None, no_sandbox: bool = False) -> bytes:
     """Open /passport/print in headless Chromium with the payload and print it. Chromium shapes and orders Arabic correctly."""
     from playwright.sync_api import sync_playwright
 
     data = {"passport": json.loads(p.model_dump_json()), "booking": {loc: booking_request(p, loc) for loc in LOCALES}}
     script = "window.__NB_PASSPORT__ = " + json.dumps(data, ensure_ascii=False).replace("</", "<\\/") + ";"
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(executable_path=chromium_path) if chromium_path else pw.chromium.launch()
+        options: dict[str, Any] = {"args": ["--no-sandbox"]} if no_sandbox else {}
+        if chromium_path:
+            options["executable_path"] = chromium_path
+        browser = pw.chromium.launch(**options)
         try:
             page = browser.new_context(locale="en-GB", timezone_id=p.timezone).new_page()
             page.add_init_script(script)

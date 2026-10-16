@@ -1,0 +1,17 @@
+.git
+.env
+.env.local
+node_modules
+web
+pipeline
+data
+docs
+scripts
+**/__pycache__
+**/.venv
+**/.pytest_cache
+**/.ruff_cache
+api/tests
+api/eval
+*.md
+!api/seed

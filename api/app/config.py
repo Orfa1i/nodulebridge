@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     ffmpeg_path: str | None = None
     web_base_url: str = "http://localhost:3000"
     chromium_path: str | None = None
+    # Containers usually run Chromium as a user without kernel sandbox support. The browser only ever opens this app's own
+    # /passport/print page, so the Dockerfile sets CHROMIUM_NO_SANDBOX=true. Leave it false on a normal machine.
+    chromium_no_sandbox: bool = False
     web_origin: str = "http://localhost:3000"
     data_base_url: str | None = None
     data_dir: Path = ROOT / "data"

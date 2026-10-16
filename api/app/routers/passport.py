@@ -84,7 +84,7 @@ async def post_pdf(body: PdfBody, request: Request):
     if limited is not None:
         return limited
     try:
-        pdf = await anyio.to_thread.run_sync(svc.render_pdf, settings.web_base_url, body.passport, settings.chromium_path)
+        pdf = await anyio.to_thread.run_sync(svc.render_pdf, settings.web_base_url, body.passport, settings.chromium_path, settings.chromium_no_sandbox)
     except Exception as exc:  # noqa: BLE001 - Chromium missing, web app down, timeout: report plainly; the UI offers browser print
         return _error(
             502,

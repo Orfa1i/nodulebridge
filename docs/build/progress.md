@@ -410,3 +410,11 @@ The warm target (4 s) was met in most runs but not all, because the CT download 
 **Still open (people, not code).** Clinician review of Arabic and English text (`pnpm check-content` still fails on purpose), Fleischner checklist ticks, listening check of the Arabic voice clips, HL7/HAPI validation of the FHIR file and opening the .ics in a calendar app, TCIA citation text, team names on /about, rotating the Google key.
 
 **Next:** Phase 10 (see `docs/build/10-*.md`).
+
+## Phase 10 — Deploy, record, submit (prepared; deployment and recording need people)
+
+**Done and tested locally.** Per-IP rate limits (`/extract` only when the report is not cached, `/tts`, `/passport/pdf`; localhost never limited; `RATE_LIMIT_*_PER_HOUR`, `TRUST_PROXY`); seed extractions of Cases A to C shipped in `api/seed/extract` and copied into the cache at start (a different model or prompt does not match them, so no stale answer is used); `api/Dockerfile` with Chromium and ffmpeg (built, run, healthy, seeded cache, PDF made inside the container against a production web build); `CHROMIUM_NO_SANDBOX` for containers; `pnpm warm` / `make warm` (health, CORS, three analyses, every case file with cache headers); `docs/deploy.md`; `docs/architecture.mmd` and `docs/architecture.png` (AI boxes outlined in the spectrum colour); `docs/build/video-plan.md`; README rewritten with the judging criteria as headings and a Safety and limitations section; `docs/build/release-checklist.md` ticked only where true.
+
+**Not done (needs you).** No hosting account was touched: Vercel, a container host and object storage need your logins and may cost money, so I stopped before them. Also open: the 61.6% / 38.4% figures could not be traced to a primary source (not printed anywhere; TODO-VERIFY), clinician review and Fleischner ticks, native listening check of the Arabic clips, TCIA citation text, team names, HL7/HAPI and calendar checks, recording the video, rotating the Google key.
+
+**Acceptance checks.** "Public URL runs Case A in under 8 s": not testable until deployed (local warm run: cached analysis 74 ms, click-to-highlight 2 to 4 s). "Checklist fully ticked or open items listed as limitations": open items are listed in the README and the checklist. "Video numbers match the drawer": video not recorded yet.

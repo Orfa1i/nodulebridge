@@ -13,7 +13,8 @@
     "check-content": "uv run --project api python -m api.scripts.check_content",
     "voices": "uv run --project api python -m api.scripts.make_voices",
     "draft-arabic": "uv run --project api python -m api.scripts.draft_arabic",
-    "check-copy": "node scripts/check-copy.mjs"
+    "check-copy": "node scripts/check-copy.mjs",
+    "warm": "node scripts/warm.mjs"
   },
   "devDependencies": {
     "json-schema-to-typescript": "16.0.0"

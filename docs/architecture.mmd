@@ -1,0 +1,20 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, Helvetica, sans-serif", "primaryColor": "#FFFFFF", "primaryTextColor": "#14142B", "primaryBorderColor": "#C9CBD6", "lineColor": "#14142B", "clusterBkg": "#FFFFFF", "clusterBorder": "#C9CBD6"}}}%%
+flowchart LR
+  subgraph Browser["Browser (on the device)"]
+    UP["Upload CT and report"] --> DEID["DICOM de-identification (dcmjs)"]
+    DEID --> VIEW["Cornerstone3D viewer<br/>+ consensus outline"]
+    UP --> RED["Report redaction check<br/>(patterns, person confirms)"]
+  end
+  subgraph API["Server (API)"]
+    RED --> EXT["LLM extraction (AI)"]:::ai
+    EXT --> VER["Deterministic verification<br/>quotes must be in the report"]
+    VER --> ENG["Fleischner 2017 engine (rules)"]
+    ENG --> TPL["Reviewed bilingual templates"]
+    TPL --> TTS["Text to speech (AI voice)"]:::ai
+    TPL --> PASS["Passport: PDF, FHIR, calendar"]
+    ENG --> PASS
+  end
+  STORE[("Prepared LIDC-IDRI cases<br/>CT, consensus masks, voices")] --> VIEW
+  VER --> VIEW
+  PASS --> OUT["Patient and doctor"]
+  classDef ai fill:#FFFFFF,stroke:#5B5BD6,stroke-width:3px,color:#14142B;

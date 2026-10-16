@@ -88,6 +88,7 @@ test("case A: all four downloads work and have the right content", async ({ page
 
 test("WhatsApp is a mock: the toast says nothing was sent", async ({ page }) => {
   await createPassport(page, "B");
+  await expect(page.getByTestId("booking-body")).toBeVisible(); // the button stays disabled until the message exists
   await page.getByTestId("whatsapp-mock").click();
   await expect(page.getByTestId("passport-notice")).toHaveText("Reminder scheduled (mock — nothing was sent)");
 });
