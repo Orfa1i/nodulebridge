@@ -180,3 +180,48 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 - Phase 2 reports B and C say "right mid-lung zone", so `lobe` is `null` and `side` is `right` by design; case A has `lobe: upper`.
 - The API listens on :8000 by default; here :8000 is taken by another project, so run `API_PORT=8001 pnpm dev` and set `NEXT_PUBLIC_API_BASE_URL` (the dev script does this; `web/.env.local` also points at :8001).
 - `data/logs`, `data/cache`, `data/eval` hold LLM requests, responses and cached extractions; they are git-ignored. Example reports only, never real patient text.
+
+## Phase 5 — The Fleischner 2017 rule engine (done; clinician check of the table still open)
+
+**Built**
+- `shared/schemas/followup-recommendation.schema.json` (filled; TS and Pydantic regenerated). Fields as the phase file lists, plus `nodule_type`, `count`, `size_mm`, `headline`, `why`, `options[].mode` (`sequence` or `any_of`), `index_date`, `date_basis`, and on each action `condition`, `repeat_every_months`, `until_months`, `window_start`, `window_end`, `then` (recursive).
+- `api/app/rules/fleischner2017.py`: the 12 table rows as data (`RULES`) plus `find_rule` (the matcher) and `recommend(findings, context)`. Pure: no network, no model, and the clock only enters through `analysis_date`. `api/app/rules/dates.py` turns `window_months` into dates with `dateutil.relativedelta`.
+- `POST /recommend` (`api/app/routers/recommend.py`): takes the `/extract` `result` plus optional `risk_tier`, `age_years`, `age_at_least_35`, `known_cancer`, `immunocompromised`, `is_screening_exam`, `study_date`, `analysis_date`. Report facts and user confirmations are merged so that either source can exclude a patient and a confirmation can never cancel a report exclusion.
+- Web: "Guideline next step" card (`ak-badge--brand` "Guideline rule", never the AI badge) under the findings card; it re-runs `/recommend` when the report is read or a confirm chip changes.
+- `docs/build/fleischner-checklist.md`: one unticked box per rule id, plus the gate and special-case rules and three open items. The team ticks it.
+
+**Behaviour worth knowing**
+- Gate order: no nodule (or only negated) -> not applicable; hedged only -> conditional, no interval; only benign or calcified nodules -> not applicable; failed gate (age < 35, known cancer, immunocompromised, screening scan) -> not applicable, every failed reason listed; stability statement -> conditional with no new interval; no size -> conditional; otherwise the table.
+- Unknown age, cancer, immune status or screening status -> `applies: "conditional"` with the question. Each question has a confirm chip ("I am 35 or older", "I have no known cancer", "My immune system is not weakened", "This scan was not for lung cancer screening"); the chip re-runs the engine and can be un-pressed.
+- Rounding is half up (`Decimal.quantize(ROUND_HALF_UP)`): 8.4 -> 8, 8.5 -> 9, 6.5 -> 7. A test shows Python's `round()` would give 8 and 6.
+- Several nodules: the largest drives the row; at equal size part-solid beats ground-glass beats solid. More than one present nodule means "multiple" even if the report says single. The driving nodule id is returned.
+- Unknown risk tier: one option when the low and high columns match, otherwise both, labelled "If your doctor considers your risk low / higher". Stated factors (spiculated, upper lobe, current or former smoking) are listed under "Factors your doctor may consider" and never turned into a tier.
+- Dates count from the study date, or the analysis date when the report has none (the card says which). Month ends clamp (31 Aug + 6 months = 28 Feb).
+
+**Acceptance results**
+- `pytest api/tests/test_fleischner.py`: 104 tests, 100% line coverage of `fleischner2017.py` and `dates.py` (`--cov-fail-under=100`). Includes: one test per rule id per risk tier against an independent transcription of the table; boundaries 5, 6, 8, 9 mm for every family; rounding; every gate (age 17/34/35/36/unknown, confirmed age, screening, known cancer, immunocompromised, several at once); benign features, hedged, stability, missing size, unknown attenuation, unclear count; multiple-nodule selection and ties; part-solid flag; dates; determinism and no input mutation; a Hypothesis property test (400 random cases): output always has `citation` and `engine_version`, always `rule_id` or `not_applicable_reasons`, and always validates against the JSON Schema.
+- `pytest api`: 180 pass. Pipeline 38, web 23, Playwright 29 pass (7 new in `next-step.spec.ts`: A, A with a confirmed answer, B with both options, C, known cancer, benign calcification, engine unreachable; `/extract` is the mocked-model fixture, `/recommend` is the real engine).
+- Outputs for the three cases on the analysis date 16 Oct 2026 (inputs are the Phase 4 UI fixtures, whose model step is mocked; the extracted facts equal the Phase 2 manifest):
+
+| Case | Rule | Applies | Size | Next step (headline) | First window |
+|---|---|---|---|---|---|
+| A | `FL17-S1-GT8` | conditional (immune status not in the report) | 9 mm | Consider a CT in about 3 months, a PET-CT, or a biopsy. | CT window opens 16 Jan 2027 |
+| B | `FL17-S1-6TO8` | conditional (same question) | 7 mm | low: Consider a CT in 6 to 12 months, then possibly another in 18 to 24 months. high: A CT in 6 to 12 months, then another in 18 to 24 months. | 16 Apr 2027 to 16 Oct 2027 |
+| C | `FL17-GGN1-GE6` | true | 16 mm | A CT in 6 to 12 months to check the area is still there, then a CT every 2 years until 5 years. | 16 Apr 2027 to 16 Oct 2027 |
+
+**Deviations and notes**
+- The phase file's example "(mean of 10 × 8 mm)" does not occur: the Phase 2 reports state one dimension ("9 mm"), so the card says "the report gives one dimension".
+- The citation link uses `https://doi.org/10.1148/radiol.2017161659`, written from memory (marked `TODO-VERIFY` in the code and in the checklist). Confirm it before the demo.
+- Patient-facing headlines are rule wording written for this project, not text copied from the paper. Phase 7 still decides the final plain-language and Arabic wording.
+- The two-risk labels and the headline texts have not been reviewed by a clinician.
+
+**Open items**
+- Clinician ticks every box in `docs/build/fleischner-checklist.md` against Table 1 of the paper (not done; not the build agent's job).
+- Phase 4 live model run and eval (see the Phase 4 section). Phase 5 does not depend on it, but the card only shows real values once a real extraction exists.
+- `TODO-VERIFY`: solid-component note wording; DOI.
+- A Google AI Studio key was given and stored as `GOOGLE_API_KEY` in the git-ignored `.env`. Nothing uses it: the extractor calls the Anthropic API. Using Gemini instead needs a decision (see Phase 4 section).
+
+**Next phase must know**
+- Phase 6/7 read `FollowupRecommendation` from `POST /recommend`: `headline`, `why`, `options[].actions[]` (with dates), `applies`, `questions_for_doctor`, `notes`, `citation`. Phase 7 explains it in Arabic and English and must not add intervals of its own.
+- Phase 8 (passport/calendar) should take its dates from `options[].actions[].window_start/window_end` and say which option (low or higher risk) each date belongs to.
+- The viewer is still not linked to the report sentences; that is Phase 6.
