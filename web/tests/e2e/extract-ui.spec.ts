@@ -112,20 +112,23 @@ test("a failed extraction shows the plain message and the provider detail, and T
   await expect(page.getByTestId("finding-values")).toHaveText(expectedValues("A"));
 });
 
-test("with no API key the real API says so in plain English (nothing is faked)", async ({ page }) => {
-  test.skip(!!process.env.NB_API_HAS_KEY, "the API has a key; this test covers the unconfigured case");
+test("with no API key the real API says so in plain English (nothing is faked)", async ({ page, request }) => {
+  const health = await request.get(`${process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8001"}/health`);
+  test.skip((await health.json()).provider !== null, "the API has a model key; this test covers the unconfigured case");
   await page.goto("/?case=A");
   await page.getByRole("button", { name: "Start analysis" }).click();
   const alert = page.locator(".ak-alert--danger");
   await expect(alert).toContainText("The AI service is not available.");
-  await expect(alert).toContainText("ANTHROPIC_API_KEY is not set");
+  await expect(alert).toContainText("is not set");
   await expect(page.getByTestId("finding-values")).toHaveCount(0);
 });
 
-test("home without a case offers the three examples", async ({ page }) => {
+test("home without a case offers the upload zone and the three examples", async ({ page }) => {
+  await mockExtract(page, "B");
   await page.goto("/");
-  await expect(page.getByText("Upload a chest CT and its report to begin.")).toBeVisible();
-  await page.getByRole("link", { name: "Open example patient B" }).click();
+  await expect(page.getByText("Drop a chest CT folder and its report, or")).toBeVisible();
+  await expect(page.getByText("DICOM folder or .nii.gz, plus the report as PDF or text. Example data only.")).toBeVisible();
+  await page.getByRole("button", { name: "Use example patient B" }).click();
   await expect(page).toHaveURL(/case=B/);
-  await expect(page.getByRole("link", { name: "Example patient B" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("button", { name: "Example patient B" })).toHaveAttribute("aria-pressed", "true");
 });

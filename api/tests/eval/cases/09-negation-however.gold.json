@@ -24,5 +24,8 @@
     "immunocompromised": null,
     "smoking_history": null,
     "is_screening_exam": false
-  }
+  },
+  "other_findings_absent": [
+    "effusion"
+  ]
 }

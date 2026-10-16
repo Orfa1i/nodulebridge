@@ -30,7 +30,7 @@ from .report_text import Sentence
 
 log = logging.getLogger("nodulebridge.extractor")
 
-PROMPT_VERSION = "extract_v3"
+PROMPT_VERSION = "extract_v4"
 PROMPT_FILE = Path(__file__).resolve().parent.parent / "prompts" / f"{PROMPT_VERSION}.md"
 SCHEMA_DIR = ROOT / "shared" / "schemas"
 TOOL_NAME = "record_extraction"

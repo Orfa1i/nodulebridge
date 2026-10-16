@@ -102,6 +102,9 @@ def score_case(gold: dict, result: dict) -> dict[str, list[int]]:
         add(f"patient.{key}", got == want)
     for needle in gold.get("other_findings_any", []):
         add("other_findings", any(needle in label.lower() for label in result["other_findings"]))
+    # findings the report says are ABSENT must not be listed as findings
+    for needle in gold.get("other_findings_absent", []):
+        add("other_findings_absent", not any(needle in label.lower() for label in result["other_findings"]))
     return s
 
 

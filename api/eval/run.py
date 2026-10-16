@@ -69,6 +69,7 @@ def phase2_cases() -> list[dict]:
                     **PHASE2_PATIENT[f"case-{letter}"],
                 },
                 "other_findings_any": ["rib"] if letter == "a" else [],
+                "other_findings_absent": ["effusion", "pneumothorax", "consolidation", "oedema", "lymphadenopathy"],
             }
         )
     return cases
@@ -197,7 +198,7 @@ def main() -> int:
             print(f"injection {case['id']} vs {twin}: {'identical output' if same else 'OUTPUT CHANGED'}")
 
     print(f"\n{'field':22} {'correct':>8} {'total':>6} {'accuracy':>9}")
-    for field in ["present_count", "negation_recorded", *FIELDS, *sorted(k for k in totals if k.startswith("patient.")), "other_findings"]:
+    for field in ["present_count", "negation_recorded", *FIELDS, *sorted(k for k in totals if k.startswith("patient.")), "other_findings", "other_findings_absent"]:
         if field in totals:
             c, n = totals[field]
             print(f"{field:22} {c:8d} {n:6d} {pct(c, n):8.1f}%")

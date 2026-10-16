@@ -193,7 +193,7 @@ Full ranked candidate table: `docs/build/evidence/phase-02/candidates.txt`. Over
 2. Fixes: gold corrected; detector now looks only at model-written labels; prompt `extract_v2` (negated nodule has no location, silence is null) then `extract_v3` ("multiple" only when the report says so, `is_screening_exam` always filled); the nullable-enum schema fix above.
 3. Clinically important: the model returned `count_context: multiple` for single-nodule reports ("No other pulmonary nodule is identified"). That would select a different Fleischner row (`FL17-SM-GT8` instead of `FL17-S1-GT8`). Added a deterministic check in `verify_extraction.py`: "multiple" needs either two or more extracted nodules or a non-negated sentence that states several nodules; otherwise `count_context` becomes `unclear`, the nodule is `needs_review`, and the engine treats it as single with a question for the doctor.
 
-**Final eval (26 cases: 23 synthetic + 3 Phase 2 PDFs), prompt `extract_v3`, all thresholds PASS**
+**Final eval (26 cases: 23 synthetic + 3 Phase 2 PDFs), prompt `extract_v3`, all thresholds PASS** (superseded by `extract_v4` in Phase 6: it also keeps absent findings out of the ignored list, 26/26 and all thresholds PASS again)
 
 | Field | gemini-3.5-flash-lite | gemini-3.1-flash-lite |
 |---|---|---|
@@ -273,3 +273,62 @@ Thresholds: every negation case correct PASS; injection leaves output unchanged 
 - Phase 6/7 read `FollowupRecommendation` from `POST /recommend`: `headline`, `why`, `options[].actions[]` (with dates), `applies`, `questions_for_doctor`, `notes`, `citation`. Phase 7 explains it in Arabic and English and must not add intervals of its own.
 - Phase 8 (passport/calendar) should take its dates from `options[].actions[].window_start/window_end` and say which option (low or higher risk) each date belongs to.
 - The viewer is still not linked to the report sentences; that is Phase 6.
+
+## Phase 6 — Linking the report to the scan (done, with two stated gaps)
+
+**Built**
+- `/` is now the case workspace with a drop zone: "Drop a chest CT folder and its report, or choose files". Accepts a dropped folder plus a PDF together (folder walking via `webkitGetAsEntry`), a multi-file choice (NIfTI plus PDF), or a CT folder chosen with a folder picker, and three example buttons. `.is-dragover` while dragging. The analysis starts as soon as both a CT and a report are present. Direct visits to `/?case=A` still open the workspace idle with "Start analysis".
+- `web/src/features/analysis/`:
+  - `deidentify.ts`: privacy hook, called on every upload before anything leaves the browser. Stub: returns the files unchanged and logs `[deidentify] stub: files are NOT de-identified yet` once. Phase 9 implements it. A test proves the warning fires before `/extract` is called.
+  - `identifyScan.ts`: reads the SeriesInstanceUID of the first parseable DICOM file in the browser (`dicom-parser`), or hashes a `.nii.gz` (SHA-256), and looks it up in `web/public/cases/index.json` (written by `pnpm sync:cases`). Prepared scan -> that case's CT and outline. Anything else -> "unmatched".
+  - `matchFinding.ts` (pure, 23 unit tests) and `pickDrivingNodule` (same selection rule as the guideline engine).
+  - `runAnalysis.ts`: the orchestrator. Stages: Read report -> Find nodule -> Match to scan -> Apply guideline -> Explain. The viewer starts loading the CT as soon as the case is known, in parallel with report reading. Every stage records `performance.now()` timings. A failed guideline call is not fatal (the Next step card shows the error).
+  - `store.ts`: `useAnalysisStore` (case, scan, stages, extraction, driving nodule, match, recommendation, confirmations, timings, cached flags). The last finished analysis is kept in `sessionStorage` (manual rehydration, guarded against blocked storage); a refresh restores it without calling the model.
+- UI: `ak-steps` stepper with a meta line per stage ("42 sentences · cached", "1 nodule found", "Matched: 9 mm, right upper", "Rule FL17-S1-GT8 (conditional)"); a Stage timings panel (shown in dev, or with `?timings=1`); the report card, findings card and next-step card read the store.
+- Two-way sync, all keyboard reachable:
+  - highlighted sentence (a `role="button"`, `tabindex=0`, Enter or Space) or the finding row's "Show in scan" button -> viewer jumps and pulses;
+  - the "Finding 1 · 9 mm" label in the viewer is now a real button -> the report scrolls to the sentence (`scrollIntoView({block:"center"})`) and `.nb-evidence.is-active` shows for 1.5 s;
+  - while the viewer is on the outline's slices the finding row gets `bg-brand-subtle` (`data-in-view`).
+- Automatic sequence at the end of a run: viewer jumps (320 ms) -> outline pulses -> report scrolls and the sentence flashes -> Next step card fades in (opacity, 320 ms; reduced motion skips the pauses and the fade).
+
+**Deviation 1: the match scoring (decided here, explain it to the team).** The phase file scores size within 2 mm = +2 and within 4 mm = +1, side +2, lobe +1, attenuation +1, and matches at 4 or more. Under that rule case B's report (7 mm, solid, right) scores 5 against case A's scan (8.8 mm, solid, right upper) and is matched, but the acceptance check says that pair must NOT match. I tightened it: size within 1 mm +2, within 2 mm +1; side +2; lobe +1; attenuation +1; matched at 5 or more (max 6). A true pair can lose only the lobe point, which fits the data: the manifest lobe is a geometric estimate and cases B and C have no lobe in the report (they score 5). A 3 x 3 matrix test (3 report extractions x 3 scans) shows only the diagonal matches; for example B-report with A-scan scores 4.
+
+**Deviation 2 (gap): "load the CT alone" for an unknown scan is not implemented.** An unknown DICOM or NIfTI is recognised as unmatched and shows the alert "No prepared outline for this scan. The report finding is shown without an outline." plus the reason; the report is still read, the guideline step still runs, and the CT card says "No outline to show for this scan". The CT itself is not displayed. The viewer is built around the prepared manifest's geometry; showing an arbitrary series needs the DICOM image loader and geometry taken from the volume. Say if you want it.
+
+**Deviation 3 (gap): Explain and audio.** The Explain stage is a labelled stub ("Summary not ready yet", shown as skipped); there is no "Play summary" button and no audio yet (Phase 7). Autoplay rules are therefore untested.
+
+**Other changes**
+- Extraction prompt `extract_v4`: the real model listed negated findings ("pleural effusion", "pneumothorax", "consolidation") under "Ignored findings". v4 says other findings must be present, not absent. New eval check `other_findings_absent` (16 checks). Eval re-run on `gemini:gemini-3.5-flash-lite`: 26/26 cases, every field 100%, all thresholds PASS, live mean 8.6 s, max 17.2 s.
+- `GET /health` now returns `provider` and a provider-qualified `model`.
+- Viewer: `engine.resize(true, true)` keeps slice, zoom and pan when the window is resized (before, resizing reset the camera).
+- `pnpm sync:cases` also writes `web/public/cases/index.json` (series UIDs and CT SHA-256).
+- New dependency `dicom-parser`.
+
+**Timings (this machine: software WebGL, Next dev server; the phase target is under 4 s warm, under 8 s live)**
+
+| Run | Click to sentence highlighted | Notes |
+|---|---|---|
+| Case A, extraction cached (live API) | 2.05 s, 2.16 s, 3.9 s (three runs) | CT load dominates; varies with machine load |
+| Case A, mocked model | 2.2 to 3.3 s; report read 0.1 to 0.2 s | |
+| Case B, live model, NOT cached | 7.4 s (total 7.7 s) | model call 6.7 s of it |
+| Second CT load of case A | 2.2 to 4.2 s | guard in the test is 6 s |
+
+The warm target (4 s) was met in most runs but not all, because the CT download and render depend on machine load. The live target (8 s) was met once; the model call alone has measured 4 s to 17 s, so a live run can exceed it. The demo should use the cached path (the step meta says "cached" and the findings card shows "Pre-computed for demo"). Timings are visible in the Stage timings panel and in `console.table`.
+
+**Acceptance**
+- Choosing example A, or dropping Case A's real DICOM folder plus its PDF, completes all five steps; the four sync behaviours work with mouse and keyboard (tests `two-way sync with the mouse`, `with the keyboard only`).
+- Case B's report with Case A's scan: "The report finding could not be matched to an outlined nodule", no jump, no "Show in scan" button, scan scrollable, stage meta "Not matched" (test).
+- The Playwright flow spec passes three runs in a row (`--repeat-each=3`, 39 tests). Full suite: 45 passed, 1 skipped by design (the no-key test is skipped when the API has a key).
+- Lint clean; api 208, pipeline 38, web unit 53, Playwright 45 pass.
+- Not tested: dragging a folder onto the zone by hand (Playwright cannot drop a folder; the folder walking code is the same code path used for files, but I did not exercise it with a real drag); a text (.txt or .md) report upload.
+
+**Open items**
+- Decide on "load the CT alone" (deviation 2).
+- Phase 7 adds the Explain step and "Play summary".
+- Phase 9 replaces the `deidentify` stub.
+- Everything from earlier phases still open (clinician checklist, Arabic banner, TCIA citation, Fleischner DOI, rotate the Google key).
+
+**Next phase must know**
+- The Passport (Phase 8) reads `useAnalysisStore`: `extraction`, `drivingNoduleId`, `match`, `recommendation`, `confirmations`, `timings`, `cached`, `scan`, `caseId`.
+- The Verification drawer (Phase 9) can read `timings`, `stages[*].ms` and `extraction.verification`.
+- To warm the cache before a demo: open each example once (`pnpm --dir web e2e` with `NB_API_HAS_KEY=1` also does it). Cache keys include the prompt version, so a prompt change means warming again.
