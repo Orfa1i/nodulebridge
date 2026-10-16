@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleCheck, TriangleAlert } from "lucide-react";
+import type { MatchResult } from "@/features/analysis/matchFinding";
 import { describeNodule, type ExtractError } from "@/lib/extract";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 
@@ -13,9 +14,26 @@ export type FindingsState =
 interface Props {
   state: FindingsState;
   onStart: () => void;
+  /** The report nodule that drives the guideline and the outline match. */
+  drivingId?: string | null;
+  match?: MatchResult | null;
+  /** True while the viewer is scrolled onto the slices of the outline. */
+  inView?: boolean;
+  /** Jump the viewer to the outline and show the sentence. */
+  onShowInScan?: () => void;
 }
 
-function NoduleRow({ n }: { n: ExtractResponse["result"]["nodules"][number] }) {
+function NoduleRow({
+  n,
+  match,
+  inView,
+  onShowInScan,
+}: {
+  n: ExtractResponse["result"]["nodules"][number];
+  match: MatchResult | null;
+  inView: boolean;
+  onShowInScan?: () => void;
+}) {
   if (n.assertion === "negated") {
     return (
       <li className="nb-finding">
@@ -26,7 +44,7 @@ function NoduleRow({ n }: { n: ExtractResponse["result"]["nodules"][number] }) {
   }
   const checked = n.confidence === "checked";
   return (
-    <li className="nb-finding" data-testid="finding-row">
+    <li className={`nb-finding${inView ? " is-in-view" : ""}`} data-testid="finding-row" data-in-view={inView}>
       <div className="nb-finding__head">
         <p className="nb-finding__values" data-testid="finding-values">
           {describeNodule(n)}
@@ -43,6 +61,16 @@ function NoduleRow({ n }: { n: ExtractResponse["result"]["nodules"][number] }) {
           </span>
         )}
       </div>
+      {match ? (
+        <p className="nb-finding__note" data-testid="match-line" data-matched={match.matched}>
+          {match.summary}
+        </p>
+      ) : null}
+      {match?.matched && onShowInScan ? (
+        <button type="button" className="ak-btn ak-btn--secondary ak-btn--sm nb-finding__action" onClick={onShowInScan}>
+          Show in scan
+        </button>
+      ) : null}
       {n.assertion === "hedged" ? <p className="nb-finding__note">The report words this as uncertain.</p> : null}
       {n.size_note ? <p className="nb-finding__note">{n.size_note}</p> : null}
       {!checked && (n.confidence_reasons ?? []).length > 0 ? (
@@ -52,7 +80,7 @@ function NoduleRow({ n }: { n: ExtractResponse["result"]["nodules"][number] }) {
   );
 }
 
-export function FindingsCard({ state, onStart }: Props) {
+export function FindingsCard({ state, onStart, drivingId = null, match = null, inView = false, onShowInScan }: Props) {
   return (
     <section className="ak-card" aria-labelledby="findings-title">
       <div className="ak-card__head">
@@ -113,7 +141,7 @@ export function FindingsCard({ state, onStart }: Props) {
           ) : (
             <ul className="nb-findings" aria-label="Nodules found in the report">
               {state.data.result.nodules.map((n) => (
-                <NoduleRow key={n.id} n={n} />
+                <NoduleRow key={n.id} n={n} match={n.id === drivingId ? match : null} inView={n.id === drivingId && inView} onShowInScan={n.id === drivingId ? onShowInScan : undefined} />
               ))}
             </ul>
           )}

@@ -9,7 +9,7 @@ const CaseViewer = dynamic(() => import("./CaseViewer").then((m) => m.CaseViewer
   loading: () => <div className="nb-viewport nb-viewer__viewport" aria-hidden="true" />,
 });
 
-export function ViewerCard({ caseId, debug = false }: { caseId: string; debug?: boolean }) {
+export function ViewerCard({ caseId, debug = false, onFindingClick }: { caseId: string; debug?: boolean; onFindingClick?: (noduleId: string) => void }) {
   const manifest = useViewerStore((s) => s.manifest);
   const meta = manifest ? `${manifest.label} · ${manifest.lidc_patient_id}` : "Loading case";
   return (
@@ -30,7 +30,7 @@ export function ViewerCard({ caseId, debug = false }: { caseId: string; debug?: 
           </span>
         </span>
       </div>
-      <CaseViewer caseId={caseId} debug={debug} />
+      <CaseViewer caseId={caseId} debug={debug} onFindingClick={onFindingClick} />
     </section>
   );
 }

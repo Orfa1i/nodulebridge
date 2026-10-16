@@ -42,13 +42,15 @@ function raf(): Promise<number> {
 
 export interface CaseViewerProps {
   caseId: string;
+  /** Called when the user activates the finding label in the viewer (click, Enter or Space). */
+  onFindingClick?: (noduleId: string) => void;
   /** Dev and test only: expose the imperative API on window.__nbViewer. */
   debug?: boolean;
 }
 
-export function CaseViewer({ caseId, debug = false }: CaseViewerProps) {
+export function CaseViewer({ caseId, debug = false, onFindingClick }: CaseViewerProps) {
   const elementRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLButtonElement>(null);
   const viewportRef = useRef<Types.IVolumeViewport | null>(null);
   const segIdRef = useRef<string>("");
   const manifestRef = useRef<CaseManifest | null>(null);
@@ -283,6 +285,7 @@ export function CaseViewer({ caseId, debug = false }: CaseViewerProps) {
         const manifestSlice = m.nodules[0].slice_index;
         const range = [displayOf(first), displayOf(last)].sort((a, b) => a - b) as [number, number];
         maskRangeRef.current = range;
+        useViewerStore.setState({ maskRange: range });
         const ok = viewerSlice === manifestSlice;
         useViewerStore.setState({ sliceCheck: { ok, manifest: manifestSlice, viewer: viewerSlice } });
         if (!ok) console.error(`Slice order mismatch: manifest ${manifestSlice}, viewer ${viewerSlice}.`);
@@ -296,7 +299,7 @@ export function CaseViewer({ caseId, debug = false }: CaseViewerProps) {
           element.removeEventListener(Enums.Events.VOI_MODIFIED, onCamera);
         });
         const ro = new ResizeObserver(() => {
-          engine.resize(true, false);
+          engine.resize(true, true); // keep the slice, zoom and pan when the window changes size
           refreshHud();
         });
         ro.observe(element);
@@ -515,9 +518,17 @@ export function CaseViewer({ caseId, debug = false }: CaseViewerProps) {
         <div className="nb-viewport__hud" data-testid="viewer-hud">
           {hud}
         </div>
-        <div ref={labelRef} className="nb-viewer__label" style={{ visibility: "hidden" }} data-testid="finding-label">
+        <button
+          ref={labelRef}
+          type="button"
+          className="nb-viewer__label"
+          style={{ visibility: "hidden" }}
+          data-testid="finding-label"
+          aria-label={nodule ? `Finding 1, ${nodule.fleischner_size_mm} mm. Show the matching sentence in the report.` : undefined}
+          onClick={() => nodule && onFindingClick?.(nodule.id)}
+        >
           {nodule ? `Finding 1 · ${nodule.fleischner_size_mm} mm` : ""}
-        </div>
+        </button>
         {status === "loading" && showProgress ? (
           <div className="nb-viewer__loading">
             <div className="ak-progress-field">

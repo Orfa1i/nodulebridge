@@ -46,3 +46,24 @@
 .nb-nextstep__chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
 .nb-nextstep__why p { margin: 0; font: 400 15px/22px var(--font-sans); color: var(--text-primary); }
 .nb-nextstep__sub { margin: 0 0 var(--space-2); font: 600 14px/20px var(--font-sans); color: var(--text-primary); }
+
+/* Analysis flow */
+.nb-stepper { margin: 0; padding: var(--space-4) var(--space-6); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--radius-lg); list-style: none; }
+.nb-stepper .ak-step { min-width: 0; }
+.nb-stepper .ak-step__meta { overflow-wrap: anywhere; }
+.nb-stepper .ak-step.is-error .ak-step__marker { background: var(--danger-600); border-color: var(--danger-600); color: var(--text-on-brand); }
+@media (max-width: 768px) { .nb-stepper { flex-direction: column; gap: var(--space-3); } .nb-stepper .ak-step::before { display: none; } }
+.nb-link-button { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+.nb-examples { padding-top: var(--space-4); }
+.nb-finding.is-in-view { background: var(--bg-brand-subtle); border-color: var(--indigo-200); }
+.nb-finding { transition: background var(--duration-base) var(--ease-standard), border-color var(--duration-base) var(--ease-standard); }
+.nb-finding__action { align-self: flex-start; }
+.nb-evidence { cursor: pointer; }
+.nb-evidence:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.nb-reveal { opacity: 0; transition: opacity var(--duration-slow) var(--ease-standard); }
+.nb-reveal.is-revealed { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .nb-reveal { transition: none; } }
+.nb-timings { font: 400 13px/18px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+.nb-timings summary { cursor: pointer; font-family: var(--font-sans); }
+.nb-timings table { border-collapse: collapse; margin-top: var(--space-2); }
+.nb-timings td { padding: 2px var(--space-4) 2px 0; }

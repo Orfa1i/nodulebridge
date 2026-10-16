@@ -8,7 +8,9 @@
   left: 0;
   top: 0;
   z-index: 2;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  border: 0;
   padding: 2px var(--space-3);
   border-radius: var(--radius-pill);
   background: var(--viewer-bg);
@@ -51,3 +53,6 @@
   border-radius: var(--radius-xs);
   background: var(--viewer-bg);
 }
+
+.nb-viewer__label:hover { background: var(--neutral-800); }
+.nb-viewer__label:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }

@@ -19,6 +19,8 @@ interface Props {
   state: NextStepState;
   confirmations: Confirmations;
   onConfirm: (next: Confirmations) => void;
+  /** The card fades in at the end of the automatic sequence. */
+  revealed?: boolean;
 }
 
 function Options({ rec }: { rec: Recommendation }) {
@@ -52,7 +54,7 @@ function Options({ rec }: { rec: Recommendation }) {
   );
 }
 
-export function NextStepCard({ state, confirmations, onConfirm }: Props) {
+export function NextStepCard({ state, confirmations, onConfirm, revealed = true }: Props) {
   const rec = state.status === "done" ? state.rec : null;
   const chips = rec ? CONFIRM_CHIPS.filter((c) => rec.questions_for_doctor.includes(c.question)) : [];
   const answered = CONFIRM_CHIPS.filter((c) => Object.entries(c.apply).every(([k, v]) => confirmations[k as keyof Confirmations] === v));
@@ -60,7 +62,7 @@ export function NextStepCard({ state, confirmations, onConfirm }: Props) {
   const otherQuestions = rec ? rec.questions_for_doctor.filter((q) => !CONFIRM_CHIPS.some((c) => c.question === q)) : [];
 
   return (
-    <section className="ak-card" aria-labelledby="nextstep-title">
+    <section className={`ak-card nb-reveal${revealed ? " is-revealed" : ""}`} aria-labelledby="nextstep-title" data-revealed={revealed}>
       <div className="ak-card__head">
         <h2 id="nextstep-title" className="ak-card__title">
           Guideline next step
