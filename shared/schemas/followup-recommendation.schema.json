@@ -2,8 +2,97 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nodulebridge.asklevia/schemas/followup-recommendation.schema.json",
   "title": "FollowupRecommendation",
-  "description": "Placeholder. TODO: fill in Phase 5.",
+  "description": "Output of the deterministic Fleischner 2017 engine. No model is involved. All windows are months after the index scan (the study date, or the analysis date when the report has none).",
   "type": "object",
-  "properties": {},
-  "additionalProperties": true
+  "properties": {
+    "applies": {
+      "enum": [true, false, "conditional"],
+      "description": "true: the guideline applies. false: it does not (see not_applicable_reasons). conditional: it applies only if the questions_for_doctor are answered a certain way, or the report is uncertain."
+    },
+    "not_applicable_reasons": { "type": "array", "items": { "type": "string" } },
+    "questions_for_doctor": { "type": "array", "items": { "type": "string" } },
+    "rule_id": { "type": ["string", "null"], "description": "Table row, for example FL17-S1-GT8. null when no row was used." },
+    "driving_nodule_id": { "type": ["string", "null"], "description": "The nodule that selected the rule." },
+    "nodule_type": { "enum": ["solid", "ground_glass", "part_solid", null] },
+    "count": { "enum": ["single", "multiple", null] },
+    "size_mm": { "type": ["integer", "null"], "description": "Mean of long and short axis, rounded half up to the whole mm." },
+    "size_band": { "type": ["string", "null"], "description": "lt6, 6to8, gt8 (solid) or lt6, ge6 (subsolid)." },
+    "risk_tier_used": { "enum": ["low", "high", "unknown"] },
+    "headline": { "type": ["string", "null"], "description": "Plain-language next step built from the rule." },
+    "why": { "type": ["string", "null"], "description": "One sentence naming the finding, the guideline and the rule id." },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": ["string", "null"], "description": "Set when low- and high-risk rows differ and the risk tier is unknown." },
+          "headline": { "type": "string" },
+          "mode": { "enum": ["sequence", "any_of"], "description": "any_of: the guideline says to consider one of the actions." },
+          "actions": { "type": "array", "items": { "$ref": "#/$defs/Action" } }
+        },
+        "required": ["label", "headline", "mode", "actions"],
+        "additionalProperties": false
+      }
+    },
+    "notes": { "type": "array", "items": { "type": "string" } },
+    "factors_to_consider": { "type": "array", "items": { "type": "string" } },
+    "index_date": { "type": "string", "format": "date" },
+    "date_basis": { "enum": ["study_date", "analysis_date"] },
+    "citation": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "url": { "type": ["string", "null"] }
+      },
+      "required": ["text", "url"],
+      "additionalProperties": false
+    },
+    "engine_version": { "type": "string" }
+  },
+  "required": [
+    "applies",
+    "not_applicable_reasons",
+    "questions_for_doctor",
+    "rule_id",
+    "driving_nodule_id",
+    "nodule_type",
+    "count",
+    "size_mm",
+    "size_band",
+    "risk_tier_used",
+    "headline",
+    "why",
+    "options",
+    "notes",
+    "factors_to_consider",
+    "index_date",
+    "date_basis",
+    "citation",
+    "engine_version"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "Action": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["CT", "PET_CT", "TISSUE_SAMPLING", "NONE"] },
+        "window_months": {
+          "type": ["array", "null"],
+          "items": { "type": "integer", "minimum": 0 },
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "[min, max] months after the index scan."
+        },
+        "optional": { "type": "boolean" },
+        "condition": { "type": ["string", "null"], "description": "For example: if the nodule is unchanged." },
+        "repeat_every_months": { "type": ["integer", "null"] },
+        "until_months": { "type": ["integer", "null"] },
+        "window_start": { "type": ["string", "null"], "format": "date" },
+        "window_end": { "type": ["string", "null"], "format": "date" },
+        "then": { "type": "array", "items": { "$ref": "#/$defs/Action" } }
+      },
+      "required": ["type", "window_months", "optional", "condition", "repeat_every_months", "until_months", "window_start", "window_end", "then"],
+      "additionalProperties": false
+    }
+  }
 }

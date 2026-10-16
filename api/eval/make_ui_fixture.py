@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import sys
 from pathlib import Path
 
@@ -41,12 +42,18 @@ class MockModel:
         scenario = self.manifest["scenario"]
         age_sentence = next(s for s in sentences if f"{scenario['age_years']}-year-old" in s.text)
         history = next(s for s in sentences if "No known cancer" in s.text)
+        immune_sentence = next((s for s in sentences if "Not immunocompromised" in s.text), None)
+        immune = (
+            {"value": False, "evidence_sentence_ids": [immune_sentence.id]}
+            if immune_sentence
+            else {"value": None, "evidence_sentence_ids": []}
+        )
         result = {
             "study": {"exam_type": None, "indication_text": scenario["indication"], "is_screening_exam": False, "study_date": None},
             "patient_context": {
                 "age_years": {"value": scenario["age_years"], "evidence_sentence_ids": [age_sentence.id]},
                 "known_cancer": {"value": False, "evidence_sentence_ids": [history.id]},
-                "immunocompromised": {"value": None, "evidence_sentence_ids": []},
+                "immunocompromised": immune,
                 "smoking_history": {"value": None, "evidence_sentence_ids": []},
             },
             "nodules": [
@@ -66,6 +73,7 @@ class MockModel:
 
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    shutil.rmtree(ROOT / "data" / "eval-fixture", ignore_errors=True)  # never reuse a stale mock answer
     for letter in "abc":
         folder = ROOT / "data" / "cases" / f"case-{letter}"
         manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))

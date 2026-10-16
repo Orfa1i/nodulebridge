@@ -3,10 +3,143 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict
+from datetime import date
+from enum import Enum
+
+from pydantic import BaseModel, ConfigDict, Field, RootModel, conint
+
+
+class Applies(Enum):
+    bool_True = True
+    bool_False = False
+    conditional = 'conditional'
+
+
+class NoduleType(Enum):
+    solid = 'solid'
+    ground_glass = 'ground_glass'
+    part_solid = 'part_solid'
+    NoneType_None = None
+
+
+class Count(Enum):
+    single = 'single'
+    multiple = 'multiple'
+    NoneType_None = None
+
+
+class RiskTierUsed(Enum):
+    low = 'low'
+    high = 'high'
+    unknown = 'unknown'
+
+
+class Mode(Enum):
+    sequence = 'sequence'
+    any_of = 'any_of'
+
+
+class DateBasis(Enum):
+    study_date = 'study_date'
+    analysis_date = 'analysis_date'
+
+
+class Citation(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    text: str
+    url: str | None
+
+
+class Type(Enum):
+    CT = 'CT'
+    PET_CT = 'PET_CT'
+    TISSUE_SAMPLING = 'TISSUE_SAMPLING'
+    NONE = 'NONE'
+
+
+class WindowMonth(RootModel[conint(ge=0)]):
+    root: conint(ge=0)
+
+
+class Action(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    type: Type
+    window_months: list[WindowMonth] | None = Field(
+        ...,
+        description='[min, max] months after the index scan.',
+        max_length=2,
+        min_length=2,
+    )
+    optional: bool
+    condition: str | None = Field(
+        ..., description='For example: if the nodule is unchanged.'
+    )
+    repeat_every_months: int | None
+    until_months: int | None
+    window_start: date | None
+    window_end: date | None
+    then: list[Action]
+
+
+class Option(BaseModel):
+    model_config = ConfigDict(
+        extra='forbid',
+    )
+    label: str | None = Field(
+        ...,
+        description='Set when low- and high-risk rows differ and the risk tier is unknown.',
+    )
+    headline: str
+    mode: Mode = Field(
+        ..., description='any_of: the guideline says to consider one of the actions.'
+    )
+    actions: list[Action]
 
 
 class FollowupRecommendation(BaseModel):
     model_config = ConfigDict(
-        extra='allow',
+        extra='forbid',
     )
+    applies: Applies = Field(
+        ...,
+        description='true: the guideline applies. false: it does not (see not_applicable_reasons). conditional: it applies only if the questions_for_doctor are answered a certain way, or the report is uncertain.',
+    )
+    not_applicable_reasons: list[str]
+    questions_for_doctor: list[str]
+    rule_id: str | None = Field(
+        ...,
+        description='Table row, for example FL17-S1-GT8. null when no row was used.',
+    )
+    driving_nodule_id: str | None = Field(
+        ..., description='The nodule that selected the rule.'
+    )
+    nodule_type: NoduleType
+    count: Count
+    size_mm: int | None = Field(
+        ..., description='Mean of long and short axis, rounded half up to the whole mm.'
+    )
+    size_band: str | None = Field(
+        ..., description='lt6, 6to8, gt8 (solid) or lt6, ge6 (subsolid).'
+    )
+    risk_tier_used: RiskTierUsed
+    headline: str | None = Field(
+        ..., description='Plain-language next step built from the rule.'
+    )
+    why: str | None = Field(
+        ...,
+        description='One sentence naming the finding, the guideline and the rule id.',
+    )
+    options: list[Option]
+    notes: list[str]
+    factors_to_consider: list[str]
+    index_date: date
+    date_basis: DateBasis
+    citation: Citation
+    engine_version: str
+
+
+Action.model_rebuild()

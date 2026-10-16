@@ -432,8 +432,10 @@
         ]
       },
       "immunocompromised": {
-        "value": null,
-        "evidence_sentence_ids": []
+        "value": false,
+        "evidence_sentence_ids": [
+          "s011"
+        ]
       },
       "smoking_history": {
         "value": null,
@@ -482,7 +484,7 @@
     "intake_ms": 1.0,
     "llm_ms": 0.0,
     "verify_ms": 0.0,
-    "total_ms": 16.0
+    "total_ms": 0.0
   },
   "prompt_version": "extract_v1",
   "model": "mock-model (UI fixture)",

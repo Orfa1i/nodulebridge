@@ -9,6 +9,7 @@ dependencies = [
     "jsonschema>=4.26.0",
     "pdfplumber>=0.11.10",
     "pydantic-settings>=2.16.0",
+    "python-dateutil>=2.9.0.post0",
     "python-multipart>=0.0.32",
     "uvicorn[standard]>=0.54.0",
 ]
@@ -26,6 +27,8 @@ extend-exclude = ["app/schemas/generated"]
 dev = [
     "datamodel-code-generator>=0.84.0",
     "httpx>=0.28.1",
+    "hypothesis>=6.170.0",
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
     "ruff>=0.17.1",
 ]
