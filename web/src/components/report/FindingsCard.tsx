@@ -21,6 +21,8 @@ interface Props {
   inView?: boolean;
   /** Jump the viewer to the outline and show the sentence. */
   onShowInScan?: () => void;
+  /** Open the verification drawer. */
+  onShowVerification?: () => void;
 }
 
 function NoduleRow({
@@ -80,7 +82,7 @@ function NoduleRow({
   );
 }
 
-export function FindingsCard({ state, onStart, drivingId = null, match = null, inView = false, onShowInScan }: Props) {
+export function FindingsCard({ state, onStart, drivingId = null, match = null, inView = false, onShowInScan, onShowVerification }: Props) {
   return (
     <section className="ak-card" aria-labelledby="findings-title">
       <div className="ak-card__head">
@@ -155,6 +157,13 @@ export function FindingsCard({ state, onStart, drivingId = null, match = null, i
               ))}
             </ul>
           )}
+          {onShowVerification ? (
+            <div>
+              <button type="button" className="ak-btn ak-btn--ghost ak-btn--sm" onClick={onShowVerification} data-testid="show-verification">
+                Show verification
+              </button>
+            </div>
+          ) : null}
           <details className="nb-ignored">
             <summary>Ignored findings ({state.data.result.other_findings.length})</summary>
             {state.data.result.other_findings.length === 0 ? (

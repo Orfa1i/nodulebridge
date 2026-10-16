@@ -15,6 +15,7 @@ import { NextStepCard, type NextStepState } from "./NextStepCard";
 import { PatientSummaryCard } from "./PatientSummaryCard";
 import { PrivacyNotice } from "./PrivacyNotice";
 import { RedactionReview } from "./RedactionReview";
+import { VerificationDrawer } from "./VerificationDrawer";
 import { ReportCard } from "./ReportCard";
 import { UploadZone } from "./UploadZone";
 import "./report.css";
@@ -63,6 +64,7 @@ function TimingsPanel() {
 export function AnalysisWorkspace({ initialCase }: { initialCase: string | null }) {
   const [hydrated, setHydrated] = useState(false);
   const [showTimings, setShowTimings] = useState(false);
+  const [verifyOpen, setVerifyOpen] = useState(false);
   const [passportBusy, setPassportBusy] = useState(false);
   const [passportError, setPassportError] = useState<string | null>(null);
   const router = useRouter();
@@ -242,6 +244,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
             match={match}
             inView={inView}
             onShowInScan={() => void focusFinding({ jump: true, report: true })}
+            onShowVerification={() => setVerifyOpen(true)}
           />
           <NextStepCard state={next} confirmations={confirmations} onConfirm={(c) => void rerunRecommendation(c)} revealed={nextRevealed || phase === "idle" || phase === "error"} />
           <PatientSummaryCard
@@ -275,6 +278,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
         </div>
       </div>
       {showTimings && phase !== "idle" ? <TimingsPanel /> : null}
+      <VerificationDrawer open={verifyOpen} onClose={() => setVerifyOpen(false)} />
     </>
   );
 }
