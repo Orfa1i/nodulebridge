@@ -14,3 +14,8 @@ minimumReleaseAgeExclude:
   - '@vitest/spy@5.0.5'
   - eslint-config-next@16.4.2
   - vitest@5.0.5
+  - '@cornerstonejs/core@5.12.1'
+  - '@cornerstonejs/metadata@5.12.1'
+  - '@cornerstonejs/nifti-volume-loader@5.12.1'
+  - '@cornerstonejs/tools@5.12.1'
+  - '@cornerstonejs/utils@5.12.1'
