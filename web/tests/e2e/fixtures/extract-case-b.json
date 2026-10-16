@@ -436,8 +436,10 @@
         "evidence_sentence_ids": []
       },
       "smoking_history": {
-        "value": null,
-        "evidence_sentence_ids": []
+        "value": "never",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
       }
     },
     "nodules": [

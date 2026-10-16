@@ -42,6 +42,11 @@ class MockModel:
         scenario = self.manifest["scenario"]
         age_sentence = next(s for s in sentences if f"{scenario['age_years']}-year-old" in s.text)
         history = next(s for s in sentences if "No known cancer" in s.text)
+        smoking = {"value": None, "evidence_sentence_ids": []}
+        for phrase, status in (("Former smoker", "former"), ("Never smoker", "never"), ("Current smoker", "current")):
+            hit = next((s for s in sentences if phrase in s.text), None)
+            if hit:
+                smoking = {"value": status, "evidence_sentence_ids": [hit.id]}
         immune_sentence = next((s for s in sentences if "Not immunocompromised" in s.text), None)
         immune = (
             {"value": False, "evidence_sentence_ids": [immune_sentence.id]}
@@ -54,7 +59,7 @@ class MockModel:
                 "age_years": {"value": scenario["age_years"], "evidence_sentence_ids": [age_sentence.id]},
                 "known_cancer": {"value": False, "evidence_sentence_ids": [history.id]},
                 "immunocompromised": immune,
-                "smoking_history": {"value": None, "evidence_sentence_ids": []},
+                "smoking_history": smoking,
             },
             "nodules": [
                 {

@@ -446,8 +446,10 @@
         "evidence_sentence_ids": []
       },
       "smoking_history": {
-        "value": null,
-        "evidence_sentence_ids": []
+        "value": "former",
+        "evidence_sentence_ids": [
+          "s010"
+        ]
       }
     },
     "nodules": [
@@ -494,7 +496,7 @@
     "intake_ms": 1.0,
     "llm_ms": 0.0,
     "verify_ms": 0.0,
-    "total_ms": 0.0
+    "total_ms": 16.0
   },
   "prompt_version": "extract_v1",
   "model": "mock-model (UI fixture)",
