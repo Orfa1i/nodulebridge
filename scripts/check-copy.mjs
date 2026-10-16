@@ -125,7 +125,7 @@ function scanSource(file) {
 
 function scanContent() {
   const dir = join(ROOT, "shared", "content");
-  for (const name of readdirSync(dir).filter((n) => n.endsWith(".json") && n !== "banned-words.json")) {
+  for (const name of readdirSync(dir).filter((n) => n.endsWith(".json") && !["banned-words.json", "fhir-codes.json"].includes(n))) {
     const file = join(dir, name);
     const walkJson = (value, path) => {
       if (typeof value === "string") {
