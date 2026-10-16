@@ -1,53 +1,43 @@
-import { FileText, ScanLine, Upload } from "lucide-react";
+import Link from "next/link";
+import { Upload } from "lucide-react";
+import { CaseWorkspace } from "@/components/report/CaseWorkspace";
+import { caseIdFromParam } from "@/lib/cases";
 
-function EmptyState({ icon, title, text }: { icon: React.ReactNode; title: string; text?: string }) {
-  return (
-    <div className="ak-empty">
-      <span className="ak-empty__mark">{icon}</span>
-      <p className="ak-empty__title">{title}</p>
-      {text ? <p className="ak-empty__text">{text}</p> : null}
-    </div>
-  );
-}
+const EXAMPLES = ["A", "B", "C"] as const;
 
-export default function CaseWorkspace() {
+export default async function CaseWorkspacePage({ searchParams }: { searchParams: Promise<{ case?: string }> }) {
+  const { case: param } = await searchParams;
+  if (param) {
+    const caseId = caseIdFromParam(param);
+    return (
+      <>
+        <h1 className="nb-page__title">Case workspace</h1>
+        <CaseWorkspace key={caseId} caseId={caseId} />
+      </>
+    );
+  }
   return (
     <>
       <h1 className="nb-page__title">Case workspace</h1>
-      <div className="nb-workspace">
-        <section className="nb-workspace__viewer ak-card" aria-labelledby="viewer-title">
-          <div className="ak-card__head">
-            <h2 id="viewer-title" className="ak-card__title">CT viewer</h2>
+      <section className="ak-card" aria-labelledby="start-title">
+        <h2 id="start-title" className="ak-card__title">
+          CT viewer
+        </h2>
+        <div className="ak-empty">
+          <span className="ak-empty__mark">
+            <Upload size={24} strokeWidth={2} aria-hidden="true" />
+          </span>
+          <p className="ak-empty__title">Upload a chest CT and its report to begin.</p>
+          <p className="ak-empty__text">Drop a DICOM folder and a report PDF. Or open an example case built from LIDC-IDRI images.</p>
+          <div className="nb-case-picker">
+            {EXAMPLES.map((letter) => (
+              <Link key={letter} href={`/?case=${letter}`} className="ak-btn ak-btn--secondary">
+                Open example patient {letter}
+              </Link>
+            ))}
           </div>
-          <EmptyState
-            icon={<Upload size={24} strokeWidth={2} aria-hidden="true" />}
-            title="Upload a chest CT and its report to begin."
-            text="Drop a DICOM folder and a report PDF. Example cases use LIDC-IDRI images only."
-          />
-        </section>
-        <div className="nb-workspace__side">
-          <section className="ak-card" aria-labelledby="report-title">
-            <div className="ak-card__head">
-              <h2 id="report-title" className="ak-card__title">Radiology report</h2>
-            </div>
-            <EmptyState
-              icon={<FileText size={24} strokeWidth={2} aria-hidden="true" />}
-              title="No report yet"
-              text="The nodule sentence will be highlighted here."
-            />
-          </section>
-          <section className="ak-card" aria-labelledby="findings-title">
-            <div className="ak-card__head">
-              <h2 id="findings-title" className="ak-card__title">Findings</h2>
-            </div>
-            <EmptyState
-              icon={<ScanLine size={24} strokeWidth={2} aria-hidden="true" />}
-              title="No findings yet"
-              text="Nodule size, location and the guideline next step appear here."
-            />
-          </section>
         </div>
-      </div>
+      </section>
     </>
   );
 }

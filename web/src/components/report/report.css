@@ -1,0 +1,35 @@
+/* Report and findings cards. Tokens only. */
+.nb-case-picker { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.nb-case-picker .ak-chip { text-decoration: none; }
+
+.nb-report {
+  max-height: min(520px, 60vh);
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  font: 400 15px/24px var(--font-sans);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.nb-report__line { margin: 0; }
+
+.nb-findings { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.nb-finding {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+.nb-finding__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.nb-finding__values { margin: 0; font: 400 15px/22px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.nb-finding__note { margin: 0; font: 400 13px/18px var(--font-sans); color: var(--text-secondary); }
+.nb-mono-note { font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-tertiary); }
+.nb-ignored { font: 400 14px/20px var(--font-sans); color: var(--text-secondary); }
+.nb-ignored summary { cursor: pointer; padding: var(--space-1) 0; }
+.nb-ignored ul { margin: var(--space-2) 0 0; padding-inline-start: var(--space-6); }
