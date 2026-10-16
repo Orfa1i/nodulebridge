@@ -1,6 +1,7 @@
 import { caseFileUrl, fetchManifest } from "@/lib/cases";
 import { extractReport, ExtractError } from "@/lib/extract";
-import { fetchRecommendation, type Confirmations } from "@/lib/recommend";
+import { fetchExplanation, type Explanation, type Locale } from "@/lib/explain";
+import { fetchRecommendation, type Confirmations, type Recommendation } from "@/lib/recommend";
 import { useViewerStore } from "@/lib/viewer/store";
 import { prefersReducedMotion } from "@/lib/viewer/css";
 import type { ExtractResponse } from "@/types/generated/extract-response";
@@ -53,6 +54,18 @@ function guidelineMeta(rec: { rule_id: string | null; applies: boolean | "condit
   return rec.applies === false ? "Guideline does not apply" : "No rule applied";
 }
 
+/** Both languages, so switching the tab is instant. Reviewed templates filled with data; no model is called. */
+async function loadExplanation(rec: Recommendation, signal?: AbortSignal): Promise<Record<Locale, Explanation>> {
+  const { extraction, drivingNoduleId, match } = state();
+  const finding = extraction?.result.nodules.find((n) => n.id === drivingNoduleId) ?? null;
+  const matched = match?.matched ?? false;
+  const [en, ar] = await Promise.all([
+    fetchExplanation(rec, finding, "en", matched, signal),
+    fetchExplanation(rec, finding, "ar", matched, signal),
+  ]);
+  return { en, ar };
+}
+
 export async function rerunRecommendation(confirmations: Confirmations): Promise<void> {
   const { extraction } = state();
   if (!extraction) return;
@@ -61,6 +74,11 @@ export async function rerunRecommendation(confirmations: Confirmations): Promise
     const rec = await fetchRecommendation(extraction.result, confirmations);
     set({ recommendation: rec, recommendationError: null, recommendationLoading: false });
     patchStage("guideline", { meta: guidelineMeta(rec) });
+    try {
+      set({ explanation: await loadExplanation(rec), explanationError: null });
+    } catch (err) {
+      set({ explanation: null, explanationError: err instanceof Error ? err.message : String(err) });
+    }
   } catch (err) {
     set({ recommendationError: err instanceof Error ? err.message : String(err), recommendationLoading: false });
   }
@@ -178,8 +196,25 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     }
     mark("guideline");
 
-    // 6. explain: the plain-language and voice summary arrive in Phase 7
-    patchStage("explain", { status: "skipped", ms: 0, meta: "Summary not ready yet" });
+    // 6. explain: reviewed bilingual templates filled from the guideline result (the voice is made on demand or pre-computed)
+    if (rec) {
+      const tExplain = now();
+      patchStage("explain", { status: "running" });
+      try {
+        const explanation = await loadExplanation(rec, signal);
+        if (!alive()) return;
+        set({ explanation, explanationError: null });
+        const draft = explanation.en.review_status.status === "draft" || explanation.ar.review_status.status === "draft";
+        patchStage("explain", { status: "done", ms: Math.round(now() - tExplain), meta: draft ? "Templates · awaiting review" : "Reviewed templates" });
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
+        if (!alive()) return;
+        set({ explanationError: err instanceof Error ? err.message : String(err) });
+        patchStage("explain", { status: "error", ms: Math.round(now() - tExplain), meta: "Summary failed" });
+      }
+    } else {
+      patchStage("explain", { status: "skipped", ms: 0, meta: "No guideline result to explain" });
+    }
 
     // 7. automatic sequence, paced so it reads on video: jump -> pulse -> report highlight -> next step -> summary button
     set({ phase: "done" });

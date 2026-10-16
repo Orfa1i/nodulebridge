@@ -268,8 +268,12 @@ def explain(
             return r.term("phrase.no_date")  # e.g. a low-risk row with no follow-up scan has no date
         return r.fill(raw, values)
 
+    reviewers: set[str] = set()
     for tid in ids:
-        r.used.add(f"template:{locale}:{tid}", c.templates[locale][tid]["review"]["status"])
+        review = c.templates[locale][tid]["review"]
+        r.used.add(f"template:{locale}:{tid}", review["status"])
+        if review["status"] == "reviewed" and review.get("reviewer"):
+            reviewers.add(review["reviewer"])
 
     notes = [r.engine_string(n) for n in rec["notes"] if n in c.engine]
     unknown_notes = [n for n in rec["notes"] if n not in c.engine]
@@ -311,7 +315,12 @@ def explain(
         "template_ids": ids,
         "questions": questions,
         "source_label": r.term("ui.source"),
-        "review_status": {"status": "reviewed" if not drafts else "draft", "draft_items": drafts, "used": statuses},
+        "review_status": {
+            "status": "reviewed" if not drafts else "draft",
+            "draft_items": drafts,
+            "used": statuses,
+            "reviewers": sorted(reviewers),
+        },
     }
 
 

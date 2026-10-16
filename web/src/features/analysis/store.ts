@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import type { Confirmations, Recommendation } from "@/lib/recommend";
+import type { Explanation, Locale } from "@/lib/explain";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 import type { MatchResult } from "./matchFinding";
 
@@ -55,6 +56,9 @@ export interface AnalysisState {
   recommendationError: string | null;
   recommendationLoading: boolean;
   confirmations: Confirmations;
+  /** Patient explanation per language, from POST /explain (reviewed templates, no model). */
+  explanation: Record<Locale, Explanation> | null;
+  explanationError: string | null;
   error: { message: string; detail: string | null } | null;
   readingSeconds: number;
   timings: Timings;
@@ -89,6 +93,8 @@ export const initialAnalysis = (): AnalysisState => ({
   recommendationError: null,
   recommendationLoading: false,
   confirmations: {},
+  explanation: null,
+  explanationError: null,
   error: null,
   readingSeconds: 0,
   timings: emptyTimings(),
@@ -135,7 +141,7 @@ export const useAnalysisStore = create<AnalysisState>()(
         ? {
             phase: s.phase, caseId: s.caseId, source: s.source, scan: s.scan, stages: s.stages, extraction: s.extraction,
             drivingNoduleId: s.drivingNoduleId, match: s.match, recommendation: s.recommendation,
-            confirmations: s.confirmations, timings: s.timings, cached: s.cached,
+            confirmations: s.confirmations, explanation: s.explanation, timings: s.timings, cached: s.cached,
           }
         : {},
   }),

@@ -332,3 +332,32 @@ The warm target (4 s) was met in most runs but not all, because the CT download 
 - The Passport (Phase 8) reads `useAnalysisStore`: `extraction`, `drivingNoduleId`, `match`, `recommendation`, `confirmations`, `timings`, `cached`, `scan`, `caseId`.
 - The Verification drawer (Phase 9) can read `timings`, `stages[*].ms` and `extraction.verification`.
 - To warm the cache before a demo: open each example once (`pnpm --dir web e2e` with `NB_API_HAS_KEY=1` also does it). Cache keys include the prompt version, so a prompt change means warming again.
+
+## Phase 7 — Bilingual explainer and voice (built; content still DRAFT, not usable in the video yet)
+
+**What it does.** After the guideline step, the case page shows a "Summary for the patient" card with English and العربية tabs (six sections: what the report found, what this means, why follow-up matters, what to do next, by when, who to contact), a PDQ source line with link where NCI wording is quoted, and a voice player ("Play summary", pause, `m:ss / m:ss` in Geist Mono, transcript always visible, "AI voice" badge, "Pre-computed for demo" badge when the clip is a pre-made file). The Explain stage in the stepper is now real (it calls `POST /explain` for both languages).
+
+**No model writes patient text.** `api/app/services/explain.py` fills reviewed templates keyed by Fleischner rule id (plus NOT_APPLICABLE, CONDITIONAL, NO_MATCH). A test checks that nothing in the explain path imports an LLM client. The model is used in only two places, both one-off and offline: `api/scripts/draft_arabic.py` (first Arabic drafts, `gemini-3.5-flash-lite`) and the TTS voice (reads fixed text aloud).
+
+**Files.** `shared/content/` (templates en/ar, anatomy terms, engine strings, PDQ snippets, banned words), `api/app/services/{explain,tts}.py`, `api/app/routers/explain.py` (`POST /explain`, `POST /tts`), `api/scripts/{draft_arabic,make_voices,check_content,case_content}.py`, `web/src/lib/explain.ts`, `web/src/components/report/PatientSummaryCard.tsx`. pnpm scripts: `check-content`, `voices`, `draft-arabic`.
+
+**Decisions made.**
+- Western digits (0-9) and an explicit Gregorian date format in both languages (Babel `d MMMM y`); measurements keep Latin "mm". The UI wraps numbers, measurements and dates in `<bdi>`.
+- Spoken text never contains dates (they would be read badly and go stale): the voice says "in six to twelve months".
+- No autoplay. A medical page that starts talking on its own is a surprise; the person presses Play.
+- The Arabic panel is `lang="ar" dir="rtl"`; badges say "Translation not yet reviewed" until the template review status is `reviewed`, then "AI-assisted translation · reviewed by {reviewer}".
+- Pre-made clips carry a sidecar JSON with the SHA-256 of the spoken text; the UI plays a clip only if the hash equals the text on screen, otherwise it asks `/tts` for a live clip. So the audio always says what the screen says.
+- TTS: Gemini TTS, voice "Kore". Models `gemini-3.8-flash-tts` (default) and `gemini-3.1-flash-tts-preview` both work. The free tier allows 10 requests per day per model, so the case C Arabic clip was made with `gemini-3.1-flash-tts-preview` (recorded in its sidecar). Re-run `pnpm voices` after the quota resets if one voice model for all six clips is wanted.
+
+**Results (real runs).** Clip lengths (target 12-18 s): A en 16.2 s, A ar 17.9 s, B en 13.0 s, B ar 13.3 s, C en 14.0 s, C ar 16.0 s. API tests 237 pass (new: render matrix A-C x en/ar, a 224-case engine grid in both languages with no missing content or leftover placeholders, banned words, no-LLM-import, check-content fails on the draft files and passes on an all-reviewed copy, TTS retries/cache/errors, clip hash matches text and duration is 12-18 s). Web unit 60 pass, Playwright 49 pass / 1 skipped (new: English panel, Arabic RTL + `<bdi>`, voice plays and the clock advances with no page errors, voice failure shown in plain words). `pnpm lint`, `tsc`, `next build --webpack` clean.
+
+**Bug found and fixed during verification:** the player read `e.currentTarget` inside a state updater, so playback crashed the page; a regression assertion now plays, waits for the clock to move and checks for page errors.
+
+**What blocks the video (open items, none of them code).**
+1. `pnpm check-content` FAILS on purpose: every Case A-C template, term, engine sentence and PDQ excerpt is `draft`. A bilingual clinician must read the Arabic (and the team the English) and set status to `reviewed` with reviewer name and date. Known Arabic quality problems for the reviewer: some odd word choices (e.g. "إراقة", "المنهج التوجيهي"), "9 mm" shown in Latin in the written text but "مليمترات" in the transcript, and a literal rendering of "retrieved".
+2. A native Arabic speaker must listen to the three Arabic clips. The model cannot check its own pronunciation. After any wording change run `pnpm voices` (it rewrites the clips and sidecars) and `pnpm check-content`.
+3. PDQ gap: the two NCI excerpts are about abnormal screening results, not incidental nodules. There is no PDQ passage saying most incidental nodules are not cancer, so the product makes no such claim. The "what this means" line quotes NCI verbatim with its source; the team should decide whether that wording fits an incidental finding.
+4. The voice MP3 files live in the git-ignored `data/` folder (like the CT files); only the sidecars are tracked. Regenerate with `pnpm voices`, then `pnpm sync:cases`.
+5. The Google AI Studio key pasted in chat is in `.env` only. Rotate it after the hackathon.
+
+**Next:** Phase 8 (referral passport), which reads `explanation` from the analysis store.

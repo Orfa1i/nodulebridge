@@ -35,7 +35,7 @@ const stepper = (page: Page) => page.getByTestId("stepper");
 const hud = (page: Page) => page.getByTestId("viewer-hud");
 async function waitDone(page: Page) {
   await expect(stepper(page)).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
-  await expect(page.locator("section.nb-reveal")).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
+  await expect(page.locator("section.nb-reveal").first()).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
 }
 async function scrollViewerAway(page: Page, presses = 15) {
   await page.getByRole("group", { name: /CT viewer/ }).focus();
@@ -242,7 +242,7 @@ test("a refresh keeps the finished analysis (sessionStorage) and does not call t
   await expect(stepper(page)).toHaveAttribute("data-phase", "done");
   await expect(page.getByTestId("finding-values")).toHaveText("9 mm · solid · right upper lobe");
   await expect(page.getByTestId("nextstep")).toHaveAttribute("data-rule", "FL17-S1-GT8");
-  await expect(page.locator("section.nb-reveal")).toHaveAttribute("data-revealed", "true");
+  await expect(page.locator("section.nb-reveal").first()).toHaveAttribute("data-revealed", "true");
   expect(calls.n).toBe(1);
   // and it also restores when the URL has no case
   await page.goto("/");

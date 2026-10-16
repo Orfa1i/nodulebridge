@@ -10,6 +10,7 @@ import { useViewerStore } from "@/lib/viewer/store";
 import { AnalysisStepper } from "./AnalysisStepper";
 import { FindingsCard, type FindingsState } from "./FindingsCard";
 import { NextStepCard, type NextStepState } from "./NextStepCard";
+import { PatientSummaryCard } from "./PatientSummaryCard";
 import { ReportCard } from "./ReportCard";
 import { UploadZone } from "./UploadZone";
 import "./report.css";
@@ -69,6 +70,9 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   const recommendationError = useAnalysisStore((s) => s.recommendationError);
   const recommendationLoading = useAnalysisStore((s) => s.recommendationLoading);
   const confirmations = useAnalysisStore((s) => s.confirmations);
+  const explanation = useAnalysisStore((s) => s.explanation);
+  const explanationError = useAnalysisStore((s) => s.explanationError);
+  const explainStage = useAnalysisStore((s) => s.stages.explain.status);
   const error = useAnalysisStore((s) => s.error);
   const readingSeconds = useAnalysisStore((s) => s.readingSeconds);
   const focus = useAnalysisStore((s) => s.focus);
@@ -215,6 +219,13 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
             onShowInScan={() => void focusFinding({ jump: true, report: true })}
           />
           <NextStepCard state={next} confirmations={confirmations} onConfirm={(c) => void rerunRecommendation(c)} revealed={nextRevealed || phase === "idle" || phase === "error"} />
+          <PatientSummaryCard
+            explanation={explanation}
+            error={explanationError}
+            loading={explainStage === "running"}
+            caseId={caseId}
+            revealed={nextRevealed || phase === "idle" || phase === "error"}
+          />
         </div>
       </div>
       {showTimings && phase !== "idle" ? <TimingsPanel /> : null}
