@@ -13,6 +13,8 @@ export interface ViewerApi {
   jumpToFinding: (noduleId: string) => Promise<void>;
   /** Subscribe to slice changes. The index is 0-based (display number = index + 1). Returns unsubscribe. */
   onSliceChange: (cb: (sliceIndex: number) => void) => () => void;
+  /** Go to the nodule (outline shown) and return the viewport as a PNG data URL, or null if it cannot be read. Used by the passport. */
+  snapshot: (noduleId: string) => Promise<string | null>;
 }
 
 interface ViewerState {

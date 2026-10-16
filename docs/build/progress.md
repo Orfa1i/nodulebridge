@@ -361,3 +361,29 @@ The warm target (4 s) was met in most runs but not all, because the CT download 
 5. The Google AI Studio key pasted in chat is in `.env` only. Rotate it after the hackathon.
 
 **Next:** Phase 8 (referral passport), which reads `explanation` from the analysis store.
+
+## Phase 8 — The referral passport (built; four downloads work; two acceptance checks need a person)
+
+**What it does.** On the case page a new card, "Follow-up passport", appears after the summary. "Create follow-up passport" takes a picture of the nodule slice with its outline from the viewer, builds the passport from the stored analysis and opens `/passport`: header card with the safety statement repeated, Finding (verbatim report quote, size/location/type in Geist Mono, the slice picture with the caption "Radiologist consensus outline · LIDC-IDRI-0213 · example data"), Guideline next step (headline, due window, rule id, citation), the Phase 7 patient panel in both languages, a Booking request card (English / العربية, "Copy message"), and the actions row: primary "Download passport (PDF)", "Download FHIR summary", "Add reminders to calendar", "Reminders for a family member", ghost "Send reminder by WhatsApp (mock)", and "Print or save as PDF".
+
+**Endpoints (all deterministic, no model).** `POST /passport/booking`, `/passport/fhir`, `/passport/ics`, `/passport/pdf`, `/mock/whatsapp` (`api/app/routers/passport.py`, logic in `api/app/services/passport.py`). Content in `shared/content/passport.json` (draft Arabic from the same drafting script; the Arabic safety statement is deliberately NOT machine-translated).
+
+**Decisions made on your behalf.**
+- PDF: the API opens the web route `/passport/print` in headless Chromium (Python Playwright) with the passport injected, so Arabic is shaped and ordered by the browser. A4, 16 mm margins, colour logo on a white page, the safety statement and "Page x / y" in the footer of every page. If the API cannot make the PDF it says so in plain words and the screen offers "Print or save as PDF" (same stylesheet). `WEB_BASE_URL` (default `http://localhost:3000`) and `CHROMIUM_PATH` are the settings.
+- FHIR R4 Bundle (type collection) built from plain dicts and validated with `fhir.resources` R4B before returning. The `ServiceRequest` has `intent: proposal`, `status: draft`: it is a guideline suggestion, not an order. It is left out (with the CarePlan) when the guideline names no date. Codes are `text` only; SNOMED CT and LOINC were not added because they were not verified (TODO-VERIFY in `passport.py`). The Patient has no identifier and a tag `example`.
+- The due window used is the first CT window of the first option (case A: 16 Jan 2027). For cases with two risk options (B) the other option is in the note.
+- Calendar: two events (book in 3 days at 09:00, window opens on `window_start` with alarms 14 days and 1 day before), time zone `Asia/Riyadh` (configurable in the payload), a separate caregiver file, deterministic UIDs.
+- The booking request states the report's own words, what the guideline suggests with its citation, open questions, asks for an appointment in the window and asks the doctor to decide. The fixed sign-off says "not a diagnosis", so the banned-word check runs on everything except that line.
+- WhatsApp is a mock: it appends to `data/mock-outbox.jsonl` (git-ignored) and the UI says "Reminder scheduled (mock — nothing was sent)". A test checks that no messaging or model API appears in the passport code.
+- `check-content` now also lists draft passport strings used by Cases A to C.
+
+**Proof.** API tests 256 pass (new: booking, FHIR validation and exactly one ServiceRequest with the right period, ICS dates/alarms/caregiver/time zone, mock outbox, a real Chromium PDF whose extracted text has the rule id, Arabic letters, the footer statement and "Page 1", A4 size, PDF failure path). Web unit 65 pass; Playwright 55 pass / 1 skipped (new: empty state, case A screen contents incl. the slice picture, all four downloads checked by content, copy to clipboard, WhatsApp mock, refresh keeps the passport, print route, PDF failure message). Lint, `tsc`, `next build --webpack` clean. Evidence in `docs/build/evidence/phase-08/`: `case-a-passport.pdf` (4 pages), page images, and a screen capture. Page 1 shows the colour logo on white, the safety statement, the quote, the outlined nodule and the rule; page 2 shows joined, right-to-left Arabic.
+
+**Not done / needs a person.**
+1. Acceptance check "open in standard apps": I validated the FHIR with `fhir.resources` and parsed the ICS with `icalendar`, but I did not upload the FHIR to the HL7/HAPI online validators (that would send data to a third party) and did not open the ICS in a calendar app. Please run both once.
+2. Arabic text is machine-drafted (booking request, calendar text, summary) and the Arabic button labels in the voice player were written by me: all need a bilingual reviewer. `pnpm check-content` still fails on purpose.
+3. SNOMED CT / LOINC codes are absent by design until verified.
+4. The Arabic safety statement (banner, footer, calendar) is still TODO-VERIFY: the PDF footer and calendar text use the English statement.
+5. The nodule picture is the viewer at 2x zoom on the finding slice; the dark band is the CT padding of that scan.
+
+**Next:** Phase 9 (safety, privacy, verification).

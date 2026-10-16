@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     tts_voice_en: str | None = None
     tts_model: str = "gemini-3.8-flash-tts"
     ffmpeg_path: str | None = None
+    web_base_url: str = "http://localhost:3000"
+    chromium_path: str | None = None
     web_origin: str = "http://localhost:3000"
     data_base_url: str | None = None
     data_dir: Path = ROOT / "data"

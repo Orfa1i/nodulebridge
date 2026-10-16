@@ -19,13 +19,14 @@ const TABS: { locale: Locale; label: string }[] = [
   { locale: "ar", label: "العربية" },
 ];
 
+// TODO-VERIFY: the Arabic button and label texts below were written by the assistant, not by a clinician or a native reviewer.
 const UI = {
   en: { play: "Play summary", pause: "Pause", transcript: "Transcript", sourceLink: "NCI PDQ page", retrieved: "retrieved" },
   ar: { play: "تشغيل الملخص", pause: "إيقاف مؤقت", transcript: "النص", sourceLink: "صفحة PDQ", retrieved: "تاريخ الاسترجاع" },
 } as const;
 
 /** Numbers, measurements and dates keep their own direction inside right-to-left text. */
-function Isolated({ text }: { text: string }) {
+export function Isolated({ text }: { text: string }) {
   return (
     <>
       {isolateRuns(text).map((run, i) => (run.isolate ? <bdi key={i}>{run.text}</bdi> : <Fragment key={i}>{run.text}</Fragment>))}

@@ -314,6 +314,11 @@ def explain(
         "voice_text": voice,
         "template_ids": ids,
         "questions": questions,
+        # pieces reused by the booking request: the options in words, the due window as written dates, the place
+        "action_text": values["action_list"],
+        "window": {"start": values["window_start"], "end": values["window_end"], "same_day": win["window_start"] == win["window_end"]} if win else None,
+        "location_text": values["location"],
+        "type_text": values["type"],
         "source_label": r.term("ui.source"),
         "review_status": {
             "status": "reviewed" if not drafts else "draft",

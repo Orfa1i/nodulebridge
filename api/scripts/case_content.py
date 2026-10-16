@@ -43,3 +43,24 @@ def case_explanation(letter: str, locale: str, content: Content | None = None) -
     out["recommendation"] = rec
     out["extraction_cached"] = payload["cached"]
     return out
+
+
+def case_passport(letter: str, content: Content | None = None) -> dict[str, Any]:
+    """The passport payload of a prepared case, as the browser would build it (no picture)."""
+    data = case_explanation(letter, "en", content)
+    explanation = {loc: case_explanation(letter, loc, content) for loc in ("en", "ar")}
+    rec = data["recommendation"]
+    settings = get_settings()
+    service = ExtractService(settings, lambda: make_extractor(settings))
+    report = read_pdf((case_dir(letter) / "report.pdf").read_bytes())
+    result = service.run(report, 0.0)["result"]
+    finding = next((n for n in result["nodules"] if n["id"] == rec["driving_nodule_id"]), None)
+    return {
+        "label": f"Example patient {letter.upper()}",
+        "case_id": f"case-{letter}",
+        "report_text": report.normalised,
+        "evidence_quote": finding["evidence"][0]["quote"] if finding else None,
+        "finding": finding,
+        "recommendation": rec,
+        "explanation": explanation,
+    }

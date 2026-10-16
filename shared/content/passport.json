@@ -1,0 +1,90 @@
+{
+  "_note": "Strings for the referral passport: booking request, PDF labels and calendar text. English is the source; Arabic is a DRAFT from api/scripts/draft_arabic.py and stays draft until a bilingual clinician reviews it. Placeholders in braces are filled by api/app/services/passport.py. The booking request never says the patient has cancer and never asks for a specific test: it states what the guideline suggests and asks the doctor to decide. The printed passport reuses the booking request, the explanation headings and the guideline text, so it has no labels of its own in Arabic.",
+  "strings": {
+    "booking.subject": {
+      "en": "Request for a follow-up appointment",
+      "ar": "طلب موعد متابعة",
+      "status": "draft"
+    },
+    "booking.greeting": {
+      "en": "Dear Doctor,",
+      "ar": "عزيزي الطبيب،",
+      "status": "draft"
+    },
+    "booking.finding": {
+      "en": "My CT report says: {quote}",
+      "ar": "يقول تقرير الأشعة المقطعية الخاص بي: {quote}",
+      "status": "draft"
+    },
+    "booking.guideline": {
+      "en": "I read that the Fleischner Society 2017 guideline for nodules found by chance suggests the following. {action_text}",
+      "ar": "قرأت أن إرشادات Fleischner Society 2017 للعقد المكتشفة بالصدفة تقترح ما يلي. {action_text}",
+      "status": "draft"
+    },
+    "booking.ask_window": {
+      "en": "Could we arrange a follow-up appointment between {window_start} and {window_end}?",
+      "ar": "هل يمكننا ترتيب موعد متابعة بين {window_start} و{window_end}؟",
+      "status": "draft"
+    },
+    "booking.ask_around": {
+      "en": "Could we arrange a follow-up appointment around {window_start}?",
+      "ar": "هل يمكننا ترتيب موعد متابعة في حدود {window_start}؟",
+      "status": "draft"
+    },
+    "booking.ask_open": {
+      "en": "Could we arrange an appointment to talk about the next step?",
+      "ar": "هل يمكننا ترتيب موعد للتحدث حول الخطوة التالية؟",
+      "status": "draft"
+    },
+    "booking.decide": {
+      "en": "I understand this is only what a guideline suggests. Please decide what is right for me.",
+      "ar": "أدرك أن هذا مجرد اقتراح توجيهي. يرجى تحديد ما يناسب حالتي.",
+      "status": "draft"
+    },
+    "booking.questions": {
+      "en": "Some answers are still needed: {questions}",
+      "ar": "ما زالت هناك حاجة إلى بعض الإجابات: {questions}",
+      "status": "draft"
+    },
+    "booking.source": {
+      "en": "Guideline: {citation}",
+      "ar": "الإرشادات: {citation}",
+      "status": "draft"
+    },
+    "booking.thanks": {
+      "en": "Thank you.",
+      "ar": "شكراً لك.",
+      "status": "draft"
+    },
+    "booking.signoff": {
+      "en": "Prepared with NoduleBridge (decision support, not a diagnosis)",
+      "ar": "تم إعداده باستخدام NoduleBridge (دعم اتخاذ القرار وليس قراراً طبياً نهائياً)",
+      "status": "draft"
+    },
+    "ics.book_summary": {
+      "en": "Book your follow-up CT",
+      "ar": "احجز متابعة الأشعة المقطعية",
+      "status": "draft"
+    },
+    "ics.window_summary": {
+      "en": "Follow-up CT window opens",
+      "ar": "تفتح نافذة متابعة الأشعة المقطعية",
+      "status": "draft"
+    },
+    "ics.caregiver_summary": {
+      "en": "Help {name} book the follow-up CT",
+      "ar": "ساعد {name} في حجز متابعة الأشعة المقطعية",
+      "status": "draft"
+    },
+    "ics.description": {
+      "en": "{action_text} Your doctor decides what is right for you.",
+      "ar": "{action_text} يحدد طبيبك ما هو مناسب لك.",
+      "status": "draft"
+    },
+    "ics.statement": {
+      "en": "Decision and adherence support only. Not a diagnosis. Follow-up decisions belong to your doctor.",
+      "ar": "",
+      "status": "draft"
+    }
+  }
+}

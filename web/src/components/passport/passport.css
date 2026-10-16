@@ -1,0 +1,47 @@
+/* Referral passport screen and print layout. Tokens only, no hex values. */
+.nb-passport { display: flex; flex-direction: column; gap: var(--space-6); }
+.nb-passport__title { font: 500 32px/40px var(--font-display); letter-spacing: -0.01em; color: var(--text-primary); margin: 0; }
+.nb-passport__meta { margin: 0; font: 400 15px/22px var(--font-sans); color: var(--text-secondary); }
+.nb-passport__meta-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.nb-passport__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-6); align-items: start; }
+@media (max-width: 900px) { .nb-passport__grid { grid-template-columns: minmax(0, 1fr); } }
+.nb-passport__quote { margin: 0; padding: var(--space-3) var(--space-4); border-inline-start: 3px solid var(--indigo-500); background: var(--bg-subtle); font: 400 16px/26px var(--font-sans); color: var(--text-primary); }
+.nb-passport__values { margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-6); }
+.nb-passport__values div { display: flex; flex-direction: column; gap: 2px; }
+.nb-passport__values dt { font: 600 13px/18px var(--font-sans); color: var(--text-secondary); }
+.nb-passport__values dd { margin: 0; font: 400 15px/22px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.nb-passport__figure { margin: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.nb-passport__figure img { width: 100%; max-height: 360px; object-fit: contain; border-radius: var(--radius-md); background: var(--bg-surface); border: 1px solid var(--border-default); }
+.nb-passport__figure figcaption { font: 400 13px/18px var(--font-sans); color: var(--text-secondary); }
+.nb-passport__rule { margin: 0; font: 400 14px/20px var(--font-sans); color: var(--text-secondary); }
+.nb-passport__message { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-subtle); }
+.nb-passport__message p { margin: 0; font: 400 16px/26px var(--font-sans); color: var(--text-primary); max-width: 72ch; }
+.nb-passport__message[dir="rtl"] p { font-size: 17px; line-height: 30px; }
+.nb-passport__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+/* Print: A4, white page, colour logo on white only, no app chrome */
+body:has(.nb-print) .ak-appbar, body:has(.nb-print) .nb-safety-banner, body:has(.nb-print) .nb-skip { display: none; }
+body:has(.nb-print) { background: var(--bg-surface); }
+body:has(.nb-print) .nb-page { max-width: 210mm; padding: var(--space-6); }
+.nb-print { background: var(--bg-surface); color: var(--text-primary); display: flex; flex-direction: column; gap: var(--space-4); font: 400 12px/18px var(--font-sans); }
+.nb-print__head { display: flex; align-items: center; gap: var(--space-3); padding-bottom: var(--space-3); border-bottom: 1px solid var(--border-default); }
+.nb-print__product { font: 500 16px/22px var(--font-display); color: var(--text-primary); }
+.nb-print__safety { padding: var(--space-3); border: 1px solid var(--border-default); border-radius: var(--radius-sm); font: 400 12px/18px var(--font-sans); }
+.nb-print__block { display: flex; flex-direction: column; gap: var(--space-2); break-inside: avoid-page; }
+.nb-print__letter { break-before: page; }
+.nb-print h1 { font-size: 26px; line-height: 32px; }
+.nb-print h2 { font: 500 17px/24px var(--font-display); margin: 0; }
+.nb-print h3 { font: 600 12px/18px var(--font-sans); margin: 0; color: var(--text-secondary); }
+.nb-print p { margin: 0; font-size: 12.5px; line-height: 19px; }
+.nb-print [dir="rtl"] p { font-size: 13.5px; line-height: 23px; }
+.nb-print__section { break-inside: avoid; display: flex; flex-direction: column; gap: 2px; }
+.nb-print__draft { font: 600 11px/16px var(--font-sans); color: var(--warning-600); }
+.nb-print__mono, .nb-passport__values-line { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.nb-passport__values-line { display: flex; gap: var(--space-4); }
+.nb-passport__headline-print { font: 500 17px/24px var(--font-display); }
+.nb-print__attribution { font-size: 10px; line-height: 14px; color: var(--text-secondary); }
+@page { size: A4; margin: 16mm; }
+@media print {
+  body:has(.nb-print) .nb-page { padding: 0; max-width: none; }
+  .nb-print__block { break-inside: avoid-page; }
+}

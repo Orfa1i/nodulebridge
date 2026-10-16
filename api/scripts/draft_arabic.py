@@ -31,6 +31,8 @@ CONTENT = ROOT / "shared" / "content"
 PLACEHOLDER = re.compile(r"\{[^{}]+\}")
 FIELDS = ["found", "reassure", "why", "todo", "when", "who", "voice", "voice_append"]
 VOICE_WORDS = {"voice": 23, "voice_append": 7}  # spoken Arabic is slower: keep the clip near 15 s
+# the safety statement is never machine-translated: its Arabic wording must come from a clinician (master brief 5.1)
+NOT_DRAFTED = {"ics.statement"}
 ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 
 SYSTEM = """You translate short patient-facing health text from English to Modern Standard Arabic for a hospital app.
@@ -117,6 +119,7 @@ def main() -> None:
     ar = json.loads(ar_path.read_text(encoding="utf-8")) if (ar_path.exists() and args.only_missing) else {"templates": {}, "headings": {}}
     engine = json.loads((CONTENT / "engine-strings.json").read_text(encoding="utf-8"))
     pdq = json.loads((CONTENT / "pdq-snippets.json").read_text(encoding="utf-8"))
+    passport = json.loads((CONTENT / "passport.json").read_text(encoding="utf-8"))
 
     items: list[dict] = []
     for k, v in en["headings"].items():
@@ -138,6 +141,10 @@ def main() -> None:
     for sid, v in pdq["snippets"].items():
         if not (args.only_missing and v["ar"]["text"]):
             items.append({"id": f"pdq.{sid}", "en": v["text"]})
+
+    for k, v in passport["strings"].items():
+        if k not in NOT_DRAFTED and not (args.only_missing and v["ar"]):
+            items.append({"id": f"passport.{k}", "en": v["en"]})
 
     print(f"translating {len(items)} strings with {args.model} in batches of 40")
     done: dict[str, str] = {}
@@ -168,7 +175,11 @@ def main() -> None:
         if f"pdq.{sid}" in done:
             v["ar"] = {"text": done[f"pdq.{sid}"], "status": "draft"}
     (CONTENT / "pdq-snippets.json").write_text(json.dumps(pdq, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("wrote patient-templates.ar.json, engine-strings.json, pdq-snippets.json (all status draft)")
+    for k, v in passport["strings"].items():
+        if f"passport.{k}" in done:
+            v["ar"], v["status"] = done[f"passport.{k}"], "draft"
+    (CONTENT / "passport.json").write_text(json.dumps(passport, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("wrote patient-templates.ar.json, engine-strings.json, pdq-snippets.json, passport.json (all status draft)")
 
 
 if __name__ == "__main__":

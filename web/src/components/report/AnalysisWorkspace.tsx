@@ -1,10 +1,12 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ViewerCard } from "@/components/viewer/ViewerCard";
 import type { UploadFiles } from "@/features/analysis/deidentify";
 import { focusFinding, rerunRecommendation, retryAnalysis, runAnalysis } from "@/features/analysis/runAnalysis";
 import { rehydrateAnalysis, resetAnalysis, STAGES, useAnalysisStore } from "@/features/analysis/store";
+import { createPassport } from "@/features/passport/passportStore";
 import { caseIdFromParam } from "@/lib/cases";
 import { useViewerStore } from "@/lib/viewer/store";
 import { AnalysisStepper } from "./AnalysisStepper";
@@ -59,6 +61,9 @@ function TimingsPanel() {
 export function AnalysisWorkspace({ initialCase }: { initialCase: string | null }) {
   const [hydrated, setHydrated] = useState(false);
   const [showTimings, setShowTimings] = useState(false);
+  const [passportBusy, setPassportBusy] = useState(false);
+  const [passportError, setPassportError] = useState<string | null>(null);
+  const router = useRouter();
 
   const phase = useAnalysisStore((s) => s.phase);
   const caseId = useAnalysisStore((s) => s.caseId);
@@ -108,6 +113,17 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
     void runAnalysis({ kind: "example", caseId: id, startedByClick: true });
   }, []);
   const startUpload = useCallback((files: UploadFiles) => void runAnalysis({ kind: "upload", files, startedByClick: true }), []);
+  const makePassport = useCallback(async () => {
+    setPassportBusy(true);
+    setPassportError(null);
+    try {
+      await createPassport();
+      router.push("/passport");
+    } catch (err) {
+      setPassportError(err instanceof Error ? err.message : String(err));
+      setPassportBusy(false);
+    }
+  }, [router]);
   const startFromCase = useCallback(() => {
     if (caseId) void runAnalysis({ kind: "example", caseId, startedByClick: true });
   }, [caseId]);
@@ -226,6 +242,27 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
             caseId={caseId}
             revealed={nextRevealed || phase === "idle" || phase === "error"}
           />
+          {phase === "done" && recommendation && explanation ? (
+            <section className="ak-card" aria-labelledby="passport-cta-title" data-testid="passport-cta">
+              <h2 id="passport-cta-title" className="ak-card__title">
+                Follow-up passport
+              </h2>
+              <p className="nb-finding__note">The finding, the next step, the summary and a message for the doctor in one place, with a PDF, a FHIR file and calendar reminders.</p>
+              <div>
+                <button type="button" className="ak-btn ak-btn--primary" onClick={() => void makePassport()} disabled={passportBusy} data-testid="create-passport">
+                  {passportBusy ? "Creating the passport" : "Create follow-up passport"}
+                </button>
+              </div>
+              {passportError ? (
+                <div className="ak-alert ak-alert--danger" role="alert">
+                  <div className="ak-alert__body">
+                    <p className="ak-alert__title">The passport could not be created.</p>
+                    <p>{passportError}</p>
+                  </div>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
         </div>
       </div>
       {showTimings && phase !== "idle" ? <TimingsPanel /> : null}

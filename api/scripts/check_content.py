@@ -19,20 +19,29 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from app.services.explain import load_content
+from app.services.passport import PassportPayload, booking_request
 from app.services.tts import text_sha256
 
-from .case_content import CASES, case_dir, case_explanation
+from .case_content import CASES, case_dir, case_explanation, case_passport
 
 
 def run_check(content_dir: str | None = None, cases: tuple[str, ...] = CASES, voices: bool = True) -> tuple[bool, list[str]]:
     content = load_content(content_dir)
+    strings = json.loads((content.directory / "passport.json").read_text(encoding="utf-8"))["strings"]
     lines: list[str] = []
     drafts: set[str] = set()
     for letter in cases:
+        passport = PassportPayload.model_validate(case_passport(letter, content))
         for locale in ("en", "ar"):
             exp = case_explanation(letter, locale, content)
             for item in exp["review_status"]["draft_items"]:
                 drafts.add(f"{locale}: {item}")
+            booking = booking_request(passport, locale, strings)
+            for item in booking["review_status"]["draft_items"]:
+                drafts.add(f"{locale}: {item}")
+            for key in ("ics.book_summary", "ics.window_summary", "ics.caregiver_summary", "ics.description"):
+                if strings[key]["status"] != "reviewed":
+                    drafts.add(f"{locale}: passport:{locale}:{key}")
             if voices:
                 sidecar = case_dir(letter) / f"voice.{locale}.json"
                 if not sidecar.exists():

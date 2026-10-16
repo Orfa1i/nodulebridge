@@ -7,12 +7,16 @@ dependencies = [
     "anthropic>=1.15.0",
     "babel>=2.18.0",
     "fastapi>=0.143.2",
+    "fhir-resources>=8.3.0",
     "httpx>=0.28.1",
+    "icalendar>=7.3.0",
     "jsonschema>=4.26.0",
     "pdfplumber>=0.11.10",
+    "playwright>=1.64.0",
     "pydantic-settings>=2.16.0",
     "python-dateutil>=2.9.0.post0",
     "python-multipart>=0.0.32",
+    "tzdata>=2026.5",
     "uvicorn[standard]>=0.54.0",
 ]
 

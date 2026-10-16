@@ -308,6 +308,16 @@ export function CaseViewer({ caseId, debug = false, onFindingClick }: CaseViewer
         // imperative API
         const api: ViewerApi = {
           jumpToFinding: (noduleId) => jumpToFinding(noduleId),
+          snapshot: async (noduleId) => {
+            await jumpToFinding(noduleId);
+            viewport.render();
+            const canvas = element.querySelector("canvas");
+            try {
+              return canvas ? canvas.toDataURL("image/png") : null;
+            } catch {
+              return null; // a tainted or unreadable canvas: the passport is made without the picture
+            }
+          },
           onSliceChange: (cb) => {
             listenersRef.current.add(cb);
             return () => listenersRef.current.delete(cb);
