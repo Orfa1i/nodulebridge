@@ -50,3 +50,23 @@ def test_a_different_model_does_not_use_the_seed(tmp_path):
     seed_extract_cache(settings)
     service = ExtractService(settings, lambda: None)
     assert service.is_cached(read_pdf(pdf.read_bytes())) is False
+
+
+def test_a_keyless_public_deployment_still_serves_the_examples_and_refuses_new_reports_plainly(tmp_path):
+    """The public demo runs with LLM_PROVIDER=gemini and NO key: stored answers are served, anything else says so."""
+    import pytest
+
+    from app.services.extractor import ExtractionUnavailable
+    from app.services.providers import make_extractor
+    from app.services.report_text import read_text
+
+    pdf = ROOT / "data" / "cases" / "case-a" / "report.pdf"
+    if not pdf.exists():
+        pytest.skip("prepared case files are not present")
+    settings = Settings(_env_file=None, data_dir=tmp_path, llm_provider="gemini", google_api_key=None, anthropic_api_key=None)
+    seed_extract_cache(settings)
+    service = ExtractService(settings, lambda: make_extractor(settings))
+    assert service.run(read_pdf(pdf.read_bytes()), 0.0)["cached"] is True
+    with pytest.raises(ExtractionUnavailable) as exc:
+        service.run(read_text("Findings: a 9 mm solid nodule is seen in the right upper lobe."), 0.0)
+    assert "GOOGLE_API_KEY" in str(exc.value) or "not" in str(exc.value).lower()

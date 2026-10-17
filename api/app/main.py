@@ -7,6 +7,7 @@ from app import __version__
 from app.config import get_settings
 from app.routers import explain, extract, health, passport, recommend, redact
 from app.services.seed import seed_extract_cache
+from app.webstatic import WebStaticFiles
 
 settings = get_settings()
 
@@ -29,3 +30,7 @@ app.include_router(recommend.router)
 app.include_router(explain.router)
 app.include_router(passport.router)
 app.include_router(redact.router)
+
+# last, so every API route above wins: the exported web app (pages, scripts, example scans) when STATIC_DIR is set
+if settings.static_dir and settings.static_dir.is_dir():
+    app.mount("/", WebStaticFiles(directory=settings.static_dir, html=True), name="web")

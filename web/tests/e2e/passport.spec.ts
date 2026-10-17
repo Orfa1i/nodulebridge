@@ -12,7 +12,7 @@ async function createPassport(page: Page, letter: string) {
   await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
   await expect(page.getByTestId("patient-summary")).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
   await page.getByTestId("create-passport").click();
-  await expect(page).toHaveURL(/\/passport$/);
+  await expect(page).toHaveURL(/\/passport\/?$/); // the static export serves /passport/ with a trailing slash
   await expect(page.getByTestId("passport")).toBeVisible();
 }
 

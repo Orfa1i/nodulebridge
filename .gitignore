@@ -23,3 +23,7 @@ web/AGENTS.md
 !/data/cases/*/report.pdf
 web/public/cases/
 .coverage
+
+# assembled Hugging Face Space folder (deploy/assemble_space.py)
+/build/
+web/out/

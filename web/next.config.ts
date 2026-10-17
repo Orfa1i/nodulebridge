@@ -11,8 +11,12 @@ function gitCommit(): string {
   }
 }
 
+// STATIC_EXPORT=1 writes the whole web app as plain files (web/out), which the API serves in the Hugging Face Space.
+const staticExport = process.env.STATIC_EXPORT === "1";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  ...(staticExport ? { output: "export" as const, trailingSlash: true, images: { unoptimized: true } } : {}),
   env: {
     NEXT_PUBLIC_APP_VERSION: pkg.version,
     NEXT_PUBLIC_GIT_COMMIT: gitCommit(),

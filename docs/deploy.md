@@ -1,5 +1,26 @@
 # Deploying NoduleBridge
 
+## Free live demo: Hugging Face Space (deployed by GitHub Actions)
+
+GitHub Actions cannot host a running app, so the live demo runs in a free **Hugging Face Space** (Docker) and a GitHub workflow keeps it up to date. One container serves everything on one address: the API, the exported web app and the example scans. It runs **without a language-model key**: the 18 examples come from stored model answers (`api/seed/extract`) and voice works for studies A to C (pre-made clips); reading a new report of your own and live voice for the other studies answer "not available" in plain words. Free Spaces sleep after inactivity and take about a minute to wake on the first visit.
+
+How the pieces fit: `deploy/space/` (the Space's Dockerfile and README), `deploy/assemble_space.py` (collects what the Space needs), `deploy/push_space.py` (one atomic commit to the Space, never touching the scans), `deploy/upload_cases.py` (uploads the scans once), `.github/workflows/deploy-space.yml` (builds the web app as static files with `STATIC_EXPORT=1` and pushes on every push to `main`). The API serves the web app when `STATIC_DIR` is set (`api/app/webstatic.py`); `LLM_PROVIDER=gemini` with no key makes the stored answers match.
+
+One-time setup:
+
+1. Make a free Hugging Face account and a **write** access token (Settings, Access Tokens).
+2. Log in locally: `uvx --from huggingface_hub hf auth login` (paste the token in your terminal).
+3. Create the Space (public, Docker): `uvx --from huggingface_hub hf repo create <you>/nodulebridge --repo-type space --space-sdk docker`.
+4. Upload the example scans once: `uv run --with huggingface_hub python deploy/upload_cases.py <you>/nodulebridge` (about 560 MB; needs `pnpm sync:cases` first).
+5. In the GitHub repository add the secret `HF_TOKEN` (`gh secret set HF_TOKEN`) and the variable `HF_SPACE` (`gh variable set HF_SPACE --body <you>/nodulebridge`).
+6. Run the workflow ("Deploy the live demo", Run workflow) or push to `main`. The Space builds (about 10 minutes the first time). Its address is `https://<you>-nodulebridge.hf.space`.
+
+Rehearse it locally with no account: `STATIC_EXPORT=1 NEXT_PUBLIC_API_BASE_URL= pnpm --dir web build`, `python deploy/assemble_space.py --with-cases`, `docker build -t nodulebridge-space:local build/space`, `docker run -p 7860:7860 nodulebridge-space:local`, then `WEB_URL=http://127.0.0.1:7860 pnpm --dir web exec playwright test`. That full suite passes against this exact image (the timings tests use `?timings` because the panel is hidden in production builds).
+
+---
+
+## Other hosts (Google Cloud, Render and similar)
+
 Three pieces: the web app (Vercel), the API (any container host), and the prepared case files (object storage). Nothing here has been run on a public host yet: the steps need your accounts. Everything below except the hosting accounts was tested locally (API image built and run, PDF made inside the container, `pnpm warm` run against it).
 
 ## 1. Case files (object storage)

@@ -72,7 +72,7 @@ test("example patient A: all five steps, the viewer jumps, the sentence is highl
 
 test("the sentence flashes after the viewer jumps, and the stage timings are recorded", async ({ page }) => {
   await mockExtract(page, "A");
-  await page.goto("/");
+  await page.goto("/?timings"); // the timings panel is on in development and with ?timings in a production build
   await page.getByRole("button", { name: "Use example patient A" }).click();
   await expect(page.locator(".nb-evidence.is-active")).toHaveCount(1, { timeout: 30_000 });
   await waitDone(page);
@@ -117,9 +117,10 @@ test("two-way sync with the mouse: sentence, finding row and viewer label", asyn
   await showTab(page, "findings");
   await page.getByRole("button", { name: "Show in scan" }).click();
   await expect(hud(page)).toContainText(sliceText("A"));
+  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "report"); // "Show in scan" also shows the sentence
 
-  // label in the viewer: the Report tab opens, the report scrolls to the sentence and flashes it
-  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "findings");
+  // label in the viewer: from another tab it opens the Report tab, scrolls to the sentence and flashes it
+  await showTab(page, "findings");
   await page.getByTestId("finding-label").click();
   await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "report");
   await expect(page.locator(".nb-evidence.is-active")).toHaveCount(1);
@@ -308,7 +309,7 @@ test("a failed read shows the error in the stepper and the findings card, and Tr
 test("LIVE: example patient A with the real model, warm cache, target 4 s from click to highlight, guard 8 s", async ({ page }) => {
   test.skip(!process.env.NB_API_HAS_KEY, "needs an API with a model key");
   test.setTimeout(120_000);
-  await page.goto("/");
+  await page.goto("/?timings");
   await page.getByRole("button", { name: "Use example patient A" }).click();
   await waitDone(page);
   await expect(page.getByTestId("stage-meta-read")).toContainText("cached");

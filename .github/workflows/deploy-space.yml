@@ -1,0 +1,71 @@
+name: Deploy the live demo
+
+# Builds the web app as static files and pushes the code to the Hugging Face Space that runs the demo.
+# One-time setup (see docs/deploy.md): create the Space, upload the example scans with deploy/upload_cases.py,
+# then add the repository secret HF_TOKEN and the repository variable HF_SPACE (for example  owner/nodulebridge ).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-space
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the deployment settings
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          if [ -z "$HF_TOKEN" ] || [ -z "$HF_SPACE" ]; then
+            echo "::warning::HF_TOKEN (secret) or HF_SPACE (variable) is not set, so nothing was deployed. See docs/deploy.md."
+            echo "SKIP=1" >> "$GITHUB_ENV"
+          fi
+
+      - uses: pnpm/action-setup@v4
+        if: env.SKIP != '1'
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        if: env.SKIP != '1'
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: web/pnpm-lock.yaml
+
+      - name: Build the web app as static files
+        if: env.SKIP != '1'
+        working-directory: web
+        env:
+          STATIC_EXPORT: "1"
+          NEXT_PUBLIC_API_BASE_URL: ""
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - uses: actions/setup-python@v5
+        if: env.SKIP != '1'
+        with:
+          python-version: "3.11"
+
+      - name: Assemble and push the Space
+        if: env.SKIP != '1'
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          pip install --quiet huggingface_hub
+          python deploy/assemble_space.py
+          python deploy/push_space.py "$HF_SPACE" --message "Deploy ${GITHUB_SHA::7} from GitHub"
