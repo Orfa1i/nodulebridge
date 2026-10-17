@@ -4,6 +4,26 @@ NoduleBridge, a product by Asklevia, helps close the follow-up gap for incidenta
 
 Live demo: TODO (public URL after deployment, see `docs/deploy.md`). Video: TODO (link after recording, see `docs/build/video-plan.md`). Architecture: `docs/architecture.png`.
 
+## Product overview
+
+**Worklist.** Eighteen chest CT studies with their reports, like the inbox a radiologist or referring doctor opens.
+
+![The worklist of 18 chest CT studies](docs/images/worklist.png)
+
+**Study view.** The nodule in the CT viewer, linked to the sentence in the report, with the guideline's next step and the actions in one tabbed panel.
+
+![A study: CT viewer with the outlined nodule and the guideline next step](docs/images/study-next-step.png)
+
+**Plain-language summary in English and Arabic**, with a voice player.
+
+![The patient summary tab](docs/images/study-summary.png)
+
+**Follow-up passport.** What was found, the next step and its due window, a message for the doctor, and downloads (PDF, FHIR summary, calendar reminders).
+
+![The follow-up passport](docs/images/passport.png)
+
+All patient details in the screenshots are fictional; the scans are LIDC-IDRI research data.
+
 ## What you see
 
 The home screen is a worklist of 18 chest CT studies, like an inbox a radiologist or referring doctor would open: study, patient (fictional age and sex), exam, indication, referring service, report on file. Opening a study reads its report, shows the nodule in the CT viewer, applies the guideline and builds the bilingual summary and passport. The scans are LIDC-IDRI; the reports and referral details are team-written examples. Three studies (R, S, T) are written so that the guideline does not apply (age 30, a screening scan, a known cancer) to show the guardrails on real scans.
@@ -66,6 +86,18 @@ pnpm test
 pnpm lint
 pnpm schemas    # regenerate TS and Python types from /shared/schemas
 ```
+
+### Example scans
+
+The 18 example CT volumes (about 560 MB) and the voice clips are not stored in git. They are rebuilt from the public TCIA LIDC-IDRI collection (no account needed):
+
+```
+pnpm fetch:cases   # download the 18 chosen series from TCIA
+pnpm build:cases   # masks, measurements, reports (needs the pipeline's Python environment)
+pnpm sync:cases    # copy them to web/public/cases
+```
+
+The model answers for the example reports are included (`api/seed/extract`), so the examples run without calling a model; reading your own report needs `GOOGLE_API_KEY` or `ANTHROPIC_API_KEY` in `.env`.
 
 Build plan and rules: `docs/build/`.
 
