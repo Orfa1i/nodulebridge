@@ -13,9 +13,6 @@ export function AppBar() {
         <span className="nb-brand__name">NoduleBridge</span>
       </Link>
       <NavLinks />
-      <div className="ak-appbar__end">
-        <span className="ak-badge ak-badge--outline">Hackathon prototype</span>
-      </div>
     </header>
   );
 }
