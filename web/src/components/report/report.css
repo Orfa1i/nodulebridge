@@ -113,3 +113,71 @@
 .nb-studybar__select { flex: 1 1 260px; max-width: 460px; }
 .nb-studybar__select .ak-select { width: 100%; }
 .nb-worklist__table td:first-child { white-space: nowrap; }
+
+/* Study view: referral header, viewer left, one tabbed result panel right. Tokens only. */
+.nb-studyhead { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.nb-studyhead__title { margin: 0; font: 500 28px/36px var(--font-display); letter-spacing: -0.01em; color: var(--text-primary); }
+.nb-studyhead__facts { margin: var(--space-2) 0 0; display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-6); }
+.nb-studyhead__facts div { display: flex; gap: var(--space-2); align-items: baseline; }
+.nb-studyhead__facts dt { font: 600 12px/18px var(--font-sans); color: var(--text-tertiary); }
+.nb-studyhead__facts dd { margin: 0; font: 400 14px/20px var(--font-sans); color: var(--text-primary); }
+.nb-studyhead__nav { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+.nb-studyhead__nav .ak-btn svg { width: 16px; height: 16px; }
+
+.nb-study { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--space-5); align-items: stretch; }
+.nb-study__viewer { min-width: 0; }
+.nb-viewer__viewport { height: clamp(380px, calc(100dvh - 340px), 700px); }
+
+.nb-result { position: relative; padding: 0; min-height: 520px; min-width: 0; }
+.nb-result__inner { position: absolute; inset: 0; display: flex; flex-direction: column; min-height: 0; }
+.nb-result__tabs { flex: none; padding: 0 var(--space-5); }
+.nb-result__body { flex: 1; min-height: 0; overflow-y: auto; padding: var(--space-5); }
+.nb-result__panel[hidden] { display: none; }
+.nb-result__panel > .ak-card { border: 0; box-shadow: none; background: transparent; padding: 0; border-radius: 0; }
+.nb-result .nb-report { max-height: none; padding: 0; border: 0; background: transparent; }
+.nb-result__footer { flex: none; padding: var(--space-3) var(--space-5); border-top: 1px solid var(--border-default); background: var(--bg-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.nb-result__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.nb-result__alert { flex-basis: 100%; }
+.nb-stepper { padding: var(--space-3) var(--space-5); }
+
+@media (max-width: 1100px) {
+  .nb-study { grid-template-columns: minmax(0, 1fr); }
+  .nb-result { min-height: 0; }
+  .nb-result__inner { position: static; }
+  .nb-result__body { overflow: visible; }
+  .nb-viewer__viewport { height: min(520px, 70vh); }
+}
+
+/* Tighter study view: title row, compact stepper, one-line safety banner, less padding */
+.nb-studyhead { display: flex; flex-direction: column; gap: var(--space-1); }
+.nb-studyhead__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.nb-studyhead__title { font-size: 24px; line-height: 32px; }
+.nb-studyhead__facts { margin: 0; }
+body:has(.nb-study) .nb-page { padding-top: var(--space-4); padding-bottom: var(--space-4); gap: var(--space-3); }
+body:has(.nb-study) .nb-safety-banner .ak-alert__body { display: flex; flex-wrap: wrap; column-gap: var(--space-2); }
+body:has(.nb-study) .nb-stepper { padding: var(--space-2) var(--space-5); gap: var(--space-2); }
+body:has(.nb-study) .nb-stepper .ak-step__marker { width: 22px; height: 22px; font-size: 12px; }
+body:has(.nb-study) .nb-stepper .ak-step__title { font-size: 13px; line-height: 18px; }
+body:has(.nb-study) .nb-stepper .ak-step__meta { font-size: 12px; line-height: 16px; }
+.nb-viewer__viewport { height: clamp(360px, calc(100dvh - 380px), 720px); }
+@media (max-width: 1100px) { .nb-viewer__viewport { height: min(520px, 70vh); } }
+
+/* Study view, second pass: everything above the viewer stays short so the page fits a laptop screen */
+body:has(.nb-study) .nb-safety-banner .ak-alert__body { flex-direction: row; align-items: baseline; }
+body:has(.nb-study) .nb-viewer-card__head > div { display: flex; align-items: baseline; flex-wrap: wrap; column-gap: var(--space-3); }
+body:has(.nb-study) .nb-viewer-card__head .ak-card__meta { margin: 0; }
+.nb-viewer__viewport { height: clamp(340px, calc(100dvh - 470px), 720px); }
+.nb-result .nb-nextstep__headline { font-size: 20px; line-height: 28px; }
+.nb-result .nb-nextstep__option { padding: var(--space-3) var(--space-4); }
+.nb-result .nb-nextstep, .nb-result .nb-nextstep__options { gap: var(--space-3); }
+@media (max-width: 1100px) { .nb-viewer__viewport { height: min(520px, 70vh); } }
+
+/* compact stepper in the study view: marker beside the title, the finding of the step under it, no connector line */
+body:has(.nb-study) .nb-stepper .ak-step { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--space-2); row-gap: 0; align-items: center; padding-right: var(--space-3); }
+body:has(.nb-study) .nb-stepper .ak-step::before { display: none; }
+body:has(.nb-study) .nb-stepper .ak-step__marker { grid-row: 1 / span 2; }
+body:has(.nb-study) .nb-stepper .ak-step__title, body:has(.nb-study) .nb-stepper .ak-step__meta { grid-column: 2; }
+
+/* the viewer's own stylesheet loads later and sets a fixed height; this one follows the window */
+.nb-study .nb-viewer__viewport { height: clamp(340px, calc(100dvh - 455px), 760px); }
+@media (max-width: 1100px) { .nb-study .nb-viewer__viewport { height: min(520px, 70vh); } }

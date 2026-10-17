@@ -41,7 +41,7 @@ export async function focusFinding(opts: { jump: boolean; report: boolean }): Pr
   if (opts.jump && match?.matched && match.noduleId) {
     await useViewerStore.getState().api?.jumpToFinding(match.noduleId);
   }
-  if (opts.report) set((s) => ({ focus: { nonce: (s.focus?.nonce ?? 0) + 1 } }));
+  if (opts.report) set((s) => ({ resultTab: "report", focus: { nonce: (s.focus?.nonce ?? 0) + 1 } })); // the sentence must be on screen to flash
 }
 
 function describeMatchStage(driving: { mean_diameter_mm?: number | null; side?: string | null; lobe?: string | null }): string {
@@ -105,7 +105,7 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     set({ timings: { ...timings } });
   };
 
-  resetAnalysis({ phase: "running", source: input.kind, startedByClick: input.startedByClick });
+  resetAnalysis({ phase: "running", source: input.kind, startedByClick: input.startedByClick, resultTab: "report" }); // the report appears first, while it is read
   const reading = window.setInterval(() => set({ readingSeconds: Math.floor((now() - t0) / 1000) }), 500);
 
   try {
@@ -181,7 +181,7 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     if (listed === 0 && extraction.verification.nodules_removed > 0) {
       patchStage("find", { status: "done", ms: Math.round(now() - tFind), meta: "Finding could not be checked" });
       for (const key of ["match", "guideline", "explain"] as const) patchStage(key, { status: "skipped", ms: 0, meta: "No checked finding" });
-      set({ match: null, phase: "done", nextRevealed: true });
+      set({ match: null, phase: "done", nextRevealed: true, resultTab: "findings" }); // the finding that could not be checked is explained there
       mark("total");
       return;
     }
@@ -258,8 +258,8 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     if (!alive()) return;
     await focusFinding({ jump: false, report: true });
     mark("highlighted");
-    if (!reduced) await sleep(300);
-    set({ nextRevealed: true });
+    if (!reduced) await sleep(700); // long enough to see the sentence light up
+    set({ nextRevealed: true, resultTab: "nextstep" });
     mark("total");
     console.table({ ...timings, extractCached: extraction.cached });
   } catch (err) {
@@ -268,6 +268,7 @@ export async function runAnalysis(input: AnalysisInput): Promise<void> {
     const e = err instanceof ExtractError ? err : null;
     set({
       phase: "error",
+      resultTab: "findings", // the error is shown there
       error: { message: e?.message ?? (err instanceof Error ? err.message : String(err)), detail: e?.detail ?? null },
     });
     const running = STAGES.find(({ key }) => state().stages[key].status === "running")?.key ?? "read";

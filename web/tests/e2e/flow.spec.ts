@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { syntheticDicom } from "../helpers/syntheticDicom";
+import { analysisSettled, showTab } from "./helpers";
 
 /**
  * The drop-in flow (Phase 6). /extract is the mocked-model fixture (real PDF intake and verification, mocked model;
@@ -36,7 +37,7 @@ const stepper = (page: Page) => page.getByTestId("stepper");
 const hud = (page: Page) => page.getByTestId("viewer-hud");
 async function waitDone(page: Page) {
   await expect(stepper(page)).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
-  await expect(page.locator("section.nb-reveal").first()).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
+  await analysisSettled(page); // the report is highlighted, then the Next step tab opens
 }
 async function scrollViewerAway(page: Page, presses = 15) {
   await page.getByRole("group", { name: /CT viewer/ }).focus();
@@ -61,7 +62,10 @@ test("example patient A: all five steps, the viewer jumps, the sentence is highl
 
   await expect(hud(page)).toContainText(sliceText("A"));
   await expect(page.locator(".nb-evidence")).toHaveCount(1);
+  await showTab(page, "findings");
   await expect(page.getByTestId("match-line")).toHaveText("Matched to outline: size 9 vs 8.8 mm, right side, upper lobe (estimate), solid");
+  await showTab(page, "nextstep");
+  await expect(page.getByTestId("nextstep")).toBeVisible();
   await expect(page.getByTestId("nextstep")).toHaveAttribute("data-rule", "FL17-S1-GT8");
   await expect(page.getByTestId("finding-label")).toHaveText("Finding 1 · 9 mm");
 });
@@ -91,7 +95,9 @@ test("two-way sync with the mouse: sentence, finding row and viewer label", asyn
   await page.getByRole("button", { name: "Use example patient A" }).click();
   await waitDone(page);
   await expect(hud(page)).toContainText(sliceText("A"));
+  await showTab(page, "findings");
   const row = page.getByTestId("finding-row");
+  await expect(row).toBeVisible();
   await expect(row).toHaveAttribute("data-in-view", "true"); // the viewer sits on the outline
 
   // scroll the viewer off the outline: the row loses its highlight
@@ -99,7 +105,8 @@ test("two-way sync with the mouse: sentence, finding row and viewer label", asyn
   await expect(hud(page)).not.toContainText(sliceText("A"));
   await expect(row).toHaveAttribute("data-in-view", "false");
 
-  // click the highlighted sentence: viewer returns to the finding
+  // click the highlighted sentence (in the report tab): viewer returns to the finding
+  await showTab(page, "report");
   await page.locator(".nb-evidence").click();
   await expect(hud(page)).toContainText(sliceText("A"));
   await expect(row).toHaveAttribute("data-in-view", "true");
@@ -107,12 +114,14 @@ test("two-way sync with the mouse: sentence, finding row and viewer label", asyn
   // away again, then the finding row button
   await scrollViewerAway(page);
   await expect(row).toHaveAttribute("data-in-view", "false");
+  await showTab(page, "findings");
   await page.getByRole("button", { name: "Show in scan" }).click();
   await expect(hud(page)).toContainText(sliceText("A"));
 
-  // label in the viewer: the report scrolls to the sentence and flashes it
-  await page.locator(".nb-report").evaluate((el) => (el.scrollTop = 0));
+  // label in the viewer: the Report tab opens, the report scrolls to the sentence and flashes it
+  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "findings");
   await page.getByTestId("finding-label").click();
+  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "report");
   await expect(page.locator(".nb-evidence.is-active")).toHaveCount(1);
   // smooth scrolling takes a moment: wait until the sentence is fully inside the report box
   await expect
@@ -135,6 +144,7 @@ test("two-way sync with the keyboard only", async ({ page }) => {
   await waitDone(page);
   await scrollViewerAway(page);
   await expect(hud(page)).not.toContainText(sliceText("A"));
+  await showTab(page, "report");
 
   const sentence = page.locator(".nb-evidence");
   await expect(sentence).toHaveAttribute("role", "button");
@@ -149,9 +159,10 @@ test("two-way sync with the keyboard only", async ({ page }) => {
   await expect(hud(page)).toContainText(sliceText("A"));
 
   // the finding label is a real button, reachable with Tab and activated with Enter
-  await page.locator(".nb-report").evaluate((el) => (el.scrollTop = 0));
+  await showTab(page, "findings");
   await page.getByTestId("finding-label").focus();
   await page.keyboard.press("Enter");
+  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "report");
   await expect(page.locator(".nb-evidence.is-active")).toHaveCount(1);
 });
 
@@ -207,13 +218,16 @@ test("an unknown scan: the report is still read, with a clear note and no outlin
   await page.goto("/");
   await page.getByTestId("files-input").setInputFiles([{ name: "unknown.dcm", mimeType: "application/dicom", buffer: Buffer.from(syntheticDicom({ burned: "NO" })) }, { name: "report.pdf", mimeType: "application/pdf", buffer: readFileSync(pdf("A")) }]);
   await expect(stepper(page)).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
+  await analysisSettled(page);
   const alert = page.getByTestId("unmatched-alert");
   await expect(alert).toContainText("No prepared outline for this scan. The report finding is shown without an outline.");
   await expect(alert).toContainText("This series is not one of the prepared cases.");
   await expect(page.getByTestId("stage-meta-match")).toHaveText("No prepared outline");
   await expect(stepper(page).locator('[data-stage="match"]')).toHaveAttribute("data-status", "skipped");
   await expect(page.getByText("No outline to show for this scan")).toBeVisible();
+  await showTab(page, "findings");
   await expect(page.getByTestId("finding-values")).toBeVisible(); // the report finding is shown
+  await showTab(page, "nextstep");
   await expect(page.getByTestId("nextstep")).toHaveAttribute("data-rule", "FL17-S1-GT8");
 });
 

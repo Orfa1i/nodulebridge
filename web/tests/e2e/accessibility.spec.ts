@@ -2,6 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { analysisSettled, showTab } from "./helpers";
 
 /** Accessibility (Phase 9, step 5): axe must report no serious or critical issue, and the main flow must work with the keyboard alone. */
 const fixture = readFileSync(join(__dirname, "fixtures", "extract-case-a.json"), "utf8");
@@ -18,8 +19,7 @@ async function finished(page: Page) {
   await page.route("**/extract", (route) => route.fulfill({ status: 200, contentType: "application/json", body: fixture }));
   await page.goto("/");
   await page.getByRole("button", { name: "Use example patient A" }).click();
-  await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
-  await expect(page.getByTestId("patient-summary")).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
+  await analysisSettled(page);
 }
 
 test("axe: / (empty case workspace)", async ({ page }) => {
@@ -41,7 +41,11 @@ test("axe: /passport (empty)", async ({ page }) => {
 
 test("axe: a finished case, the Arabic summary, the verification drawer", async ({ page }) => {
   await finished(page);
-  await audit(page, "case done");
+  // hidden panels are skipped by axe, so open each tab and audit it
+  for (const tab of ["nextstep", "findings", "report", "summary"] as const) {
+    await showTab(page, tab);
+    await audit(page, `case done, ${tab} tab`);
+  }
   await page.getByTestId("summary-tab-ar").click();
   await audit(page, "case done, Arabic summary");
   await page.getByTestId("show-verification").click();
@@ -85,7 +89,18 @@ test("keyboard only: the whole flow from the example buttons to the passport dow
   for (let i = 0; i < 40 && !(await example.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press("Tab");
   await expect(example).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
+  await analysisSettled(page);
+
+  // the result tabs follow the keyboard pattern: Tab reaches the open tab, the arrow keys, Home and End move between tabs
+  await reachByTab(page.getByTestId("result-tab-nextstep"));
+  await page.keyboard.press("ArrowRight");
+  await expect(page.getByTestId("result-tab-findings")).toBeFocused();
+  await expect(page.getByTestId("result-tab-findings")).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
+  await expect(page.getByTestId("result-tab-summary")).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("ArrowRight"); // wraps around
+  await expect(page.getByTestId("result-tab-nextstep")).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
 
   // the finding label and "Show verification" are real buttons: Tab reaches them, Enter works, Escape returns focus
   await reachByTab(page.getByTestId("show-verification"));
@@ -116,6 +131,7 @@ test("keyboard only: the whole flow from the example buttons to the passport dow
 
 test("status is never shown by colour alone: every badge and alert carries text", async ({ page }) => {
   await finished(page);
+  await showTab(page, "summary");
   const empty = await page.locator(".ak-badge").evaluateAll((els) => els.filter((e) => !(e.textContent ?? "").trim() && !e.getAttribute("aria-label")).length);
   expect(empty).toBe(0);
   const emptyAlerts = await page.locator(".ak-alert").evaluateAll((els) => els.filter((e) => !(e.textContent ?? "").trim()).length);
@@ -124,12 +140,12 @@ test("status is never shown by colour alone: every badge and alert carries text"
 
 test("the Arabic panel declares lang=ar and dir=rtl for assistive technology", async ({ page }) => {
   await finished(page);
+  await showTab(page, "summary");
   await page.getByTestId("summary-tab-ar").click();
   const panel = page.getByTestId("summary-panel-ar");
   await expect(panel).toHaveAttribute("lang", "ar");
   await expect(panel).toHaveAttribute("dir", "rtl");
   await expect(page.getByTestId("summary-tab-ar")).toHaveAttribute("lang", "ar");
-  await expect(page.getByRole("tabpanel")).toHaveAttribute("lang", "ar");
 });
 
 test("axe self-check: the audit really catches a serious violation (so a clean result means something)", async ({ page }) => {

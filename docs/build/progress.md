@@ -445,3 +445,13 @@ The project owner confirmed LOINC 18748-4, SNOMED CT 786838002, SNOMED CT 169069
 **Voice.** Unchanged for A to C (pre-made clips, tested by you). The 15 new studies have no pre-made clips; the player asks the API to speak the text on demand. The free speech quota allows about ten requests a day per model, so voicing all 15 in both languages (30 clips) takes a few days of quota (`pnpm voices --only d`, one study at a time) or a paid key.
 
 **Notes.** The case data is now about 560 MB in `web/public/cases` (object storage for deployment). The extra studies use the same draft Arabic templates; `pnpm check-content` still covers only A to C, which are the clips that matter for the video.
+
+## Study view redesign (2026-10-17)
+
+**Problem.** The right-hand column stacked the report, findings, next step, patient summary and passport card, so a study needed a lot of scrolling.
+
+**New layout.** A compact study header (name, then one line of referral facts: study id, fictional age and sex, exam, indication, referring service; All studies, Previous, Next and a study menu on the title row), a short step bar, the CT viewer on the left, and one tabbed result panel on the right: **Next step, Findings, Report, Summary**. The long text scrolls inside the panel, and the main actions (Create follow-up passport, Show verification) sit in a footer that never scrolls away. At 1440x900 and 1920x1080 the whole study area ends inside the window (tested); below 1100 px the panel moves under the viewer.
+
+**Behaviour.** The Report tab is open while the report is read, the sentence lights up, then the Next step tab opens by itself; the person can open any tab at any time. A study that is open but not analysed opens on Findings (where Start analysis is); a failed or unverifiable result opens Findings (where the explanation is); a refresh opens Next step. Clicking the viewer label or a finding switches to the Report tab so the sentence flashes. Each tab opens at its top. Tabs follow the keyboard pattern (one tab stop, arrow keys, Home, End) and the panels are labelled by their tabs. Hidden panels stay in the page, so the analysis can fill any tab.
+
+**Tests.** `layout.spec.ts` (8 new: fits the window, side by side or stacked, header facts, auto tab sequence, footer always visible, scroll reset, idle and refresh tabs, tablist roles). All other specs now open the tab they look at (`tests/e2e/helpers.ts`), and axe audits every tab. Two things the redesign exposed and fixed: the Start analysis button was hidden behind the wrong default tab, and each tab inherited the previous tab's scroll position. Totals: unit 113, Playwright 95 passed / 1 skipped.

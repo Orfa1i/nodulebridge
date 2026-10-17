@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { analysisSettled, showTab } from "./helpers";
 
 /** Patient summary (Phase 7). /extract is the mocked-model fixture; /recommend and /explain are the real API; audio is the pre-computed clip. */
 const fixture = (l: string) => readFileSync(join(__dirname, "fixtures", `extract-case-${l.toLowerCase()}.json`), "utf8");
@@ -11,6 +12,8 @@ async function open(page: Page, letter: string) {
   await page.getByRole("button", { name: `Use example patient ${letter}` }).click();
   await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
   await expect(page.getByTestId("patient-summary")).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
+  await analysisSettled(page);
+  await showTab(page, "summary");
 }
 
 test("english panel shows the six sections, the draft badge and no leftover placeholders", async ({ page }) => {

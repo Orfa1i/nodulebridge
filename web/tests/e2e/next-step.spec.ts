@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { showTab } from "./helpers";
 
 /**
  * "Guideline next step" card. /extract is the mocked-model fixture (see extract-ui.spec.ts);
@@ -13,8 +14,11 @@ async function openAndAnalyse(page: Page, letter: string, patch?: (body: ReturnT
   patch?.(body);
   await page.route("**/extract", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto(`/?case=${letter}`);
+  await showTab(page, "nextstep");
   await expect(page.getByText("No next step yet")).toBeVisible();
+  await showTab(page, "findings"); // the Start analysis button lives with the findings
   await page.getByRole("button", { name: "Start analysis" }).click();
+  await expect(page.getByTestId("result-panel")).toHaveAttribute("data-active-tab", "nextstep", { timeout: 60_000 }); // the analysis opens it when done
   await expect(page.getByTestId("nextstep")).toBeVisible();
 }
 
@@ -29,7 +33,7 @@ const fmt = (d: Date) => new Intl.DateTimeFormat("en-GB", { day: "numeric", mont
 
 test("case A: headline, due window, why and citation come from the rule; the answer is conditional", async ({ page }) => {
   await openAndAnalyse(page, "A");
-  const card = page.locator("section", { has: page.locator("#nextstep-title") });
+  const card = page.locator("section[aria-labelledby=\"nextstep-title\"]");
   await expect(card.locator(".ak-badge--brand")).toHaveText("Guideline rule");
   await expect(card.locator(".ak-badge--ai")).toHaveCount(0); // a rule is never labelled as AI
 

@@ -7,6 +7,7 @@ import type { Explanation, Locale } from "@/lib/explain";
 import type { ExtractResponse } from "@/types/generated/extract-response";
 import type { MatchResult } from "./matchFinding";
 
+export type ResultTab = "nextstep" | "findings" | "report" | "summary";
 export type StageKey = "read" | "find" | "match" | "guideline" | "explain";
 export type StageStatus = "pending" | "running" | "done" | "error" | "skipped";
 
@@ -73,6 +74,8 @@ export interface AnalysisState {
   focus: { nonce: number } | null;
   /** Next-step card fades in at the end of the automatic sequence. */
   nextRevealed: boolean;
+  /** Which tab of the result panel is open. The analysis moves it (report while reading, then next step); the person can too. */
+  resultTab: ResultTab;
 }
 
 const emptyStage = (): Stage => ({ status: "pending", meta: null, ms: null });
@@ -109,6 +112,7 @@ export const initialAnalysis = (): AnalysisState => ({
   cached: { extract: null },
   focus: null,
   nextRevealed: false,
+  resultTab: "findings", // before an analysis the Findings tab holds the Start analysis button
 });
 
 function safeSessionStorage(): Storage {

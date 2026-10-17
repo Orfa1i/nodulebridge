@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { analysisSettled, showTab } from "./helpers";
 
 /**
  * UI tests for the report and findings cards.
@@ -33,9 +34,13 @@ for (const letter of ["A", "B", "C"]) {
   test(`case ${letter}: findings card shows the manifest values and the evidence is highlighted`, async ({ page }) => {
     await mockExtract(page, letter);
     await page.goto(`/?case=${letter}`);
+    await showTab(page, "report");
     await expect(page.getByText("Example report written for this demo")).toBeVisible();
+    await showTab(page, "findings");
     await expect(page.getByText("No findings yet")).toBeVisible();
     await page.getByRole("button", { name: "Start analysis" }).click();
+    await analysisSettled(page);
+    await showTab(page, "findings");
 
     const row = page.getByTestId("finding-values");
     await expect(row).toHaveText(expectedValues(letter));
@@ -43,7 +48,10 @@ for (const letter of ["A", "B", "C"]) {
     await expect(page.getByText("Findings from the report")).toBeVisible();
     await expect(page.locator("#findings-title ~ .ak-badge--ai")).toHaveText("AI-assisted");
 
+    // the single-dimension note from verification is shown
+    await expect(page.getByText("Report gives one dimension; Fleischner uses the mean of long and short axis.")).toBeVisible();
     // the evidence sentence is highlighted in the report and is the nodule sentence
+    await showTab(page, "report");
     const highlighted = page.locator(".nb-evidence");
     await expect(highlighted).toHaveCount(1);
     await expect(highlighted).toContainText(`${manifestOf(letter).nodules[0].fleischner_size_mm} mm`);
@@ -51,8 +59,6 @@ for (const letter of ["A", "B", "C"]) {
     await expect(page.locator("[data-sid]").first()).toBeVisible();
     // the report is shown sentence by sentence
     expect(await page.locator("[data-sid]").count()).toBeGreaterThan(25);
-    // the single-dimension note from verification is shown
-    await expect(page.getByText("Report gives one dimension; Fleischner uses the mean of long and short axis.")).toBeVisible();
   });
 }
 
@@ -60,6 +66,8 @@ test("case A: ignored findings are listed and collapsed by default", async ({ pa
   await mockExtract(page, "A");
   await page.goto("/?case=A");
   await page.getByRole("button", { name: "Start analysis" }).click();
+  await analysisSettled(page);
+  await showTab(page, "findings");
   const details = page.locator("details.nb-ignored");
   await expect(details.locator("summary")).toContainText("Ignored findings (1)");
   await expect(details).not.toHaveAttribute("open", "");
@@ -70,7 +78,9 @@ test("case A: ignored findings are listed and collapsed by default", async ({ pa
 test("reading shows the indeterminate spectrum bar with elapsed seconds, and the spectrum stays within its three places", async ({ page }) => {
   await mockExtract(page, "A", 1500);
   await page.goto("/?case=A");
+  await showTab(page, "findings");
   await page.getByRole("button", { name: "Start analysis" }).click();
+  await showTab(page, "findings"); // the analysis shows the report while it reads; the progress bar is with the findings
   const progress = page.getByTestId("reading-progress");
   await expect(progress).toBeVisible();
   await expect(progress).toContainText("Reading the report");
@@ -85,8 +95,8 @@ test("reading shows the indeterminate spectrum bar with elapsed seconds, and the
     return hits;
   });
   for (const cls of spectrum) expect(cls).toMatch(/ak-progress__bar|ak-badge--ai|ak-divider--spectrum/);
-  await expect(page.getByTestId("finding-values")).toBeVisible();
   await expect(progress).toHaveCount(0);
+  await expect(page.getByTestId("finding-values")).toBeVisible();
 });
 
 test("a failed extraction shows the plain message and the provider detail, and Try again works", async ({ page }) => {
@@ -105,10 +115,13 @@ test("a failed extraction shows the plain message and the provider detail, and T
   });
   await page.goto("/?case=A");
   await page.getByRole("button", { name: "Start analysis" }).click();
+  await analysisSettled(page, "findings"); // a failed read opens the Findings tab, where the error is shown
   const alert = page.locator(".ak-alert--danger");
   await expect(alert).toContainText("The report could not be read. Paste the text instead.");
   await expect(alert).toContainText("The Anthropic API rejected the key (401)");
   await alert.getByRole("button", { name: "Try again" }).click();
+  await analysisSettled(page);
+  await showTab(page, "findings");
   await expect(page.getByTestId("finding-values")).toHaveText(expectedValues("A"));
 });
 
@@ -117,6 +130,7 @@ test("with no API key the real API says so in plain English (nothing is faked)",
   test.skip((await health.json()).provider !== null, "the API has a model key; this test covers the unconfigured case");
   await page.goto("/?case=A");
   await page.getByRole("button", { name: "Start analysis" }).click();
+  await analysisSettled(page, "findings");
   const alert = page.locator(".ak-alert--danger");
   await expect(alert).toContainText("The AI service is not available.");
   await expect(alert).toContainText("is not set");

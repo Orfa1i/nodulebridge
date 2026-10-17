@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { join } from "node:path";
+import { analysisSettled, showTab } from "./helpers";
 
 /**
  * The worklist (18 prepared studies). /extract is the REAL API: the model's answers for every report are pre-computed in
@@ -16,7 +17,7 @@ async function open(page: Page, letter: string) {
   const back = page.getByTestId("all-studies");
   if (await back.isVisible()) await back.click();
   await page.getByRole("button", { name: `Use example patient ${letter}` }).click();
-  await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
+  await analysisSettled(page);
 }
 
 test("the home screen is a worklist of 18 studies with referral details and no findings", async ({ page }) => {
@@ -60,6 +61,7 @@ test("a new study opens end to end: report read, finding linked to the outline, 
   await expect(page.getByTestId("study-select")).toHaveValue("F");
   await expect(page.getByTestId("stage-meta-match")).toContainText("Matched: 8 mm, left upper");
   await expect(page.getByTestId("nextstep")).toHaveAttribute("data-rule", "FL17-S1-6TO8");
+  await showTab(page, "summary");
   await expect(page.getByTestId("summary-panel-en")).toBeVisible();
   await expect(page.getByTestId("voice-play")).toBeVisible(); // spoken on demand: this study has no pre-made clip
 });

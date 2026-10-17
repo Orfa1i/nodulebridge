@@ -5,12 +5,14 @@ import { useCallback, useEffect, useState } from "react";
 import { ViewerCard } from "@/components/viewer/ViewerCard";
 import type { UploadFiles } from "@/features/privacy/uploadFiles";
 import { focusFinding, rerunRecommendation, retryAnalysis, runAnalysis } from "@/features/analysis/runAnalysis";
-import { rehydrateAnalysis, resetAnalysis, STAGES, useAnalysisStore } from "@/features/analysis/store";
+import { rehydrateAnalysis, resetAnalysis, STAGES, useAnalysisStore, type ResultTab } from "@/features/analysis/store";
 import { createPassport } from "@/features/passport/passportStore";
 import { caseIdFromParam } from "@/lib/cases";
 import { useViewerStore } from "@/lib/viewer/store";
-import { fetchWorklist, letterOf, type WorklistStudy } from "@/lib/worklist";
+import { fetchWorklist, type WorklistStudy } from "@/lib/worklist";
 import { AnalysisStepper } from "./AnalysisStepper";
+import { ResultPanel, type ResultTabSpec } from "./ResultPanel";
+import { StudyHeader } from "./StudyHeader";
 import { FindingsCard, type FindingsState } from "./FindingsCard";
 import { NextStepCard, type NextStepState } from "./NextStepCard";
 import { PatientSummaryCard } from "./PatientSummaryCard";
@@ -85,6 +87,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
   const readingSeconds = useAnalysisStore((s) => s.readingSeconds);
   const focus = useAnalysisStore((s) => s.focus);
   const nextRevealed = useAnalysisStore((s) => s.nextRevealed);
+  const resultTab = useAnalysisStore((s) => s.resultTab);
   const sliceIndex = useViewerStore((s) => s.sliceIndex);
   const maskRange = useViewerStore((s) => s.maskRange);
 
@@ -97,7 +100,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
       const s = useAnalysisStore.getState();
       const wanted = initialCase ? caseIdFromParam(initialCase) : null;
       if (s.phase === "done" && (!wanted || s.caseId === wanted)) {
-        useAnalysisStore.setState({ nextRevealed: true }); // restored: no replay of the sequence
+        useAnalysisStore.setState({ nextRevealed: true, resultTab: "nextstep" }); // restored: no replay of the sequence
         if (s.caseId) setUrlCase(s.caseId);
       } else if (wanted) {
         resetAnalysis({ caseId: wanted, scan: { kind: "prepared", label: null, via: "example", reason: null } });
@@ -181,36 +184,88 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
     );
   }
 
-  const letter = caseId ? caseId.replace("case-", "").toUpperCase() : null;
   const unmatched = scan?.kind === "unmatched";
+  const study = studies.find((x) => x.case_id === caseId) ?? null;
+  const revealed = nextRevealed || phase === "idle" || phase === "error";
+  const setTab = (t: ResultTab) => useAnalysisStore.setState({ resultTab: t });
+  const nodules = extraction?.result.nodules.length ?? null;
+
+  const tabs: ResultTabSpec[] = [
+    {
+      key: "nextstep",
+      label: "Next step",
+      content: <NextStepCard state={next} confirmations={confirmations} onConfirm={(c) => void rerunRecommendation(c)} revealed={revealed} />,
+    },
+    {
+      key: "findings",
+      label: "Findings",
+      hint: nodules === null ? null : String(nodules),
+      content: (
+        <FindingsCard
+          state={findings}
+          onStart={phase === "error" ? retryAnalysis : startFromCase}
+          drivingId={drivingId}
+          match={match}
+          inView={inView}
+          onShowInScan={() => void focusFinding({ jump: true, report: true })}
+        />
+      ),
+    },
+    {
+      key: "report",
+      label: "Report",
+      content: (
+        <ReportCard
+          data={extraction}
+          reading={phase === "running"}
+          focusNonce={focus?.nonce ?? 0}
+          onSentenceActivate={() => void focusFinding({ jump: true, report: !match?.matched })}
+        />
+      ),
+    },
+    {
+      key: "summary",
+      label: "Summary",
+      content: <PatientSummaryCard explanation={explanation} error={explanationError} loading={explainStage === "running"} caseId={caseId} revealed={revealed} />,
+    },
+  ];
+
+  const canPassport = phase === "done" && !!recommendation && !!explanation;
+  const footer =
+    extraction || canPassport ? (
+      <div className="nb-result__actions" data-testid={canPassport ? "passport-cta" : undefined}>
+        {canPassport ? (
+          <button type="button" className="ak-btn ak-btn--primary" onClick={() => void makePassport()} disabled={passportBusy} data-testid="create-passport">
+            {passportBusy ? "Creating the passport" : "Create follow-up passport"}
+          </button>
+        ) : null}
+        {extraction ? (
+          <button type="button" className="ak-btn ak-btn--ghost" onClick={() => setVerifyOpen(true)} data-testid="show-verification">
+            Show verification
+          </button>
+        ) : null}
+        {passportError ? (
+          <div className="ak-alert ak-alert--danger nb-result__alert" role="alert">
+            <div className="ak-alert__body">
+              <p className="ak-alert__title">The passport could not be created.</p>
+              <p>{passportError}</p>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    ) : null;
+
   return (
     <>
-      <h1 className="nb-page__title">Case workspace</h1>
-      <nav className="nb-studybar" aria-label="Studies">
-        <button type="button" className="ak-btn ak-btn--ghost ak-btn--sm" onClick={() => { setUrlCase(null); resetAnalysis(); }} data-testid="all-studies">
-          All studies
-        </button>
-        {studies.length > 0 && letter ? (
-          <>
-            <button type="button" className="ak-btn ak-btn--secondary ak-btn--sm" onClick={() => startExample(letterOf(studies[(studies.findIndex((s) => s.case_id === caseId) - 1 + studies.length) % studies.length].case_id))} data-testid="prev-study">
-              Previous study
-            </button>
-            <button type="button" className="ak-btn ak-btn--secondary ak-btn--sm" onClick={() => startExample(letterOf(studies[(studies.findIndex((s) => s.case_id === caseId) + 1) % studies.length].case_id))} data-testid="next-study">
-              Next study
-            </button>
-            <label className="nb-studybar__select">
-              <span className="nb-sr-only">Switch study</span>
-              <select className="ak-select" value={letter} onChange={(e) => startExample(e.target.value)} data-testid="study-select">
-                {studies.map((s) => (
-                  <option key={s.case_id} value={letterOf(s.case_id)}>
-                    {s.label} · {s.scenario.indication ?? s.scenario.exam ?? "Chest CT"}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </>
-        ) : null}
-      </nav>
+      <StudyHeader
+        study={study}
+        studies={studies}
+        onAllStudies={() => {
+          setUrlCase(null);
+          resetAnalysis();
+        }}
+        onOpen={startExample}
+      />
 
       {privacy ? <PrivacyNotice summary={privacy} /> : null}
       {redaction ? <RedactionReview redaction={redaction} /> : null}
@@ -234,8 +289,8 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
         </div>
       ) : null}
 
-      <div className="nb-workspace">
-        <div className="nb-workspace__viewer">
+      <div className="nb-study">
+        <div className="nb-study__viewer">
           {caseId ? (
             <ViewerCard key={caseId} caseId={caseId} onFindingClick={() => void focusFinding({ jump: false, report: true })} />
           ) : (
@@ -250,52 +305,7 @@ export function AnalysisWorkspace({ initialCase }: { initialCase: string | null 
             </section>
           )}
         </div>
-        <div className="nb-workspace__side">
-          <ReportCard
-            data={extraction}
-            reading={phase === "running"}
-            focusNonce={focus?.nonce ?? 0}
-            onSentenceActivate={() => void focusFinding({ jump: true, report: !match?.matched })}
-          />
-          <FindingsCard
-            state={findings}
-            onStart={phase === "error" ? retryAnalysis : startFromCase}
-            drivingId={drivingId}
-            match={match}
-            inView={inView}
-            onShowInScan={() => void focusFinding({ jump: true, report: true })}
-            onShowVerification={() => setVerifyOpen(true)}
-          />
-          <NextStepCard state={next} confirmations={confirmations} onConfirm={(c) => void rerunRecommendation(c)} revealed={nextRevealed || phase === "idle" || phase === "error"} />
-          <PatientSummaryCard
-            explanation={explanation}
-            error={explanationError}
-            loading={explainStage === "running"}
-            caseId={caseId}
-            revealed={nextRevealed || phase === "idle" || phase === "error"}
-          />
-          {phase === "done" && recommendation && explanation ? (
-            <section className="ak-card" aria-labelledby="passport-cta-title" data-testid="passport-cta">
-              <h2 id="passport-cta-title" className="ak-card__title">
-                Follow-up passport
-              </h2>
-              <p className="nb-finding__note">The finding, the next step, the summary and a message for the doctor in one place, with a PDF, a FHIR file and calendar reminders.</p>
-              <div>
-                <button type="button" className="ak-btn ak-btn--primary" onClick={() => void makePassport()} disabled={passportBusy} data-testid="create-passport">
-                  {passportBusy ? "Creating the passport" : "Create follow-up passport"}
-                </button>
-              </div>
-              {passportError ? (
-                <div className="ak-alert ak-alert--danger" role="alert">
-                  <div className="ak-alert__body">
-                    <p className="ak-alert__title">The passport could not be created.</p>
-                    <p>{passportError}</p>
-                  </div>
-                </div>
-              ) : null}
-            </section>
-          ) : null}
-        </div>
+        <ResultPanel tabs={tabs} active={resultTab} onChange={setTab} footer={footer} />
       </div>
       {showTimings && phase !== "idle" ? <TimingsPanel /> : null}
       <VerificationDrawer open={verifyOpen} onClose={() => setVerifyOpen(false)} />

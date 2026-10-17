@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { analysisSettled, showTab, type ResultTab } from "./helpers";
 
 /**
  * Guardrails (Phase 9, step 3), end to end in the browser. /extract returns the case A fixture changed the way a model
@@ -16,14 +17,14 @@ type Fixture = {
 };
 const base = (): Fixture => JSON.parse(readFileSync(join(__dirname, "fixtures", "extract-case-a.json"), "utf8"));
 
-async function analyse(page: Page, change: (f: Fixture) => void) {
+async function analyse(page: Page, change: (f: Fixture) => void, settledTab: ResultTab = "nextstep") {
   const body = base();
   change(body);
   await page.route("**/extract", (route) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(body) }));
   await page.goto("/");
   await page.getByRole("button", { name: "Use example patient A" }).click();
   await expect(page.getByTestId("stepper")).toHaveAttribute("data-phase", "done", { timeout: 60_000 });
-  await expect(page.locator("section.nb-reveal").first()).toHaveAttribute("data-revealed", "true", { timeout: 20_000 });
+  await analysisSettled(page, settledTab);
 }
 
 async function expectNoNextStep(page: Page) {
@@ -31,6 +32,7 @@ async function expectNoNextStep(page: Page) {
   await expect(page.getByTestId("nextstep-option")).toHaveCount(0);
   await expect(page.getByText("The guideline does not apply here.")).toBeVisible();
   await expect(page.getByTestId("passport-cta")).toBeVisible(); // a summary exists, but it holds no next step
+  await showTab(page, "summary");
   const summary = await page.getByTestId("summary-panel-en").innerText();
   expect(summary).not.toMatch(/repeat CT|PET-CT|biopsy/i);
 }
@@ -42,6 +44,7 @@ test("lung cancer screening: not applicable, and it says a different guideline a
   });
   await expectNoNextStep(page);
   await expect(page.getByTestId("nextstep")).toContainText("A different guideline applies.");
+  await showTab(page, "summary");
   await expect(page.getByTestId("summary-panel-en")).toContainText("A different guideline applies.");
 });
 
@@ -65,9 +68,11 @@ test("no pulmonary nodules: no finding, a plain explanation, no next step, no re
   await analyse(page, (f) => {
     f.result.nodules = [];
   });
+  await showTab(page, "findings");
   await expect(page.getByText("No nodules found in the report.")).toBeVisible();
   await expect(page.getByTestId("stage-meta-find")).toHaveText("No nodule in the report");
   await expect(page.getByTestId("nextstep-option")).toHaveCount(0);
+  await showTab(page, "summary");
   const found = page.getByTestId("summary-found");
   await expect(found).toContainText("The report does not describe a nodule in the lungs.");
   await expect(page.getByTestId("summary-panel-en")).not.toContainText("NCI");
@@ -78,11 +83,12 @@ test("a quote that is not in the report: the finding is dropped, Needs review is
   await analyse(page, (f) => {
     f.result.nodules = [];
     f.verification = { issues: ["quote_not_found:n1:s036"], quotes_checked: 1, quotes_dropped: 1, nodules_removed: 1 };
-  });
+  }, "findings"); // the panel opens the Findings tab, where the unchecked finding is explained
   const row = page.getByTestId("unverified-finding");
   await expect(row).toBeVisible();
   await expect(row).toContainText("Needs review");
   await expect(row).toContainText("could not be checked against the report");
+  await showTab(page, "nextstep");
   await expect(page.getByTestId("nextstep-blocked")).toContainText("No next step is shown.");
   await expect(page.getByTestId("nextstep-option")).toHaveCount(0);
   await expect(page.getByTestId("summary-panel-en")).toHaveCount(0);
